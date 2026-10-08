@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071b31">
+  <title>{% block title %}Your Company Quality System{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='style.css',v='1') }}">
+  <script defer src="{{ url_for('static',filename='app.js',v='1') }}"></script>
+</head>
+<body class="{% if user %}signed-in{% endif %}">
+{% if user %}
+<aside class="sidebar" data-sidebar>
+  <a class="brand" href="{{ url_for('home') }}"><span>YC</span><div><strong>Your Company</strong><small>Quality System</small></div></a>
+  <nav>
+    <a href="{{ url_for('home') }}" class="{% if request.endpoint=='home' %}active{% endif %}"><i>⌂</i>Dashboard</a>
+    {% if user.role in ['operator','admin'] %}<a href="{{ url_for('home') }}#reports"><i>＋</i>New Report</a>{% endif %}
+    <a href="{{ url_for('home') }}#records"><i>▤</i>Quality Records</a>
+    {% if user.role in ['incharge','admin'] %}<a href="{{ url_for('home') }}#records"><i>✓</i>Approvals</a>{% endif %}
+    {% if user.role=='admin' %}<a href="{{ url_for('users') }}" class="{% if request.endpoint=='users' %}active{% endif %}"><i>◎</i>User Management</a>{% endif %}
+  </nav>
+  <div class="sidebar-note"><strong>Commercial demo</strong><small>One server · One database</small></div>
+</aside>
+<header class="topbar">
+  <button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Toggle sidebar">☰</button>
+  <div class="top-user"><span><strong>{{ user.name }}</strong><small>{{ user.role|title }}</small></span><em>{{ user.name[0]|upper }}</em>
+    <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Log out</button></form>
+  </div>
+</header>
+{% endif %}
+<main class="page {% block pageclass %}{% endblock %}">
+{% with messages=get_flashed_messages() %}{% if messages %}<div class="flashes" role="status">{% for message in messages %}<div>{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>
