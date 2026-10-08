@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">{{ user.role|upper }} WORKSPACE</p><h1>Your Company Quality System</h1><p>One controlled workspace for inspections, CTQ tests, approvals, audit history and PDF reports.</p></div><div class="hero-flow"><span>Operator entry</span><b>→</b><span>Verification</span><b>→</b><span>Controlled record</span></div></section>
+
+<div class="section-title" id="reports"><div><p class="eyebrow">QUALITY MODULES</p><h2>Main reports</h2></div><span>Compact customer demonstration</span></div>
+<section class="report-grid">
+{% for key,definition in reports_def.items() %}
+  <article class="report-card"><div class="report-icon">{{ loop.index }}</div><div><strong>{{ definition.title }}</strong><p>{{ definition.description }}</p></div><footer><span>{{ kind_counts[key] }} records</span>{% if user.role in ['operator','admin'] %}<a href="{{ url_for('new_report',kind=key) }}">Open report →</a>{% else %}<span>View records below</span>{% endif %}</footer></article>
+{% endfor %}
+</section>
+
+<div class="section-title"><div><p class="eyebrow">LIVE SUMMARY</p><h2>Report status</h2></div><span>{{ rows|length }} visible records</span></div>
+<section class="stats"><article><span>Total</span><strong>{{ rows|length }}</strong></article><article><span>Pending</span><strong>{{ counts['Pending Approval'] }}</strong></article><article><span>Approved</span><strong>{{ counts['Approved']+counts['Approved with Remarks'] }}</strong></article><article><span>Returned</span><strong>{{ counts['Returned for Correction'] }}</strong></article><article><span>Drafts</span><strong>{{ counts['Draft'] }}</strong></article></section>
+
+<section class="panel" id="records"><div class="panel-head"><div><p class="eyebrow">AUDIT LIST</p><h2>Quality records</h2></div><span>Latest first</span></div>
+  {% if rows %}<div class="record-list"><div class="record-head"><span>Report</span><span>Date / shift</span><span>Prepared by</span><span>Result</span><span>Status</span><span></span></div>
+  {% for row in rows %}<a class="record-row" href="{{ url_for('report_detail',report_id=row.id) }}"><span><strong>DEMO-{{ '%05d'|format(row.id) }}</strong><small>{{ reports_def[row.kind].title }}</small></span><span><strong>{{ row.day }}</strong><small>Shift {{ row.shift }} · {{ row.line }}</small></span><span><strong>{{ row.owner_name }}</strong><small>To: {{ row.approver_name or 'Not assigned' }}</small></span><span><b class="result result-{{ row.result|lower|replace(' ','-') }}">{{ row.result }}</b></span><span><b class="status status-{{ row.status|lower|replace(' ','-') }}">{{ row.status }}</b></span><span class="view-link">View →</span></a>{% endfor %}
+  </div>{% else %}<div class="empty"><strong>No records yet</strong><p>Open one of the report cards to demonstrate quality-data entry.</p></div>{% endif %}
+</section>
+{% endblock %}
