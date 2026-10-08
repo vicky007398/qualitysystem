@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}{{ definition.title }} · Your Company{% endblock %}
+{% block content %}
+<header class="detail-header"><div><a href="{{ url_for('home') }}">← Dashboard</a><p class="eyebrow">CONTROLLED QUALITY RECORD</p><h1>{{ definition.title }}</h1><p>DEMO-{{ '%05d'|format(report.id) }} · {{ report.day }} · Shift {{ report.shift }}</p></div><div class="detail-actions"><span class="status status-{{ report.status|lower|replace(' ','-') }}">{{ report.status }}</span><a class="button secondary" href="{{ url_for('report_pdf',report_id=report.id) }}">Download PDF</a>{% if report.status in ['Draft','Returned for Correction'] and report.owner==user.id %}<a class="button primary" href="{{ url_for('edit_report',report_id=report.id) }}">Edit report</a>{% endif %}</div></header>
+
+<section class="record-meta"><div><span>Customer</span><strong>{{ report.customer or '-' }}</strong></div><div><span>Line</span><strong>{{ report.line }}</strong></div><div><span>Reference</span><strong>{{ report.reference or '-' }}</strong></div><div><span>Prepared by</span><strong>{{ report.owner_name }}</strong></div><div><span>Approver</span><strong>{{ report.approver_name or '-' }}</strong></div><div><span>Completion</span><strong>{{ completed }}/{{ total }}</strong></div></section>
+
+{% for section in definition.sections %}
+<section class="read-panel"><header><span>{{ '%02d'|format(loop.index) }}</span><div><p>{{ section.name|upper }}</p><h2>{{ section.parameter }}</h2><small>{{ section.criterion }}</small></div></header><div class="read-values">
+  {% for field in section.fields %}<div><span>{{ field.label }}</span><strong>{{ payload['values'].get(field.key,'-') or '-' }} {{ field.get('unit', '') }}</strong>{% if field.get('calculation')=='n_per_mm' and calculations.get(field.key+'_n_per_mm') is not none %}<small>{{ calculations.get(field.key+'_n_per_mm') }} N/mm</small>{% endif %}</div>{% endfor %}
+</div></section>
+{% endfor %}
+
+<section class="evaluation"><div><span>Automatic evaluation</span><strong class="result result-{{ report.result|lower|replace(' ','-') }}">{{ report.result }}</strong></div>{% if report.remarks %}<blockquote><strong>Approval remarks</strong>{{ report.remarks }}</blockquote>{% endif %}</section>
+
+{% if may_review %}<section class="review-box"><div><p class="eyebrow">APPROVAL WORKFLOW</p><h2>Verify this report</h2><p>Administrators can review every pending report. Incharges can review reports assigned to them.</p></div><form method="post" action="{{ url_for('review_report',report_id=report.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><label>Verification comment<textarea name="comment" rows="3" placeholder="Required when returning or rejecting"></textarea></label><div><button class="button primary" name="action" value="approve">Approve</button><button class="button warning" name="action" value="return">Return for correction</button><button class="button danger" name="action" value="reject">Reject</button></div></form></section>{% endif %}
+
+{% if report.status in ['Draft','Returned for Correction'] and report.owner==user.id %}<form method="post" action="{{ url_for('delete_report',report_id=report.id) }}" data-delete-draft class="delete-row"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Delete this draft</button></form>{% endif %}
+
+<section class="panel history"><div class="panel-head"><div><p class="eyebrow">AUDIT TRAIL</p><h2>Record history</h2></div></div><ol>{% for item in history %}<li><i></i><div><strong>{{ item.action }}</strong><span>{{ item.actor_name }} · {{ item.time }}</span>{% if item.comment %}<blockquote>{{ item.comment }}</blockquote>{% endif %}</div></li>{% endfor %}</ol></section>
+{% endblock %}
