@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}User Management · Your Company{% endblock %}
+{% block content %}
+<header class="form-header"><div><a href="{{ url_for('home') }}">← Dashboard</a><p class="eyebrow">ADMINISTRATION</p><h1>User Management</h1><p>Create demonstration operators, incharges and administrators.</p></div></header>
+<section class="user-layout"><form method="post" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}"><h2>Create user</h2><div class="form-stack"><label>Employee ID<input name="employee" required maxlength="30"></label><label>Full name<input name="name" required maxlength="80"></label><label>Role<select name="role" required><option value="operator">Operator</option><option value="incharge">Shift incharge</option><option value="admin">Administrator</option></select></label><label>Password<input type="password" name="password" required minlength="5" maxlength="12"><small>5 to 12 characters</small></label><button class="button primary">Create user</button></div></form>
+<section class="panel"><div class="panel-head"><div><p class="eyebrow">ACTIVE ACCOUNTS</p><h2>System users</h2></div></div><div class="user-list">{% for row in rows %}<div><span>{{ row.name[0]|upper }}</span><p><strong>{{ row.name }}</strong><small>{{ row.employee }} · {{ row.role|title }}</small></p><b>{{ 'Active' if row.active else 'Disabled' }}</b></div>{% endfor %}</div></section></section>
+{% endblock %}
