@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Sign in · Your Company Quality System{% endblock %}
+{% block pageclass %}login-page{% endblock %}
+{% block content %}
+<section class="login-shell">
+  <div class="login-story">
+    <div class="login-brand"><span>YC</span><strong>YOUR COMPANY</strong></div>
+    <div class="login-copy"><p>QUALITY PROCESS DOCUMENTATION</p><h1>Capture.<br>Verify.<br><span>Improve.</span></h1><p>A complete demonstration of controlled quality entry, approval, traceability and downloadable reporting.</p></div>
+    <div class="login-metrics"><div><strong>6</strong><span>Report types</span></div><div><strong>3</strong><span>User roles</span></div><div><strong>PDF</strong><span>Controlled output</span></div></div>
+  </div>
+  <div class="login-access">
+    <form method="post" class="login-card">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <span class="login-mark">QMS</span><p class="eyebrow">SECURE DEMO ACCESS</p><h2>Welcome back</h2><p class="muted">Use a demonstration account to explore the complete workflow.</p>
+      <label>Employee ID<input name="employee" autocomplete="username" placeholder="Enter employee ID" required autofocus></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" placeholder="Enter password" required></label>
+      <button class="button primary full">Enter Quality System →</button>
+      <div class="demo-accounts"><strong>Demo accounts · Password: Demo123</strong><span>Operator: OP100</span><span>Incharge: IC100</span><span>Administrator: AD100</span></div>
+    </form>
+  </div>
+</section>
+{% endblock %}
