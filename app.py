@@ -1,4 +1,5 @@
 import io
+import math
 import json
 import os
 import secrets
@@ -104,6 +105,11 @@ REPORTS = {
         ]}],
     },
 }
+
+# Illustrative customer-demo checkpoints; not a production specification.
+REPORTS["ipqc"]["sections"] = [{'name': 'Incoming material', 'parameter': 'Front glass condition', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'glass_condition', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Incoming material', 'parameter': 'Cell visual inspection', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'cell_visual', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Incoming material', 'parameter': 'Ribbon identification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'ribbon_id', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Incoming material', 'parameter': 'Busbar identification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'busbar_id', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Incoming material', 'parameter': 'Encapsulant identification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'encapsulant_id', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Incoming material', 'parameter': 'Flux identification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'flux_id', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Glass loading', 'parameter': 'Glass size verification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'glass_size', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Glass cleaning', 'parameter': 'Glass cleanliness', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'glass_clean', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Encapsulant cutting', 'parameter': 'Front encapsulant dimensions', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'front_epe', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Cell cutting', 'parameter': 'Cell cut quality', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'cell_cut', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Stringing', 'parameter': 'Soldering temperature', 'criterion': '360–400 °C · illustrative demo limits', 'fields': [{'key': 'soldering_temperature', 'label': 'Measured temperature', 'type': 'number', 'unit': '°C', 'min': 360, 'max': 400}]}, {'name': 'Stringing', 'parameter': 'Ribbon alignment', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'ribbon_alignment', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Stringing', 'parameter': 'Cell pitch', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'cell_pitch', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Stringing', 'parameter': 'String visual condition', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'string_visual', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Stringing', 'parameter': 'Ribbon peel verification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'ribbon_peel_check', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Layup', 'parameter': 'String position', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'string_position', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Layup', 'parameter': 'String-to-string gap', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'string_gap', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Layup', 'parameter': 'Cell matrix alignment', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'matrix_alignment', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Autobussing', 'parameter': 'Busbar solder joints', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'busbar_joints', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Autobussing', 'parameter': 'Busbar routing', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'busbar_routing', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Insulation', 'parameter': 'Insulation placement', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'insulation', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Pre-lamination EL', 'parameter': 'EL power supply reference', 'criterion': 'Record the EL power supply reference', 'fields': [{'key': 'pre_el_ref', 'label': 'Reference number', 'type': 'text'}]}, {'name': 'Pre-lamination EL', 'parameter': 'EL image inspection', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'pre_el_image', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Rear layup', 'parameter': 'Rear encapsulant placement', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'rear_epe', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Rear layup', 'parameter': 'Rear glass / backsheet condition', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'rear_sheet', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Lamination', 'parameter': 'Lamination temperature', 'criterion': '140–150 °C · illustrative demo limits', 'fields': [{'key': 'lamination_temperature', 'label': 'Measured temperature', 'type': 'number', 'unit': '°C', 'min': 140, 'max': 150}]}, {'name': 'Lamination', 'parameter': 'Vacuum cycle verification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'vacuum_cycle', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Lamination', 'parameter': 'Curing cycle verification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'curing_cycle', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Post lam EL and Visual', 'parameter': 'EL power supply reference', 'criterion': 'Record the EL power supply reference', 'fields': [{'key': 'post_el_ref', 'label': 'Reference number', 'type': 'text'}]}, {'name': 'Post lam EL and Visual', 'parameter': 'EL image and visual inspection', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'post_el_image', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Framing', 'parameter': 'Frame and sealant condition', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'frame', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Junction box', 'parameter': 'Junction box bonding', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'jbox', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Junction box', 'parameter': 'Cable and connector verification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'connectors', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Edge milling and cleaning', 'parameter': 'Edge finish and cleanliness', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'edge_clean', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Sun simulator', 'parameter': 'Power measurement verification', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'power_check', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}, {'name': 'Final EL', 'parameter': 'EL power supply reference', 'criterion': 'Record the EL power supply reference', 'fields': [{'key': 'final_el_ref', 'label': 'Reference number', 'type': 'text'}]}, {'name': 'Final inspection', 'parameter': 'Module visual condition', 'criterion': 'Conforms to the demo inspection specification', 'fields': [{'key': 'final_visual', 'label': 'Observation', 'type': 'select', 'options': ['OK', 'Not OK']}]}]
+REPORTS["ipqc"]["description"] = "37 guided checkpoints from incoming materials to final inspection."
+CTQ_KINDS = ("gel", "ribbon_peel", "adhesion", "busbar_peel")
 
 STATUSES = ["Draft", "Pending Approval", "Returned for Correction", "Approved", "Approved with Remarks", "Rejected"]
 FINAL_STATUSES = {"Approved", "Approved with Remarks", "Rejected"}
@@ -236,6 +242,8 @@ def evaluate(kind, values):
             outcomes.append(("min" not in field or number >= field["min"]) and ("max" not in field or number <= field["max"]))
             if field.get("calculation") == "n_per_mm":
                 calculations[field["key"] + "_n_per_mm"] = round(number / 0.24, 3)
+        else:
+            outcomes.append(bool(str(value).strip()))
     total = len(field_definitions(kind))
     completed = sum(values.get(field["key"], "") != "" for field in field_definitions(kind))
     result = "Not evaluated" if not outcomes else "PASS" if completed == total and all(outcomes) else "FAIL" if completed == total else "In progress"
@@ -295,10 +303,13 @@ def logout():
 @app.get("/")
 @require()
 def home():
-    rows = visible_reports()
+    module = request.args.get("module", "ipqc")
+    if module not in {"ipqc", "ctq"}:
+        abort(404)
+    rows = [row for row in visible_reports() if (row["kind"] in CTQ_KINDS if module == "ctq" else row["kind"] not in CTQ_KINDS)]
     counts = {status: sum(row["status"] == status for row in rows) for status in STATUSES}
     kind_counts = {kind: sum(row["kind"] == kind for row in rows) for kind in REPORTS}
-    return render_template("home.html", rows=rows, counts=counts, kind_counts=kind_counts)
+    return render_template("home.html", rows=rows, counts=counts, kind_counts=kind_counts, module=module, ctq_kinds=CTQ_KINDS)
 
 
 def clean_values(kind, submitted, require_all):
@@ -311,7 +322,8 @@ def clean_values(kind, submitted, require_all):
             raise ValueError(f"Complete {field['label']} before submission.")
         if value and field["type"] == "number":
             try:
-                float(value)
+                if not math.isfinite(float(value)):
+                    raise ValueError("Reading must be finite")
             except ValueError as error:
                 raise ValueError(f"{field['label']} must be numeric.") from error
         if value and field["type"] == "select" and value not in field["options"]:
@@ -345,7 +357,7 @@ def new_report(kind):
             if action == "submit" and not all([line, reference, customer]):
                 raise ValueError("Complete line, reference number and customer name.")
             result, calculations, _completed, _total = evaluate(kind, values)
-            payload = json.dumps({"version": "DEMO-1", "values": values, "calculations": calculations})
+            payload = json.dumps({"version": "DEMO-1", "values": values, "calculations": calculations, "definition": REPORTS[kind]})
             status = "Pending Approval" if action == "submit" else "Draft"
             timestamp = now()
             with db():
@@ -384,7 +396,7 @@ def edit_report(report_id):
             result, calculations, _completed, _total = evaluate(kind, values)
             timestamp = now()
             status = "Pending Approval" if action == "submit" else "Draft"
-            payload = json.dumps({"version": "DEMO-1", "values": values, "calculations": calculations})
+            payload = json.dumps({"version": "DEMO-1", "values": values, "calculations": calculations, "definition": REPORTS[kind]})
             with db():
                 db().execute("""
                   UPDATE reports SET day=?,shift=?,line=?,reference=?,customer=?,approver=?,status=?,result=?,payload=?,remarks='',version=version+1,updated=? WHERE id=?
@@ -404,10 +416,14 @@ def edit_report(report_id):
 def report_detail(report_id):
     report = get_report(report_id)
     payload = json.loads(report["payload"])
-    result, calculations, completed, total = evaluate(report["kind"], payload.get("values", {}))
+    definition = payload.get("definition", REPORTS[report["kind"]])
+    fields = [field for section in definition["sections"] for field in section["fields"]]
+    completed = sum(bool(payload.get("values", {}).get(field["key"], "")) for field in fields)
+    total = len(fields)
+    calculations = payload.get("calculations", {})
     history = db().execute("SELECT h.*,u.name AS actor_name FROM history h JOIN users u ON u.id=h.actor WHERE h.report=? ORDER BY h.id", (report_id,)).fetchall()
     may_review = report["status"] == "Pending Approval" and (g.user["role"] == "admin" or report["approver"] == g.user["id"])
-    return render_template("detail.html", report=report, definition=REPORTS[report["kind"]], payload=payload,
+    return render_template("detail.html", report=report, definition=definition, payload=payload,
                            calculations=calculations, completed=completed, total=total, history=history, may_review=may_review)
 
 
@@ -448,7 +464,7 @@ def delete_report(report_id):
 
 def report_pdf_data(report):
     payload = json.loads(report["payload"])
-    definition = REPORTS[report["kind"]]
+    definition = payload.get("definition", REPORTS[report["kind"]])
     styles = getSampleStyleSheet()
     story = [Paragraph("YOUR COMPANY", styles["Title"]), Paragraph(definition["title"], styles["Heading1"]), Spacer(1, 5 * mm)]
     meta = [
@@ -467,8 +483,9 @@ def report_pdf_data(report):
             value = values.get(field["key"], "-") or "-"
             display = f"{value} {field.get('unit', '')}".strip()
             rows.append([section["name"], section["parameter"], section["criterion"], f"{field['label']}: {display}"])
+    rows = [[Paragraph(str(cell), styles["BodyText"]) for cell in row] for row in rows]
     table = Table(rows, colWidths=[35 * mm, 55 * mm, 48 * mm, 42 * mm], repeatRows=1)
-    table.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), .45, colors.HexColor("#73879a")), ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0b2742")), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, 1), (-1, -1), "Helvetica"), ("FONTSIZE", (0, 0), (-1, -1), 8), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 5), ("RIGHTPADDING", (0, 0), (-1, -1), 5), ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5)]))
+    table.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), .45, colors.HexColor("#73879a")), ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f3e5d9")), ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#263844")), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, 1), (-1, -1), "Helvetica"), ("FONTSIZE", (0, 0), (-1, -1), 8), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 5), ("RIGHTPADDING", (0, 0), (-1, -1), 5), ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5)]))
     story += [table, Spacer(1, 6 * mm), Paragraph(f"Evaluation: {report['result']}", styles["Heading2"])]
     if report["remarks"]:
         story.append(Paragraph(f"Approval remarks: {report['remarks']}", styles["BodyText"]))
@@ -518,3 +535,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", os.environ.get("QUALITYSYSTEM_PORT", "8080")))
     print(f"Quality System Demo listening on http://{host}:{port}")
     serve(app, host=host, port=port)
+

@@ -3,20 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#151a1e">
+  <meta name="theme-color" content="#f8fafc">
   <title>{% block title %}Your Company Quality System{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static',filename='style.css',v='2') }}">
-  <script defer src="{{ url_for('static',filename='app.js',v='2') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static',filename='style.css',v='1.2.0') }}">
+  <script defer src="{{ url_for('static',filename='app.js',v='1.2.0') }}"></script>
 </head>
 <body class="{% if user %}signed-in{% endif %}">
 {% if user %}
 <aside class="sidebar" data-sidebar>
   <a class="brand" href="{{ url_for('home') }}"><span>YC</span><div><strong>Your Company</strong><small>Quality Intelligence</small></div></a>
   <nav>
-    <a href="{{ url_for('home') }}" class="{% if request.endpoint=='home' %}active{% endif %}"><i>⌂</i>Dashboard</a>
-    {% if user.role in ['operator','admin'] %}<a href="{{ url_for('home') }}#reports"><i>＋</i>New Report</a>{% endif %}
-    <a href="{{ url_for('home') }}#records"><i>▤</i>Quality Records</a>
-    {% if user.role in ['incharge','admin'] %}<a href="{{ url_for('home') }}#records"><i>✓</i>Approvals</a>{% endif %}
+    <a href="{{ url_for('home',module='ipqc') }}" class="{% if request.args.get('module','ipqc')=='ipqc' and request.endpoint=='home' %}active{% endif %}"><i>01</i>IPQC</a>
+    <a href="{{ url_for('home',module='ctq') }}" class="{% if request.args.get('module')=='ctq' and request.endpoint=='home' %}active{% endif %}"><i>02</i>CTQ Tests</a>
     {% if user.role=='admin' %}<a href="{{ url_for('users') }}" class="{% if request.endpoint=='users' %}active{% endif %}"><i>◎</i>User Management</a>{% endif %}
   </nav>
   <div class="sidebar-note"><strong>Customer preview</strong><small>Secure · Traceable · Paperless</small></div>
@@ -34,3 +32,4 @@
 </main>
 </body>
 </html>
+

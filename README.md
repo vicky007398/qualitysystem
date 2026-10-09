@@ -2,6 +2,10 @@
 
 A generic commercial demonstration of digital quality-process documentation for manufacturing companies. The interface uses **Your Company** and contains no customer-specific brand.
 
+## Version 1.2.0
+
+Bright day theme with JetBrains Mono / Consolas, separate IPQC and CTQ workspaces and separate summaries. CTQ reports appear in order: Gel, Ribbon Peel, Adhesion, Busbar Peel. The IPQC checkpoint strip supports direct selection, mobile swipe and completion tracking. Checkpoints and limits are illustrative demo content, not a customer production specification. Existing databases are preserved.
+
 ## Demonstrated workflow
 
 1. Operator creates a report or saves a draft.
@@ -12,8 +16,7 @@ A generic commercial demonstration of digital quality-process documentation for 
 
 ## Demo reports
 
-- IPQC Checksheet — four process stages with one checkpoint each
-- Stringer Parameter Report — one temperature parameter across six tracks
+- IPQC Checksheet — 37 illustrative checkpoints with sliding Previous/Next navigation
 - Gel Content Test — one controlled percentage result
 - Adhesion Test — one controlled strength result
 - Ribbon Peel Test — one average force with automatic N/mm calculation
@@ -81,3 +84,4 @@ The application stores its SQLite database at `data/qualitysystem.db`. Keep it o
 ## Commercialisation note
 
 This repository is a demonstration, not a validated production QMS. A customer deployment should add company configuration, controlled master-data management, HTTPS, automated backups, a signed installer/service, licence controls, validation documentation and an agreed retention policy.
+
