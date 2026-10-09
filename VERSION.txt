@@ -1,2 +1,6 @@
 Quality Process Documentation Automation — Customer Demo
-Version 1.0.0
+Version 1.1.0
+
+- Added a fully distinct premium industrial visual theme.
+- Standardised the interface on JetBrains Mono / Consolas.
+- Tightened desktop and mobile layouts for customer demonstrations.
