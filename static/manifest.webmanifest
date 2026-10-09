@@ -1,0 +1,16 @@
+{
+  "name": "Your Company Quality System Demo",
+  "short_name": "QMS Demo",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#f4f6fa",
+  "icons": [
+    {
+      "src": "/static/company-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

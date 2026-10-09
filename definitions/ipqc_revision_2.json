@@ -1,0 +1,1055 @@
+{
+  "id": "commercial-demo-ipqc-1.3",
+  "title": "In-Process Quality Audit Report",
+  "document_no": "DEMO/QMS/IPQC/001",
+  "issue_date": "01-02-2026",
+  "revision_no": "00",
+  "revision_date": "00/00/0000",
+  "copy": "Demo Copy",
+  "source_sheet": "Revision 2",
+  "header_fields": [
+    {
+      "key": "production_order",
+      "label": "Production Order No.",
+      "required": true
+    },
+    {
+      "key": "customer_name",
+      "label": "Customer name",
+      "required": true
+    }
+  ],
+  "sections": [
+    {
+      "number": "1",
+      "name": "Temperature & Relative Humidity(%RH) monitoring",
+      "items": [
+        {
+          "id": "R10",
+          "source_row": 10,
+          "serial": "1",
+          "stage": "Temperature & Relative Humidity(%RH) monitoring",
+          "parameter": "Shop-floor Temperature",
+          "acceptance": "Temperature : 25 ± 5⁰C",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "2",
+      "name": "Front Glass Loading",
+      "items": [
+        {
+          "id": "R12",
+          "source_row": 12,
+          "serial": "2",
+          "stage": "Front Glass Loading",
+          "parameter": "Supplier Name, Lot number and Expiry date",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "3",
+      "name": "Front Encapsulant",
+      "items": [
+        {
+          "id": "R15",
+          "source_row": 15,
+          "serial": "3",
+          "stage": "Front Encapsulant",
+          "parameter": "Supplier name, Manufacturing date and Expiry date",
+          "acceptance": "As per Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "4",
+      "name": "Cell Loading",
+      "items": [
+        {
+          "id": "R83",
+          "source_row": 83,
+          "serial": "4",
+          "stage": "Cell Loading",
+          "parameter": "Cell Supplier Name, Batch No, Expire date",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Cell Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "5",
+      "name": "Stringer/Cell cutting section",
+      "items": [
+        {
+          "id": "R32",
+          "source_row": 32,
+          "serial": "5",
+          "stage": "Stringer/Cell cutting section",
+          "parameter": "Drying Base 1",
+          "acceptance": "100 ± 20 °C | Ref: DEMO/QAD/QP/L3/001",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Stringer 1 - Track A",
+                "Stringer 1 - Track B",
+                "Stringer 2 - Track A",
+                "Stringer 2 - Track B",
+                "Stringer 3 - Track A",
+                "Stringer 3 - Track B"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "R38",
+          "source_row": 38,
+          "serial": "5",
+          "stage": "Stringer/Cell cutting section",
+          "parameter": "Set Power # 1",
+          "acceptance": "As per process parameter | Ref: DEMO/QAD/QP/L3/001",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Stringer 1 - Track A",
+                "Stringer 1 - Track B",
+                "Stringer 2 - Track A",
+                "Stringer 2 - Track B",
+                "Stringer 3 - Track A",
+                "Stringer 3 - Track B"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "R55",
+          "source_row": 55,
+          "serial": "5",
+          "stage": "Stringer/Cell cutting section",
+          "parameter": "Standby Power # 1",
+          "acceptance": "As per process parameter | Ref: DEMO/QAD/QP/L3/001",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Stringer 1 - Track A",
+                "Stringer 1 - Track B",
+                "Stringer 2 - Track A",
+                "Stringer 2 - Track B",
+                "Stringer 3 - Track A",
+                "Stringer 3 - Track B"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "6",
+      "name": "Auto Bussing",
+      "items": [
+        {
+          "id": "R86",
+          "source_row": 86,
+          "serial": "6",
+          "stage": "Auto Bussing",
+          "parameter": "Bus Ribbon Supplier name, Batch No, Expire date",
+          "acceptance": "As per Label",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Bus Ribbon Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "7",
+      "name": "String Rework",
+      "items": [
+        {
+          "id": "R92",
+          "source_row": 0,
+          "serial": "7",
+          "stage": "String Rework",
+          "parameter": "String Rework Verification",
+          "acceptance": "As per approved work instruction",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "8",
+      "name": "Auto Barcode Placing",
+      "items": [
+        {
+          "id": "R97",
+          "source_row": 97,
+          "serial": "8",
+          "stage": "Auto Barcode Placing",
+          "parameter": "Module Type",
+          "acceptance": "Refer Production order",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "9",
+      "name": "Auto Tapping",
+      "items": [
+        {
+          "id": "R93",
+          "source_row": 93,
+          "serial": "9",
+          "stage": "Auto Tapping",
+          "parameter": "Tape Supplier Name",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "10",
+      "name": "Auto Middle Patch Cutting",
+      "items": [
+        {
+          "id": "R101",
+          "source_row": 101,
+          "serial": "10",
+          "stage": "Auto Middle Patch Cutting",
+          "parameter": "Supplier, Lot No, Exp Date",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "11",
+      "name": "Auto Long-Length Patch Cutting",
+      "items": [
+        {
+          "id": "R101L",
+          "source_row": 0,
+          "serial": "11",
+          "stage": "Auto Long-Length Patch Cutting",
+          "parameter": "Supplier, Lot No, Exp Date",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "12",
+      "name": "Rear Encapsulant",
+      "items": [
+        {
+          "id": "R105",
+          "source_row": 105,
+          "serial": "12",
+          "stage": "Rear Encapsulant",
+          "parameter": "Supplier name, Manufacturing date and Expiry date",
+          "acceptance": "As per Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "13",
+      "name": "Rear Glass Loading",
+      "items": [
+        {
+          "id": "R110",
+          "source_row": 110,
+          "serial": "13",
+          "stage": "Rear Glass Loading",
+          "parameter": "Supplier Name, Lot number and Expiry date",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "14",
+      "name": "Pre EL and AOI Visual Inspection",
+      "items": [
+        {
+          "id": "R113",
+          "source_row": 113,
+          "serial": "14",
+          "stage": "Pre EL and AOI Visual Inspection",
+          "parameter": "El inspection",
+          "acceptance": "EL image should fulfill the EL Acceptance Criteria",
+          "frequency": "Twice per shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "1"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "15",
+      "name": "Rework Station",
+      "items": [
+        {
+          "id": "R122",
+          "source_row": 122,
+          "serial": "15",
+          "stage": "Rework Station",
+          "parameter": "Soldering Temperature Verification",
+          "acceptance": "Temperature range 380±20⁰C",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "16",
+      "name": "Edge Sealing Tape",
+      "items": [
+        {
+          "id": "R125",
+          "source_row": 125,
+          "serial": "16",
+          "stage": "Edge Sealing Tape",
+          "parameter": "Visual Appearance",
+          "acceptance": "Visually should be Ok",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "17",
+      "name": "Laminator",
+      "items": [
+        {
+          "id": "R126",
+          "source_row": 126,
+          "serial": "17",
+          "stage": "Laminator",
+          "parameter": "Laminator Recipe",
+          "acceptance": "As per approved running recipe and laminator display | Ref: DEMO/QAD/QP/L3/002",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "Laminator 1A",
+              "fields": [
+                "Chamber 1 · Lamination (s)",
+                "Chamber 1 · Temperature Setting (°C)"
+              ]
+            },
+            {
+              "label": "Laminator 1B",
+              "fields": [
+                "Chamber 1 · Lamination (s)",
+                "Chamber 1 · Temperature Setting (°C)"
+              ]
+            },
+            {
+              "label": "Laminator 2A",
+              "fields": [
+                "Chamber 1 · Lamination (s)",
+                "Chamber 1 · Temperature Setting (°C)"
+              ]
+            },
+            {
+              "label": "Laminator 2B",
+              "fields": [
+                "Chamber 1 · Lamination (s)",
+                "Chamber 1 · Temperature Setting (°C)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "18",
+      "name": "Trimming Section",
+      "items": [
+        {
+          "id": "R148",
+          "source_row": 148,
+          "serial": "18",
+          "stage": "Trimming Section",
+          "parameter": "Quality of Trimming",
+          "acceptance": "Trimming should be proper/ should not be damaged",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "19",
+      "name": "Post lam EL and Visual",
+      "items": [
+        {
+          "id": "R149",
+          "source_row": 149,
+          "serial": "19",
+          "stage": "Post lam EL and Visual",
+          "parameter": "illuminance Level (LUX)",
+          "acceptance": "≥ 700 Lux",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "20",
+      "name": "Framing",
+      "items": [
+        {
+          "id": "R154",
+          "source_row": 154,
+          "serial": "20",
+          "stage": "Framing",
+          "parameter": "Frame Supplier name and Type",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "21",
+      "name": "JB Dispensing",
+      "items": [
+        {
+          "id": "R167B",
+          "source_row": 0,
+          "serial": "21",
+          "stage": "JB Dispensing",
+          "parameter": "JB sealant weight (g)",
+          "acceptance": "As per approved process specification | Ref: DEMO/QAD/QP/FM/L3/006",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Sealant weight"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "22",
+      "name": "JB Fixing",
+      "items": [
+        {
+          "id": "R168",
+          "source_row": 168,
+          "serial": "22",
+          "stage": "JB Fixing",
+          "parameter": "JB supplier name, type, Diode",
+          "acceptance": "Refer Production order",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Supplier name"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Supplier name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "23",
+      "name": "JB Soldering",
+      "items": [
+        {
+          "id": "R171",
+          "source_row": 171,
+          "serial": "23",
+          "stage": "JB Soldering",
+          "parameter": "Soldering Temp",
+          "acceptance": "Temperature range 380±20⁰C",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "24",
+      "name": "Auto Potting",
+      "items": [
+        {
+          "id": "R173",
+          "source_row": 173,
+          "serial": "24",
+          "stage": "Auto Potting",
+          "parameter": "JB Potting Supplier name, Type/Model no., Expire date",
+          "acceptance": "Refer Production order",
+          "frequency": "Once Per Shift",
+          "observations": [
+            {
+              "label": "Shift check",
+              "fields": [
+                "Supplier name (A)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "25",
+      "name": "Sealant Curing",
+      "items": [
+        {
+          "id": "R176",
+          "source_row": 176,
+          "serial": "25",
+          "stage": "Sealant Curing",
+          "parameter": "Curing Time",
+          "acceptance": "≥4Hrs",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "26",
+      "name": "Edge Milling",
+      "items": [
+        {
+          "id": "R182A",
+          "source_row": 0,
+          "serial": "26",
+          "stage": "Edge Milling",
+          "parameter": "Visual Observation",
+          "acceptance": "Should be smooth and visually OK",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "27",
+      "name": "Cleaning Stage",
+      "items": [
+        {
+          "id": "R182B",
+          "source_row": 0,
+          "serial": "27",
+          "stage": "Cleaning Stage",
+          "parameter": "Visual Observation",
+          "acceptance": "Should be free from dust, no marks on glass, no residue on glass",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "28",
+      "name": "Sun Simulator",
+      "items": [
+        {
+          "id": "R179",
+          "source_row": 179,
+          "serial": "28",
+          "stage": "Sun Simulator",
+          "parameter": "Running Module Serial No. and Wp",
+          "acceptance": "Refer Production order",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Module sr. no"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Module sr. no"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "29",
+      "name": "HV/ IR / Ground Continuity Tester",
+      "items": [
+        {
+          "id": "R183",
+          "source_row": 183,
+          "serial": "29",
+          "stage": "HV/ IR / Ground Continuity Tester",
+          "parameter": "HV/ IR / Ground Continuity Tester",
+          "acceptance": "As per process parameter | Ref: DEMO/QAD/QP/L3/005",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "1. Module No."
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "1. Module No."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "30",
+      "name": "Final EL and Visual",
+      "items": [
+        {
+          "id": "R188",
+          "source_row": 188,
+          "serial": "30",
+          "stage": "Final EL and Visual",
+          "parameter": "El inspection",
+          "acceptance": "EL image should fulfill the EL Acceptance Criteria",
+          "frequency": "Twice per shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "1"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "31",
+      "name": "RFID",
+      "items": [
+        {
+          "id": "R197",
+          "source_row": 197,
+          "serial": "31",
+          "stage": "RFID",
+          "parameter": "RFID Verification",
+          "acceptance": "RFID Static Data Should be Match with Electrical Parameter",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "32",
+      "name": "Visual 360°",
+      "items": [
+        {
+          "id": "R198A",
+          "source_row": 0,
+          "serial": "32",
+          "stage": "Visual 360°",
+          "parameter": "Illumination Level (LUX)",
+          "acceptance": "≥ 700 Lux",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Illumination level"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Illumination level"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "33",
+      "name": "Auto Sorter",
+      "items": [
+        {
+          "id": "R204",
+          "source_row": 204,
+          "serial": "33",
+          "stage": "Auto Sorter",
+          "parameter": "Sorting criteria verification",
+          "acceptance": "As per WI",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "34",
+      "name": "Auto Backlabel",
+      "items": [
+        {
+          "id": "R204A",
+          "source_row": 0,
+          "serial": "34",
+          "stage": "Auto Backlabel",
+          "parameter": "Backlabel Verification",
+          "acceptance": "As per electrical datasheet",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Visual OK"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Visual OK"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "35",
+      "name": "Auto Corner",
+      "items": [
+        {
+          "id": "R204B",
+          "source_row": 0,
+          "serial": "35",
+          "stage": "Auto Corner",
+          "parameter": "Visual Observation",
+          "acceptance": "As per module design",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Visually OK"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Visually OK"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "36",
+      "name": "Packaging",
+      "items": [
+        {
+          "id": "R205",
+          "source_row": 205,
+          "serial": "36",
+          "stage": "Packaging",
+          "parameter": "Packing/Corrugated Box Size",
+          "acceptance": "Refer Module packing W",
+          "frequency": "Twice Per Shift",
+          "observations": [
+            {
+              "label": "First check",
+              "fields": [
+                "Observation"
+              ]
+            },
+            {
+              "label": "Second check",
+              "fields": [
+                "Observation"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

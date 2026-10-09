@@ -1,0 +1,50 @@
+{
+  "source": "Bill of Material Specification_G12R",
+  "display_rule": "Supplier and manufacturer names only, shown in proper case",
+  "categories": {
+    "cell_connector": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "string_connector": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "frame": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "jb": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "encapsulant": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "adhesive": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "potting": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "front_glass": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "rear_glass": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "solar_cell": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ],
+    "flux": [
+      "Sample Supplier A",
+      "Sample Supplier B"
+    ]
+  }
+}

@@ -3,33 +3,62 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f8fafc">
-  <title>{% block title %}Your Company Quality System{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static',filename='style.css',v='1.2.0') }}">
-  <script defer src="{{ url_for('static',filename='app.js',v='1.2.0') }}"></script>
+  <meta name="theme-color" content="#0d1117" data-theme-color>
+  <title>{% block title %}Company QMS{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='company-logo.svg') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='company-logo.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='demo-1.3.0') }}">
+  <script defer src="{{ url_for('static', filename='app.js', v='demo-1.3.0') }}"></script>
 </head>
-<body class="{% if user %}signed-in{% endif %}">
-{% if user %}
-<aside class="sidebar" data-sidebar>
-  <a class="brand" href="{{ url_for('home') }}"><span>YC</span><div><strong>Your Company</strong><small>Quality Intelligence</small></div></a>
-  <nav>
-    <a href="{{ url_for('home',module='ipqc') }}" class="{% if request.args.get('module','ipqc')=='ipqc' and request.endpoint=='home' %}active{% endif %}"><i>01</i>IPQC</a>
-    <a href="{{ url_for('home',module='ctq') }}" class="{% if request.args.get('module')=='ctq' and request.endpoint=='home' %}active{% endif %}"><i>02</i>CTQ Tests</a>
-    {% if user.role=='admin' %}<a href="{{ url_for('users') }}" class="{% if request.endpoint=='users' %}active{% endif %}"><i>◎</i>User Management</a>{% endif %}
+<body class="{% if user %}authenticated{% endif %}">
+  {% if user %}
+  <aside id="desktop-sidebar" class="desktop-sidebar" aria-label="Main navigation">
+    <a class="sidebar-brand" href="{{ url_for('home') }}" aria-label="Company QMS home">
+      <img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Your Company">
+    </a>
+    <nav class="sidebar-nav">
+      <a class="{% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}"><span class="nav-icon">⌂</span><span>Home</span></a>
+      {% if user['role'] == 'operator' and not is_superuser(user) %}<a href="{{ url_for('home',module='ipqc') }}#report-types"><span class="nav-icon">＋</span><span>Report Entry</span></a>{% endif %}
+      {% if user['role'] == 'operator' and not is_superuser(user) %}<a href="{{ url_for('home',module='ctq') }}#ctq-tests"><span class="nav-icon">◫</span><span>CTQ Test</span></a>{% endif %}
+      {% if not is_superuser(user) %}<a href="{{ url_for('home') }}#records"><span class="nav-icon">▤</span><span>{% if user['role']=='operator' %}My Records{% else %}Quality Records{% endif %}</span></a>{% endif %}
+      {% if user['role'] in ['incharge','admin'] and not is_superuser(user) %}<a href="{{ url_for('home') }}#records"><span class="nav-icon">✓</span><span>Approvals</span></a>{% endif %}
+      {% if is_superuser(user) %}<a class="{% if request.endpoint == 'users' %}active{% endif %}" href="{{ url_for('users') }}"><span class="nav-icon">◎</span><span>User Management</span></a>{% endif %}
+      <a class="{% if request.endpoint == 'password' %}active{% endif %}" href="{{ url_for('password') }}"><span class="nav-icon">◇</span><span>Change Password</span></a>
+    </nav>
+    <div class="sidebar-footer"><strong>Company QMS</strong><span>Commercial demonstration</span><small>© 2026 Quality Control</small></div>
+  </aside>
+  <header class="topbar">
+    <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="desktop-sidebar" aria-expanded="true" aria-label="Hide sidebar" title="Hide sidebar"><span aria-hidden="true">←</span></button>
+    <a class="brand" href="{{ url_for('home') }}" aria-label="QMS home">
+      <img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Your Company">
+      <span><strong>Quality Records</strong><small>Demo system</small></span>
+    </a>
+    <div class="top-actions">
+      <div class="desktop-user"><strong>{{ user['name'] }}</strong><span>{{ 'Super User' if is_superuser(user) else user['role']|title }}</span></div>
+      <button class="icon-button" type="button" data-theme-toggle aria-label="Change colour theme">◐</button>
+      <button class="avatar" type="button" data-menu-toggle aria-expanded="false" aria-label="Open account menu">{{ user['name'][0]|upper }}</button>
+      <div class="account-menu" data-account-menu hidden>
+        <strong>{{ user['name'] }}</strong><span>{{ user['employee'] }} · {{ 'Super User' if is_superuser(user) else user['role']|title }}</span>
+        <a href="{{ url_for('password') }}">Change password</a>
+        {% if is_superuser(user) %}<a href="{{ url_for('users') }}">Manage users</a>{% endif %}
+        <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-button">Log out</button></form>
+      </div>
+    </div>
+  </header>
+  {% endif %}
+  <main class="page {% block pageclass %}{% endblock %}">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}<div class="flash-stack" role="status">{% for message in messages %}<div class="flash">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  {% if user %}
+  <nav class="page-scroll-controls" aria-label="Page scrolling">
+    <button type="button" data-page-scroll="up" aria-label="Scroll up" title="Scroll up">↑</button>
+    <button type="button" data-page-scroll="down" aria-label="Scroll down" title="Scroll down">↓</button>
   </nav>
-  <div class="sidebar-note"><strong>Customer preview</strong><small>Secure · Traceable · Paperless</small></div>
-</aside>
-<header class="topbar">
-  <button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Toggle sidebar">☰</button>
-  <div class="top-user"><span><strong>{{ user.name }}</strong><small>{{ user.role|title }}</small></span><em>{{ user.name[0]|upper }}</em>
-    <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Log out</button></form>
-  </div>
-</header>
-{% endif %}
-<main class="page {% block pageclass %}{% endblock %}">
-{% with messages=get_flashed_messages() %}{% if messages %}<div class="flashes" role="status">{% for message in messages %}<div>{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
-{% block content %}{% endblock %}
-</main>
+  {% endif %}
 </body>
 </html>
 

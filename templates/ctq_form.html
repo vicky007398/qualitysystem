@@ -1,0 +1,141 @@
+{% macro field_control(field, key, values) -%}
+{% set value = values.get(key, field.get('default','')) %}
+{% set options = ctq_material_options.get(kind,{}).get(key, field.get('options',[])) %}
+{% set custom_material = value and value not in options %}
+<label class="ctq-field"><span>{{ field.label }}{% if field.unit %} <em>{{ field.unit }}</em>{% endif %}</span>
+  {% if options %}
+  <span class="material-choice" data-material-choice>
+    <select class="material-select" data-material-select data-ctq-field="{{ key }}" data-ctq-label="{{ field.label }}" data-generic-cell {% if field.required %}required{% endif %}>
+      <option value="">Select {{ field.label|lower }}</option>
+      {% for option in options %}<option value="{{ option }}" {% if value==option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+      <option value="__other__" {% if custom_material %}selected{% endif %}>Others</option>
+    </select>
+    <input class="material-other-input" data-material-other value="{{ value if custom_material else '' }}"
+           maxlength="500" placeholder="Enter raw material name" aria-label="Enter {{ field.label }} manually"
+           {% if not custom_material %}hidden{% endif %}>
+  </span>
+  {% else %}
+  <input type="{{ field.type }}" data-ctq-field="{{ key }}" data-ctq-label="{{ field.label }}" data-generic-cell value="{{ value }}"
+         {% if field.type=='number' %}step="any" inputmode="decimal"{% else %}maxlength="500"{% endif %}
+         {% if field.required %}required{% endif %}>
+  {% endif %}
+</label>
+{%- endmacro %}
+
+{% macro matrix_control(row, key, label, values) -%}
+{% set value = values.get(key, row.get('default','')) %}
+<div class="ctq-matrix-input">
+  <input type="{{ row.type }}" data-ctq-field="{{ key }}" data-ctq-label="{{ label }} · {{ row.label }}" value="{{ value }}"
+         {% if row.type=='number' %}step="any" inputmode="decimal"{% else %}maxlength="500"{% endif %}
+         {% if row.required %}required{% endif %} aria-label="{{ row.label }}">
+  {% if row.unit %}<span>{{ row.unit }}</span>{% endif %}
+</div>
+{%- endmacro %}
+
+<div class="ctq-document-strip">
+  <span><b>Document No.</b>{{ ctq.document.document_no }}</span>
+  <span><b>Issue Date</b>{{ ctq.document.issue_date }}</span>
+  <span><b>Revision</b>{{ ctq.document.revision_no }}</span>
+  <span><b>Acceptance</b>{{ ctq.acceptance }}</span>
+</div>
+
+<aside class="photo-import ctq-pdf-import" data-ctq-pdf-import>
+  <div class="photo-import-heading">
+    <div><span>PDF ASSIST</span><strong>Upload the completed {{ ctq.name }} PDF</strong><p>The first page is read temporarily. Review every detected value before pasting it into the controlled fields.</p></div>
+    <label class="button secondary photo-upload-button">Upload PDF<input type="file" accept="application/pdf,.pdf" data-ctq-pdf-input hidden></label>
+  </div>
+  <div class="photo-import-workspace" data-ctq-pdf-workspace hidden>
+    <div class="photo-import-image"><img data-ctq-pdf-preview alt="Rendered first page of the selected CTQ PDF"></div>
+    <div class="photo-import-review">
+      <div class="photo-import-status"><strong data-ctq-pdf-status>Preparing PDF…</strong><progress data-ctq-pdf-progress max="100" value="0"></progress><small data-ctq-pdf-summary></small></div>
+      <div class="photo-result-list" data-ctq-pdf-results></div>
+      <div class="photo-import-actions"><button type="button" class="button ghost" data-ctq-pdf-discard>Discard</button><button type="button" class="button primary" data-ctq-pdf-paste disabled>Paste detected values</button></div>
+    </div>
+  </div>
+</aside>
+
+<div data-ctq-form data-ctq-kind="{{ kind }}">
+{% for section in ctq.sections %}
+  <article class="ctq-section ctq-section-{{ section.type }}">
+    <div class="ctq-section-head"><span>{{ loop.index }}</span><div><p>CONTROLLED TEST SECTION</p><h3>{{ section.title }}</h3></div></div>
+
+    {% if section.type == 'fields' %}
+      <div class="ctq-field-grid">
+      {% for field in section.fields %}{{ field_control(field, field.key, ctq_values) }}{% endfor %}
+      </div>
+
+    {% elif section.type == 'matrix' %}
+      <div class="matrix-card ctq-matrix-card">
+        <div class="matrix-scroll"><table class="stringer-matrix ctq-matrix"><thead><tr><th>Parameter</th>{% for column in section.columns %}<th>{{ column.label }}</th>{% endfor %}</tr></thead><tbody>
+        {% for row in section.rows %}<tr><th><strong>{{ row.label }}</strong>{% if row.unit %}<small>{{ row.unit }}</small>{% endif %}</th>
+          {% for column in section.columns %}
+          {% if not row.columns or column.key in row.columns %}<td>{{ matrix_control(row, column.key ~ '_' ~ row.key, column.label, ctq_values) }}</td>{% else %}<td class="not-applicable">Not applicable</td>{% endif %}
+          {% endfor %}
+        </tr>{% endfor %}
+        </tbody></table></div>
+      </div>
+
+    {% elif section.type == 'gel_samples' %}
+      <div class="matrix-card ctq-matrix-card"><div class="matrix-scroll"><table class="stringer-matrix ctq-sample-table"><thead><tr>
+        <th>Sample</th><th>W1 — EVA Sample <small>g</small></th><th>W2 — Filter Paper <small>g</small></th><th>W3 — Residual Specimen <small>g</small></th><th>Dried Sample <small>W3 − W2 g</small></th><th>Gel Content <small>%</small></th><th>Remarks</th>
+      </tr></thead><tbody>
+      {% for sample in range(1, section.count + 1) %}<tr><th>Sample {{ sample }}</th>
+        {% for weight in ['w1','w2','w3'] %}<td><input type="number" step="any" inputmode="decimal" data-ctq-field="sample_{{ sample }}_{{ weight }}" data-ctq-label="Sample {{ sample }} {{ weight|upper }}" value="{{ ctq_values.get('sample_' ~ sample ~ '_' ~ weight,'') }}" required aria-label="Sample {{ sample }} {{ weight|upper }}"></td>{% endfor %}
+        <td class="calculated-cell"><output data-ctq-calc="sample_{{ sample }}_dried">{{ ctq_calculated.get('sample_' ~ sample ~ '_dried','—') }}</output></td>
+        <td class="calculated-cell"><output data-ctq-calc="sample_{{ sample }}_gel">{{ ctq_calculated.get('sample_' ~ sample ~ '_gel','—') }}</output></td>
+        <td><input data-ctq-field="sample_{{ sample }}_remarks" data-ctq-label="Sample {{ sample }} Remarks" value="{{ ctq_values.get('sample_' ~ sample ~ '_remarks','') }}" maxlength="500" aria-label="Sample {{ sample }} remarks"></td>
+      </tr>{% endfor %}
+      </tbody><tfoot><tr><th colspan="5">Average Gel Content</th><td class="calculated-cell"><output data-ctq-calc="average_gel">{{ ctq_calculated.get('average_gel','—') }}</output></td><td><span class="ctq-result" data-ctq-assessment>{{ ctq_calculated.get('overall_result','Pending') }}</span></td></tr></tfoot></table></div></div>
+
+    {% elif section.type == 'ribbon_peel_matrix' %}
+      <p class="ctq-help">Enter the displayed peel-force peaks for each serial position. N/mm is calculated automatically as Average (N) ÷ 0.24 mm.</p>
+      <div class="ribbon-track-list">
+      {% for track in section.tracks %}
+        <details class="ribbon-track" {% if loop.first %}open{% endif %}>
+          <summary><span>Stringer {{ track.label }}</span><em>N/mm divisor 0.24 mm</em><b>Front + Back · {{ section.count }} positions</b></summary>
+          <div class="ribbon-side-grid">
+          {% for side in section.sides %}
+            <div class="matrix-card ctq-matrix-card ribbon-side-card">
+              <div class="ribbon-side-heading"><strong>{{ side.label }}</strong><span>Stringer {{ track.label }}</span></div>
+              <div class="matrix-scroll"><table class="stringer-matrix ctq-ribbon-table"><thead><tr><th>Sl No.</th>{% for peak in range(1, section.peaks + 1) %}<th>Peak {{ peak }} <small>N</small></th>{% endfor %}<th>Average <small>N</small></th><th>N/mm</th></tr></thead><tbody>
+              {% for position in range(1, section.count + 1) %}{% set calc_prefix = 'rp_' ~ track.key ~ '_' ~ side.key ~ '_s' ~ position %}<tr data-ribbon-position data-ribbon-minimum="{{ section.minimum }}" data-ribbon-calc-prefix="{{ calc_prefix }}"><th>{{ position }}</th>
+                {% for peak in range(1, section.peaks + 1) %}{% set nr = position in track.get('not_required',{}).get('positions',[]) and peak in track.get('not_required',{}).get('peaks',[]) %}{% set field_key = calc_prefix ~ '_p' ~ peak %}
+                  {% if nr %}<td class="ribbon-nr" aria-label="Not required">NR</td>{% else %}<td><input type="number" step="any" min="0" inputmode="decimal" data-ctq-field="{{ field_key }}" data-ctq-label="Stringer {{ track.label }} {{ side.label }} Serial {{ position }} Peak {{ peak }}" data-ribbon-peak value="{{ ctq_values.get(field_key,'') }}" aria-label="Stringer {{ track.label }} {{ side.label }}, serial {{ position }}, peak {{ peak }}"></td>{% endif %}
+                {% endfor %}
+                <td class="calculated-cell"><output data-ctq-calc="{{ calc_prefix }}_average">{{ ctq_calculated.get(calc_prefix ~ '_average','—') }}</output></td>
+                <td class="calculated-cell"><output data-ctq-calc="{{ calc_prefix }}_n_per_mm">{{ ctq_calculated.get(calc_prefix ~ '_n_per_mm','—') }}</output></td>
+              </tr>{% endfor %}
+              </tbody></table></div>
+            </div>
+          {% endfor %}
+          </div>
+        </details>
+      {% endfor %}
+      </div>
+      <div class="ribbon-assessment"><span>Overall Assessment</span><small>Every measured peak must be ≥ {{ section.minimum }} N</small><strong class="ctq-result" data-ctq-assessment>{{ ctq_calculated.get('overall_result','Pending') }}</strong></div>
+
+    {% elif section.type == 'adhesion_readings' %}
+      <div class="matrix-card ctq-matrix-card"><div class="matrix-scroll"><table class="stringer-matrix ctq-adhesion-table"><thead><tr><th>Test Interface</th>{% for reading in range(1, section.count + 1) %}<th>Reading {{ reading }} <small>N/cm</small></th>{% endfor %}<th>Average <small>N/cm</small></th><th>Criterion</th></tr></thead><tbody>
+      {% for group in section.groups %}<tr><th><strong>{{ group.label }}</strong></th>
+        {% for reading in range(1, section.count + 1) %}<td><input type="number" step="any" inputmode="decimal" data-ctq-field="{{ group.key }}_{{ reading }}" data-ctq-label="{{ group.label }} Reading {{ reading }}" value="{{ ctq_values.get(group.key ~ '_' ~ reading,'') }}" required aria-label="{{ group.label }} reading {{ reading }}"></td>{% endfor %}
+        <td class="calculated-cell"><output data-ctq-calc="{{ group.key }}_average">{{ ctq_calculated.get(group.key ~ '_average','—') }}</output></td><td>≥ {{ group.minimum }} N/cm</td>
+      </tr>{% endfor %}
+      </tbody><tfoot><tr><th colspan="6">Overall Assessment</th><td colspan="2"><span class="ctq-result" data-ctq-assessment>{{ ctq_calculated.get('overall_result','Pending') }}</span></td></tr></tfoot></table></div></div>
+
+    {% elif section.type == 'busbar_matrix' %}
+      <p class="ctq-help">Enable each interconnector type used in this test, then enter the displayed ribbon readings. N/mm is calculated automatically as Average (N) ÷ 0.24 mm.</p>
+      <div class="matrix-card ctq-matrix-card busbar-matrix-card"><div class="matrix-scroll"><table class="stringer-matrix ctq-busbar-table"><thead><tr><th>Interconnector Type</th>{% for reading in range(1, section.count + 1) %}<th>R{{ reading }}</th>{% endfor %}<th>Average <small>N</small></th><th>N/mm <small>Avg ÷ 0.24</small></th></tr></thead><tbody>
+      {% for row in section.rows %}{% set enabled_key = row.key ~ '_enabled' %}<tr data-busbar-row="{{ row.key }}"><th><label class="busbar-enable"><input type="checkbox" data-ctq-field="{{ enabled_key }}" value="1" {% if ctq_values.get(enabled_key) == '1' %}checked{% endif %}><span>{{ row.label }}</span></label></th>
+        {% for reading in range(1, section.count + 1) %}<td><input type="number" step="any" inputmode="decimal" data-ctq-field="{{ row.key }}_r{{ reading }}" data-ctq-label="{{ row.label }} Ribbon {{ reading }}" value="{{ ctq_values.get(row.key ~ '_r' ~ reading,'') }}" aria-label="{{ row.label }} ribbon {{ reading }}"></td>{% endfor %}
+        <td class="calculated-cell"><output data-ctq-calc="{{ row.key }}_average">{{ ctq_calculated.get(row.key ~ '_average','—') }}</output></td>
+        <td class="calculated-cell"><output data-ctq-calc="{{ row.key }}_n_per_mm">{{ ctq_calculated.get(row.key ~ '_n_per_mm','—') }}</output></td>
+      </tr>{% endfor %}
+      </tbody><tfoot><tr><th colspan="18">Overall Assessment · Criterion ≥ {{ section.minimum }} N</th><td colspan="2"><span class="ctq-result" data-ctq-assessment>{{ ctq_calculated.get('overall_result','Pending') }}</span></td></tr></tfoot></table></div></div>
+
+    {% elif section.type == 'empty' %}
+      <div class="ctq-empty"><span>Controlled sheet is blank</span><strong>No test fields added</strong><p>{{ section.message }}</p></div>
+    {% endif %}
+  </article>
+{% endfor %}
+</div>
+

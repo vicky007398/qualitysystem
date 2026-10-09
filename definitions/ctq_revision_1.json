@@ -1,0 +1,314 @@
+{
+  "gel": {
+    "name": "Gel Test",
+    "description": "Record laminator settings, EVA sample weights, and automatically calculated gel content.",
+    "document": {
+      "title": "Gel Content Test",
+      "document_no": "DEMO/QMS/GEL/001",
+      "issue_date": "01-02-2026",
+      "revision_no": "0",
+      "revision_date": "-"
+    },
+    "acceptance": "Gel content: minimum 75% and maximum 95%",
+    "submit_enabled": true,
+    "sections": [
+      {
+        "id": "material",
+        "title": "Test and material information",
+        "type": "fields",
+        "fields": [
+          {
+            "key": "test_type",
+            "label": "Type of Test",
+            "type": "select",
+            "options": [
+              "IPQC",
+              "IQC"
+            ],
+            "required": true
+          },
+          {
+            "key": "lamination_no",
+            "label": "Lamination No.",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "laminator_parameters",
+        "title": "Laminator parameters",
+        "type": "matrix",
+        "columns": [
+          {
+            "key": "chamber_1",
+            "label": "Chamber 1"
+          },
+          {
+            "key": "chamber_2",
+            "label": "Chamber 2"
+          }
+        ],
+        "rows": [
+          {
+            "key": "total_vacuum_time",
+            "label": "Total Vacuum Time",
+            "type": "number",
+            "unit": "s",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "testing_details",
+        "title": "Testing details",
+        "type": "fields",
+        "fields": [
+          {
+            "key": "heating_start_time",
+            "label": "Sample Heating Start Time",
+            "type": "datetime-local",
+            "required": true
+          },
+          {
+            "key": "heating_end_time",
+            "label": "Sample Removal Time",
+            "type": "datetime-local",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "samples",
+        "title": "Sample readings",
+        "type": "gel_samples",
+        "count": 2
+      }
+    ]
+  },
+  "ribbon_peel": {
+    "name": "Ribbon Peel Test",
+    "description": "Record Front and Back Cell-to-Ribbon peel readings for all six Stringer tracks, with automatic average and N/mm calculations.",
+    "document": {
+      "title": "Cell To Ribbon Peel Test Report",
+      "document_no": "DEMO/QMS/RIBBON_PEEL/001",
+      "issue_date": "01-02-2026",
+      "revision_no": "0",
+      "revision_date": "00/00/0000",
+      "copy": "Control Copy"
+    },
+    "acceptance": "Every measured peel peak ≥ 0.8 N",
+    "submit_enabled": true,
+    "sections": [
+      {
+        "id": "material",
+        "title": "Material information",
+        "type": "fields",
+        "fields": [
+          {
+            "key": "cell_make",
+            "label": "Cell Make",
+            "type": "text",
+            "required": true
+          },
+          {
+            "key": "ribbon_make",
+            "label": "Ribbon Make",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "peel_readings",
+        "title": "Stringer track peel readings",
+        "type": "ribbon_peel_matrix",
+        "count": 2,
+        "peaks": 3,
+        "minimum": 0.8,
+        "divisor_mm": 0.24,
+        "sides": [
+          {
+            "key": "front",
+            "label": "Front"
+          },
+          {
+            "key": "back",
+            "label": "Back"
+          }
+        ],
+        "tracks": [
+          {
+            "key": "1a",
+            "label": "1A",
+            "ribbon_width_mm": 0.24
+          },
+          {
+            "key": "1b",
+            "label": "1B",
+            "ribbon_width_mm": 0.24
+          },
+          {
+            "key": "2a",
+            "label": "2A",
+            "ribbon_width_mm": 0.24
+          },
+          {
+            "key": "2b",
+            "label": "2B",
+            "ribbon_width_mm": 0.24
+          },
+          {
+            "key": "3a",
+            "label": "3A",
+            "ribbon_width_mm": 0.24
+          },
+          {
+            "key": "3b",
+            "label": "3B",
+            "ribbon_width_mm": 0.24
+          }
+        ]
+      }
+    ]
+  },
+  "adhesion": {
+    "name": "Adhesion Test",
+    "description": "Record material lots, laminator recipe, and EVA / EPE adhesion force readings.",
+    "document": {
+      "title": "Adhesion Test",
+      "document_no": "DEMO/QMS/ADHESION/001",
+      "issue_date": "02-01-2026",
+      "revision_no": "0",
+      "revision_date": "-"
+    },
+    "acceptance": "EVA & EPE to Glass ≥ 60 N/cm; EVA & EPE to Backsheet ≥ 40 N/cm",
+    "submit_enabled": true,
+    "sections": [
+      {
+        "id": "material",
+        "title": "Material and equipment information",
+        "type": "fields",
+        "fields": [
+          {
+            "key": "front_glass_supplier",
+            "label": "Front Glass Supplier",
+            "type": "text",
+            "required": true
+          },
+          {
+            "key": "front_glass_lot",
+            "label": "Front Glass Lot No.",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "recipe",
+        "title": "Laminator recipe",
+        "type": "matrix",
+        "columns": [
+          {
+            "key": "zone_1",
+            "label": "Zone 1"
+          },
+          {
+            "key": "zone_2",
+            "label": "Zone 2"
+          }
+        ],
+        "rows": [
+          {
+            "key": "set_temperature",
+            "label": "Set Temperature",
+            "type": "number",
+            "unit": "°C",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "peel_readings",
+        "title": "Peel force readings",
+        "type": "adhesion_readings",
+        "count": 2,
+        "groups": [
+          {
+            "key": "glass",
+            "label": "EVA / EPE to Glass",
+            "unit": "N/cm",
+            "minimum": 60
+          },
+          {
+            "key": "backsheet",
+            "label": "EVA / EPE to Backsheet",
+            "unit": "N/cm",
+            "minimum": 40
+          }
+        ]
+      }
+    ]
+  },
+  "busbar_peel": {
+    "name": "Busbar Peel Test",
+    "description": "Record 16 ribbon-to-busbar peel readings with automatic Average and N/mm calculations for each applicable interconnector type.",
+    "document": {
+      "title": "Ribbon to Busbar Peel Test",
+      "document_no": "DEMO/QMS/BUSBAR_PEEL/001",
+      "issue_date": "02-01-2026",
+      "revision_no": "0",
+      "revision_date": "-"
+    },
+    "acceptance": "Peel strength ≥ 2 N",
+    "submit_enabled": true,
+    "sections": [
+      {
+        "id": "material",
+        "title": "Material and machine information",
+        "type": "fields",
+        "fields": [
+          {
+            "key": "cell_ribbon",
+            "label": "Cell Ribbon (Make / Specification)",
+            "type": "text",
+            "required": true
+          },
+          {
+            "key": "busbar",
+            "label": "Busbar (Make / Specification)",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "peel_matrix",
+        "title": "Ribbon peel readings",
+        "type": "busbar_matrix",
+        "count": 3,
+        "minimum": 2,
+        "divisor_mm": 0.24,
+        "rows": [
+          {
+            "key": "long",
+            "label": "Long Busbar Interconnector",
+            "default_enabled": true
+          },
+          {
+            "key": "short",
+            "label": "Short Busbar Interconnector"
+          },
+          {
+            "key": "top",
+            "label": "I Busbar Interconnector Top"
+          },
+          {
+            "key": "bottom",
+            "label": "I Busbar Interconnector Bottom"
+          }
+        ]
+      }
+    ]
+  }
+}

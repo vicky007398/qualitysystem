@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% macro observation_control(item, observation, observation_index, field, saved, material_options, show_label=true) -%}
+  {% set saved_value = saved.get('observations',{}).get(observation_index|string,{}).get(field,'') %}
+  {% set options = material_options.get(item.id,{}).get(field,[]) %}
+  {% set custom_material = saved_value and saved_value not in options %}
+  {% set unit = observation_unit(item.parameter,field) %}
+  {% if show_label %}<label class="observation-field"><span>{{ field }}</span>{% endif %}
+  {% if options %}
+  <div class="material-choice" data-material-choice>
+    <select class="material-select" data-material-select data-item-id="{{ item.id }}" data-source-row="{{ item.source_row }}" data-observation-index="{{ observation_index }}" data-observation-label="{{ observation.label }}" data-field-label="{{ field }}" data-parameter-label="{{ item.parameter }}">
+      <option value="">Select supplier</option>
+      {% for option in options %}<option value="{{ option }}" {% if saved_value==option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+      <option value="__other__" {% if custom_material %}selected{% endif %}>Others</option>
+    </select>
+    <input class="material-other-input" data-material-other value="{{ saved_value if custom_material else '' }}"
+           maxlength="500" placeholder="Enter raw material name" aria-label="Enter {{ field }} manually"
+           {% if not custom_material %}hidden{% endif %}>
+  </div>
+  {% elif unit %}
+  <div class="value-with-unit"><input data-item-id="{{ item.id }}" data-source-row="{{ item.source_row }}" data-observation-index="{{ observation_index }}" data-observation-label="{{ observation.label }}" data-field-label="{{ field }}" data-parameter-label="{{ item.parameter }}" data-unit="{{ unit }}" value="{{ saved_value }}" maxlength="500"><span>{{ unit }}</span></div>
+  {% else %}
+  <input data-item-id="{{ item.id }}" data-source-row="{{ item.source_row }}" data-observation-index="{{ observation_index }}" data-observation-label="{{ observation.label }}" data-field-label="{{ field }}" data-parameter-label="{{ item.parameter }}" value="{{ saved_value }}" maxlength="500">
+  {% endif %}
+  {% if show_label %}</label>{% endif %}
+{%- endmacro %}
+
+{% macro photo_import_panel(scope) -%}
+<aside class="photo-import" data-photo-import="{{ scope }}">
+  <div class="photo-import-heading">
+    <div><span>PDF ASSIST</span><strong>Read the fixed machine screen from a scanned PDF</strong><p>Scan one machine screen as a PDF. The reader uses its first page for Stringer temperature, Stringer solder-power or Laminator chamber values.</p></div>
+    <label class="button secondary photo-upload-button">Upload PDF<input type="file" accept="application/pdf,.pdf" data-photo-input hidden></label>
+  </div>
+  <div class="photo-import-options">
+    <label>Machine shown in PDF
+      <select data-photo-target>
+        <option value="">Select machine</option>
+        {% if scope == 'stringer' %}
+          {% for target in ['Stringer 1A','Stringer 1B','Stringer 2A','Stringer 2B','Stringer 3A','Stringer 3B'] %}<option value="{{ target }}">{{ target }} only</option>{% endfor %}
+        {% else %}
+          {% for target in ['Laminator 1A','Laminator 1B','Laminator 2A','Laminator 2B'] %}<option value="{{ target }}">{{ target }} only</option>{% endfor %}
+        {% endif %}
+      </select>
+    </label>
+    <small>Select the machine shown. Upload a one-page scanner PDF; Stringer temperature uses Actual, solder power uses channels 1–17, and Laminator uses Lam-1 to Lam-3 Setting boxes.</small>
+  </div>
+  <div class="photo-import-workspace" data-photo-workspace hidden>
+    <div class="photo-import-image"><img data-photo-preview alt="Rendered first page of the selected machine-screen PDF"></div>
+    <div class="photo-import-review">
+      <div class="photo-import-status"><strong data-photo-status>Preparing PDF…</strong><progress data-photo-progress max="100" value="0"></progress><small data-photo-summary></small></div>
+      <div class="photo-result-list" data-photo-results></div>
+      <div class="photo-import-actions"><button type="button" class="button ghost" data-photo-discard>Discard</button><button type="button" class="button primary" data-photo-paste disabled>Paste detected values</button></div>
+    </div>
+  </div>
+</aside>
+{%- endmacro %}
+
+{% macro standard_ipqc_item(item, saved, material_options, item_number) -%}
+<article class="check-card" data-ipqc-item="{{ item.id }}" data-source-row="{{ item.source_row }}">
+  <div class="parameter-strip">
+    <div><span>PARAMETER {{ item_number }}</span><strong>{{ item.parameter }}</strong></div>
+    <div><span>ACCEPTANCE CRITERIA</span><strong>{{ item.acceptance or 'As specified in the controlled process document' }}</strong></div>
+    <div><span>INSPECTION FREQUENCY</span><strong>{{ item.frequency or 'As required' }}</strong></div>
+  </div>
+  <div class="observation-groups observation-count-{{ item.observations|length }}">
+  {% for observation in item.observations %}{% set observation_index = loop.index0 %}
+    <fieldset class="observation-group"><legend>{{ observation.label }}</legend><div class="observation-grid">
+    {% for field in observation.fields %}{{ observation_control(item,observation,observation_index,field,saved,material_options) }}{% endfor %}
+    </div></fieldset>
+  {% endfor %}
+  </div>
+</article>
+{%- endmacro %}
+
+{% macro hv_matrix_item(item, saved, material_options, item_number) -%}
+<article class="matrix-card hv-matrix-card" data-ipqc-item="{{ item.id }}" data-source-row="{{ item.source_row }}">
+  <div class="matrix-heading">
+    <div><span>PARAMETER {{ item_number }}</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div>
+    <em>{{ item.frequency }}</em>
+  </div>
+  <div class="hv-check-grid">
+  {% for observation in item.observations %}{% set observation_index = loop.index0 %}
+    <section class="hv-check-block">
+      <h4>{{ observation.label }}</h4>
+      <div class="matrix-scroll"><table class="stringer-matrix hv-matrix">
+        <thead><tr><th>Module No.</th><th>IR</th><th>HV</th><th>GND</th></tr></thead>
+        <tbody>
+        {% for module_number in range(1,6) %}<tr>
+          {% for field_name in ['Module No.','IR','HV','GND'] %}
+          <td>{{ observation_control(item,observation,observation_index,module_number ~ '. ' ~ field_name,saved,material_options,false) }}</td>
+          {% endfor %}
+        </tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </section>
+  {% endfor %}
+  </div>
+</article>
+{%- endmacro %}
+
+{% block title %}{{ forms[kind][0] }} · Company QMS{% endblock %}
+{% block content %}
+<form method="post" id="report-form" data-kind="{{ kind }}" data-status="{{ record.get('status','Draft') }}" novalidate>
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="version" value="{{ record.version or 0 }}">
+  <input type="hidden" name="rows" id="rows-json">
+  <section class="form-top">
+    <div><a class="back-link" href="{{ url_for('home') }}">← Dashboard</a><p class="eyebrow">NEW QUALITY RECORD</p><h1>{{ forms[kind][0] }}</h1></div>
+    <span class="badge status-draft">{{ record.get('status','Draft') }}</span>
+  </section>
+  {% if returned %}<div class="returned-note"><strong>Returned by {{ returned['name'] }}</strong><span>{{ returned['comment'] }}</span><small>{{ returned['time'] }}</small></div>{% endif %}
+
+  <div class="stepper" aria-label="Form progress">
+    <button type="button" class="step active" data-step-jump="0"><span>1</span>Basic information</button>
+    {% if kind=='ipqc' %}{% for section in ipqc.sections %}<button type="button" class="step" data-step-jump="{{ loop.index }}"><span>{{ loop.index+1 }}</span>{{ section.name }}</button>{% endfor %}{% elif kind in ctq_kinds %}<button type="button" class="step" data-step-jump="1"><span>2</span>Test form</button>{% else %}<button type="button" class="step" data-step-jump="1"><span>2</span>Readings</button>{% endif %}
+    <button type="button" class="step" data-step-jump="{{ (ipqc.sections|length + 1) if kind=='ipqc' else 2 }}"><span>✓</span>Review</button>
+  </div>
+
+  <section class="form-step active" data-form-step="0">
+    <div class="form-card"><h2>Basic Information</h2>
+      {% if kind=='ipqc' %}<div class="document-strip"><span>{{ ipqc.document_no }}</span><span>Revision {{ ipqc.revision_no }}</span><span>{{ ipqc.copy }}</span></div>{% endif %}
+      <div class="field-grid">
+        <label>Production date<input type="date" name="day" value="{{ record.day }}" required></label>
+        <label>Shift<select name="shift" required>{% for s in ['A','B','C'] %}<option value="{{ s }}" {% if record.shift==s %}selected{% endif %}>Shift {{ s }}</option>{% endfor %}</select></label>
+        <label>Line<input name="line" value="{{ record.line }}" maxlength="100" required></label>
+        <label>Machine / test location<input name="machine" value="{{ record.machine }}" maxlength="150" required placeholder="e.g. Line 1 shop floor"></label>
+        <label>Inspection time<input type="datetime-local" name="inspection_time" value="{{ record.inspection_time }}" required></label>
+        <label>Shift incharge<select name="approver" required><option value="">Select incharge</option>{% for p in approvers %}<option value="{{ p['id'] }}" {% if record.approver|string==p['id']|string %}selected{% endif %}>{{ p['name'] }} · {{ p['employee'] }}</option>{% endfor %}</select></label>
+        {% if kind=='ipqc' %}
+          {% for field in ipqc.header_fields %}{% if field.type=='checkbox' %}<label class="check-field full"><input type="checkbox" name="meta_{{ field.key }}" value="1" {% if metadata.get(field.key) %}checked{% endif %}><span>{{ field.label }}</span></label>{% else %}<label class="full">{{ field.label }}<input name="meta_{{ field.key }}" value="{{ metadata.get(field.key,'') }}" maxlength="200" {% if field.required %}required{% endif %}></label>{% endif %}{% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="step-actions"><button type="submit" name="action" value="draft" class="button secondary">Save draft</button><button type="button" class="button primary" data-next>Next</button></div>
+  </section>
+
+  {% if kind=='ipqc' %}
+    {% for section in ipqc.sections %}
+    <section class="form-step" data-form-step="{{ loop.index }}" data-section-name="{{ section.name }}">
+      <div class="section-head"><p>Stage {{ section.number }}</p><h2>{{ section.name }}</h2><span>{{ section['items']|length }} checks</span></div>
+      {% if section.name == 'Stringer/Cell cutting section' %}
+        {{ photo_import_panel('stringer') }}
+        {% set track_fields = ['Stringer 1 - Track A','Stringer 1 - Track B','Stringer 2 - Track A','Stringer 2 - Track B','Stringer 3 - Track A','Stringer 3 - Track B'] %}
+        {% set track_labels = ['Stringer 1A','Stringer 1B','Stringer 2A','Stringer 2B','Stringer 3A','Stringer 3B'] %}
+        {% set width_tracks = ['Stringer 1 - A','Stringer 1 - B','Stringer 2 - A','Stringer 2 - B','Stringer 3 - A','Stringer 3 - B'] %}
+        {% set process_ids = ['R32','R33','R34','R35','R36','R24','R23','R25','R26','R27','R27B','R30'] %}
+        {% set set_power_ids = ['R38','R39','R40','R41','R42','R43','R44','R45','R46','R47','R48','R49','R50','R51','R52','R53','R54'] %}
+        {% set standby_power_ids = ['R55','R56','R57','R58','R59','R60','R61','R62','R63','R64','R65','R66','R67','R68','R69','R70','R71'] %}
+
+        {% for item in section['items'] %}{% if item.id == 'R20' %}{% set saved = saved_rows.get(item.id,{}) %}
+        <article class="matrix-card" data-ipqc-item="{{ item.id }}">
+          <div class="matrix-heading"><div><span>Six-track measurement</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div><em>{{ item.frequency }}</em></div>
+          <div class="matrix-scroll"><table class="stringer-matrix width-matrix"><thead><tr><th>Stringer / track</th><th>Top</th><th>Middle</th><th>Bottom</th></tr></thead><tbody>
+          {% for track in width_tracks %}<tr><th>{{ track_labels[loop.index0] }}</th>
+            {% for position in ['top','middle','bottom'] %}<td>{{ observation_control(item,item.observations[0],0,track ~ ' ' ~ position,saved,material_options,false) }}</td>{% endfor %}
+          </tr>{% endfor %}
+          </tbody></table></div>
+        </article>
+        {% endif %}{% endfor %}
+
+        <article class="matrix-card process-matrix-card">
+          <div class="matrix-heading"><div><span>Six-track process matrix</span><h3>Stringer process parameters</h3><p>Enter one reading for every active stringer track.</p></div><em>Twice per shift</em></div>
+          <div class="matrix-scroll"><table class="stringer-matrix process-matrix"><thead><tr><th>Parameter</th>{% for label in track_labels %}<th>{{ label }}</th>{% endfor %}</tr></thead><tbody>
+          {% for item in section['items'] %}{% if item.id in process_ids %}{% set saved = saved_rows.get(item.id,{}) %}
+          <tr data-ipqc-item="{{ item.id }}"><th><strong>{{ item.parameter }}</strong><small>{{ item.acceptance }}</small></th>{% for field in track_fields %}<td>{{ observation_control(item,item.observations[0],0,field,saved,material_options,false) }}</td>{% endfor %}</tr>
+          {% endif %}{% endfor %}
+          </tbody></table></div>
+        </article>
+
+        <article class="matrix-card lamp-matrix-card">
+          <div class="matrix-heading"><div><span>Power matrix</span><h3>Set power</h3><p>Each row is one stringer track. Each column is one power position.</p></div><em>{{ set_power_ids|length }} set-power fields</em></div>
+          <div class="matrix-scroll"><table class="stringer-matrix lamp-matrix"><thead><tr><th>Stringer / track</th>{% for item in section['items'] %}{% if item.id in set_power_ids %}<th>SP{{ item.parameter|replace('Set Power # ','') }}</th>{% endif %}{% endfor %}</tr></thead><tbody>
+          {% for field in track_fields %}<tr><th>{{ track_labels[loop.index0] }}</th>{% for item in section['items'] %}{% if item.id in set_power_ids %}{% set saved = saved_rows.get(item.id,{}) %}<td>{{ observation_control(item,item.observations[0],0,field,saved,material_options,false) }}</td>{% endif %}{% endfor %}</tr>{% endfor %}
+          </tbody></table></div>
+        </article>
+
+        <article class="matrix-card lamp-matrix-card">
+          <div class="matrix-heading"><div><span>Power matrix</span><h3>Standby power</h3><p>Each row is one stringer track. Each column is one power position.</p></div><em>{{ standby_power_ids|length }} standby-power fields</em></div>
+          <div class="matrix-scroll"><table class="stringer-matrix lamp-matrix"><thead><tr><th>Stringer / track</th>{% for item in section['items'] %}{% if item.id in standby_power_ids %}<th>SB{{ item.parameter|replace('Standby Power # ','') }}</th>{% endif %}{% endfor %}</tr></thead><tbody>
+          {% for field in track_fields %}<tr><th>{{ track_labels[loop.index0] }}</th>{% for item in section['items'] %}{% if item.id in standby_power_ids %}{% set saved = saved_rows.get(item.id,{}) %}<td>{{ observation_control(item,item.observations[0],0,field,saved,material_options,false) }}</td>{% endif %}{% endfor %}</tr>{% endfor %}
+          </tbody></table></div>
+        </article>
+
+        {% for item in section['items'] %}{% if item.id != 'R20' and item.id not in process_ids and item.id not in set_power_ids and item.id not in standby_power_ids %}
+          {% set saved = saved_rows.get(item.id,{}) %}{{ standard_ipqc_item(item,saved,material_options,loop.index) }}
+        {% endif %}{% endfor %}
+      {% elif section.name == 'Laminator' %}
+        {{ photo_import_panel('laminator') }}
+        {% for item in section['items'] %}{% set saved = saved_rows.get(item.id,{}) %}
+        <div class="laminator-matrix-group" data-ipqc-item="{{ item.id }}" data-source-row="{{ item.source_row }}">
+          <div class="matrix-heading"><div><span>Four-laminator matrix</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div><em>{{ item.frequency }}</em></div>
+          <div class="laminator-chamber-stack">
+          {% for chamber in ['Chamber 1'] %}
+            <article class="matrix-card laminator-matrix-card">
+              <div class="laminator-chamber-title"><span>{{ chamber }}</span><small>Recipe parameters</small></div>
+              <div class="matrix-scroll"><table class="stringer-matrix laminator-matrix"><thead><tr><th>Parameter</th>{% for observation in item.observations %}<th>{{ observation.label }}</th>{% endfor %}</tr></thead><tbody>
+              {% for field in item.observations[0].fields %}{% if field.startswith(chamber ~ ' · ') %}<tr><th><strong>{{ field|replace(chamber ~ ' · ','') }}</strong></th>{% for observation in item.observations %}<td>{{ observation_control(item,observation,loop.index0,field,saved,material_options,false) }}</td>{% endfor %}</tr>{% endif %}{% endfor %}
+              </tbody></table></div>
+            </article>
+          {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        {% for item in section['items'] %}{% set saved = saved_rows.get(item.id,{}) %}
+          {{ standard_ipqc_item(item,saved,material_options,loop.index) }}
+        {% endfor %}
+      {% endif %}
+      <div class="step-actions"><button type="button" class="button ghost" data-back>Back</button><button type="submit" name="action" value="draft" class="button secondary">Save draft</button><button type="button" class="button primary" data-next>Next</button></div>
+    </section>
+    {% endfor %}
+  {% elif kind in ctq_kinds %}
+    <section class="form-step" data-form-step="1">
+      <div class="section-head"><p>CTQ TEST FORM</p><h2>{{ ctq.document.title }}</h2><span>{{ 'Controlled fields' if ctq.submit_enabled else 'Blank source sheet' }}</span></div>
+      {% include 'ctq_form.html' %}
+      <div class="step-actions"><button type="button" class="button ghost" data-back>Back</button><button type="submit" name="action" value="draft" class="button secondary">Save draft</button><button type="button" class="button primary" data-next>Next</button></div>
+    </section>
+  {% else %}
+    <section class="form-step" data-form-step="1">
+      <div class="section-head"><p>READINGS</p><h2>{{ forms[kind][0] }}</h2><span id="row-count">{{ rows|length }} row</span></div>
+      <div id="generic-rows" data-labels='{{ labels|tojson }}' data-rows='{{ rows|tojson }}'></div>
+      <button type="button" class="button secondary" data-add-row>+ Add reading</button>
+      <div class="step-actions"><button type="button" class="button ghost" data-back>Back</button><button type="submit" name="action" value="draft" class="button secondary">Save draft</button><button type="button" class="button primary" data-next>Next</button></div>
+    </section>
+  {% endif %}
+
+  <section class="form-step" data-form-step="{{ (ipqc.sections|length + 1) if kind=='ipqc' else 2 }}">
+    <div class="form-card"><h2>Review and submit</h2><p class="muted">Check the readings before sending this report to the selected shift incharge. Submitted reports become read-only.</p>
+      <div class="review-summary" data-review-summary></div>
+      <label>Overall operator remarks<textarea name="remarks" maxlength="3000" rows="4" placeholder="Add any important process observation for the incharge">{{ record.remarks }}</textarea></label>
+      {% if kind not in ctq_kinds or ctq.submit_enabled %}<label class="confirm"><input type="checkbox" data-confirm-submit><span>I confirm that I entered these readings from the actual inspection.</span></label>{% else %}<div class="ctq-submit-disabled"><strong>Submission unavailable</strong><span>The controlled Ribbon Peel Test worksheet contains no fields. You can save this page as a draft, but it cannot be submitted.</span></div>{% endif %}
+    </div>
+    <div class="step-actions"><button type="button" class="button ghost" data-back>Back</button><button type="submit" name="action" value="draft" class="button secondary">Save draft</button>{% if kind not in ctq_kinds or ctq.submit_enabled %}<button type="submit" name="action" value="submit" class="button success" data-submit disabled>Submit to incharge</button>{% endif %}</div>
+  </section>
+</form>
+{% endblock %}
+

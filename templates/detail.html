@@ -1,21 +1,144 @@
-{% extends 'base.html' %}
-{% block title %}{{ definition.title }} · Your Company{% endblock %}
+{% extends "base.html" %}
+{% macro read_value(item,field) -%}
+  {% set value = item.observations[0]['values'].get(field,'') if item.observations else '' %}
+  {{ display_observation_value(item.parameter,field,value) }}
+{%- endmacro %}
+{% macro read_observation_value(item,observation_index,field) -%}
+  {% set value = item.observations[observation_index]['values'].get(field,'') if item.observations|length > observation_index else '' %}
+  {{ display_observation_value(item.parameter,field,value) }}
+{%- endmacro %}
+{% macro standard_read_item(item,item_number) -%}
+<article class="read-check">
+  <div class="read-check-head"><span>{{ item_number }}</span><div><h3>{{ item.parameter }}</h3><p><b>Acceptance:</b> {{ item.acceptance or '-' }}</p><p><b>Frequency:</b> {{ item.frequency or '-' }}</p></div></div>
+  <div class="read-observation-groups observation-count-{{ item.observations|length }}">
+  {% for observation in item.observations %}<div class="read-observation"><strong>{{ observation.label }}</strong><dl>{% for label,value in observation['values'].items() %}<div><dt>{{ label }}</dt><dd>{{ display_observation_value(item.parameter,label,value) }}</dd></div>{% endfor %}</dl></div>{% endfor %}
+  </div>
+</article>
+{%- endmacro %}
+{% macro hv_read_item(item,item_number) -%}
+<article class="matrix-card read-matrix-card hv-matrix-card">
+  <div class="matrix-heading"><div><span>PARAMETER {{ item_number }}</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div><em>{{ item.frequency }}</em></div>
+  <div class="hv-check-grid">
+  {% for observation in item.observations %}{% set observation_index = loop.index0 %}
+    <section class="hv-check-block"><h4>{{ observation.label }}</h4><div class="matrix-scroll"><table class="stringer-matrix hv-matrix">
+      <thead><tr><th>Module No.</th><th>IR</th><th>HV</th><th>GND</th></tr></thead><tbody>
+      {% for module_number in range(1,6) %}<tr>{% for field_name in ['Module No.','IR','HV','GND'] %}<td>{{ read_observation_value(item,observation_index,module_number ~ '. ' ~ field_name) }}</td>{% endfor %}</tr>{% endfor %}
+      </tbody>
+    </table></div></section>
+  {% endfor %}
+  </div>
+</article>
+{%- endmacro %}
+{% block title %}QMS-{{ '%06d'|format(r['id']) }} · Company QMS{% endblock %}
 {% block content %}
-<header class="detail-header"><div><a href="{{ url_for('home') }}">← Dashboard</a><p class="eyebrow">CONTROLLED QUALITY RECORD</p><h1>{{ definition.title }}</h1><p>DEMO-{{ '%05d'|format(report.id) }} · {{ report.day }} · Shift {{ report.shift }}</p></div><div class="detail-actions"><span class="status status-{{ report.status|lower|replace(' ','-') }}">{{ report.status }}</span><a class="button secondary" href="{{ url_for('report_pdf',report_id=report.id) }}">Download PDF</a>{% if report.status in ['Draft','Returned for Correction'] and report.owner==user.id %}<a class="button primary" href="{{ url_for('edit_report',report_id=report.id) }}">Edit report</a>{% endif %}</div></header>
+<div class="readonly-banner">{% if r['status'] in ['Draft','Returned for correction'] %}<strong>Draft preview.</strong> Use Edit report to change your entries.{% else %}<strong>Read-only view.</strong> Pending, approved, and rejected reports cannot be edited.{% endif %}</div>
+<section class="detail-top">
+  <div><a class="back-link" href="{{ url_for('home') }}">← Dashboard</a><p class="eyebrow">QMS-{{ '%06d'|format(r['id']) }}</p><h1>{{ forms[r['kind']][0] }}</h1><p>{{ r['line'] }} · {{ r['day'] }} · Shift {{ r['shift'] }}</p></div>
+  <span class="badge status-{{ r['status']|lower|replace(' ','-') }}">{{ r['status'] }}</span>
+</section>
+<div class="action-row">
+  <a class="button primary" href="{{ url_for('report_pdf',rid=r['id']) }}">Download PDF</a>
+  {% if user['role']=='operator' and r['status'] in ['Draft','Returned for correction'] %}<a class="button secondary" href="{{ url_for('edit',rid=r['id']) }}">Edit report</a>{% endif %}
+  {% if user['role']=='operator' and r['owner']==user['id'] and r['status']=='Draft' %}
+  <form method="post" action="{{ url_for('delete_draft',rid=r['id']) }}" data-delete-draft>
+    <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="version" value="{{ r['version'] }}">
+    <button type="submit" class="button delete-draft-button">Delete draft</button>
+  </form>
+  {% endif %}
+</div>
 
-<section class="record-meta"><div><span>Customer</span><strong>{{ report.customer or '-' }}</strong></div><div><span>Line</span><strong>{{ report.line }}</strong></div><div><span>Reference</span><strong>{{ report.reference or '-' }}</strong></div><div><span>Prepared by</span><strong>{{ report.owner_name }}</strong></div><div><span>Approver</span><strong>{{ report.approver_name or '-' }}</strong></div><div><span>Completion</span><strong>{{ completed }}/{{ total }}</strong></div></section>
+<section class="signature-panel" aria-label="Report responsibility">
+  <div><span>ENTERED BY</span><strong>{{ r['operator_name'] }}</strong><small>Operator</small></div>
+  <div><span>REVIEWED BY</span><strong>{{ reviewed_by['actor_name'] if reviewed_by else r['approver_name'] or 'Not assigned' }}</strong><small>{% if reviewed_by %}{{ 'Administrator' if reviewed_by['actor_role']=='admin' else 'Shift incharge' }} · {{ r['status'] }}{% else %}Awaiting verification by assigned incharge or administrator{% endif %}</small></div>
+</section>
 
-{% for section in definition.sections %}
-<section class="read-panel"><header><span>{{ '%02d'|format(loop.index) }}</span><div><p>{{ section.name|upper }}</p><h2>{{ section.parameter }}</h2><small>{{ section.criterion }}</small></div></header><div class="read-values">
-  {% for field in section.fields %}<div><span>{{ field.label }}</span><strong>{{ payload['values'].get(field.key,'-') or '-' }} {{ field.get('unit', '') }}</strong>{% if field.get('calculation')=='n_per_mm' and calculations.get(field.key+'_n_per_mm') is not none %}<small>{{ calculations.get(field.key+'_n_per_mm') }} N/mm</small>{% endif %}</div>{% endfor %}
-</div></section>
-{% endfor %}
+{% if can_review %}
+<form method="post" action="{{ url_for('review',rid=r['id']) }}" class="review-panel">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="version" value="{{ r['version'] }}">
+  <h2>{{ 'Administrator verification' if user['role']=='admin' else 'Incharge verification' }}</h2><p>Verify the recorded observations. Return for correction sends the report back to the operator for editing and resubmission; Reject closes it as a final, locked record.{% if user['role']=='admin' %} You are reviewing this report as an administrator; its assigned incharge remains {{ r['approver_name'] or 'not assigned' }}.{% endif %}</p>
+  <label>Verification comment<textarea name="comment" maxlength="3000" rows="3" placeholder="Required for approve with remarks, return, or reject"></textarea></label>
+  <div class="review-buttons"><button class="button success" name="action" value="Approved">Approve</button><button class="button primary" name="action" value="Approved with remarks">Approve with remarks</button><button class="button warning" name="action" value="Returned for correction">Return for correction</button><button class="button danger" name="action" value="Rejected">Reject report</button></div>
+</form>
+{% endif %}
 
-<section class="evaluation"><div><span>Automatic evaluation</span><strong class="result result-{{ report.result|lower|replace(' ','-') }}">{{ report.result }}</strong></div>{% if report.remarks %}<blockquote><strong>Approval remarks</strong>{{ report.remarks }}</blockquote>{% endif %}</section>
+<section class="form-card detail-basic"><h2>Basic Information</h2>
+  <dl class="detail-grid">
+    <div><dt>Production date</dt><dd>{{ r['day'] }}</dd></div><div><dt>Shift</dt><dd>Shift {{ r['shift'] }}</dd></div>
+    <div><dt>Line</dt><dd>{{ r['line'] }}</dd></div><div><dt>Machine / location</dt><dd>{{ r['machine'] }}</dd></div>
+    <div><dt>Inspection time</dt><dd>{{ r['inspection_time'] }} IST</dd></div>{% if r['kind']!='ipqc' %}<div><dt>Overall result</dt><dd><span class="result result-{{ r['result']|lower|replace(' ','-') }}">{{ r['result'] }}</span></dd></div>{% endif %}
+    <div><dt>Entered by</dt><dd>{{ r['operator_name'] }}</dd></div><div><dt>Assigned incharge</dt><dd>{{ r['approver_name'] or '-' }}</dd></div>
+    {% if payload.get('metadata') %}{% for key,value in payload.metadata.items() %}<div><dt>{{ key|replace('_',' ')|title }}</dt><dd>{{ 'Yes' if value is sameas true else 'No' if value is sameas false else value }}</dd></div>{% endfor %}{% endif %}
+  </dl>
+  <div class="remarks-block"><strong>Operator remarks</strong><p>{{ r['remarks'] or '-' }}</p></div>
+</section>
 
-{% if may_review %}<section class="review-box"><div><p class="eyebrow">APPROVAL WORKFLOW</p><h2>Verify this report</h2><p>Administrators can review every pending report. Incharges can review reports assigned to them.</p></div><form method="post" action="{{ url_for('review_report',report_id=report.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><label>Verification comment<textarea name="comment" rows="3" placeholder="Required when returning or rejecting"></textarea></label><div><button class="button primary" name="action" value="approve">Approve</button><button class="button warning" name="action" value="return">Return for correction</button><button class="button danger" name="action" value="reject">Reject</button></div></form></section>{% endif %}
+{% if r['kind']=='ipqc' and payload.get('format')=='ipqc-v1' %}
+  <section class="stage-overview panel">
+    <div class="panel-heading"><div><p class="eyebrow">INSPECTION PROGRESS</p><h2>IPQC audit stages</h2></div><span>{{ stage_progress|selectattr('status','equalto','Completed')|list|length }} / {{ stage_progress|length }} completed</span></div>
+    <div class="stage-grid">
+      {% for stage in stage_progress %}<a class="stage-card stage-{{ stage.status|lower|replace(' ','-') }}" href="#detail-stage-{{ loop.index }}"><span>{{ stage.percent }}%</span><strong>{{ stage.name }}</strong><em>{{ stage.status }}</em></a>{% endfor %}
+    </div>
+  </section>
+  {% for section in payload.sections %}
+  <details id="detail-stage-{{ loop.index }}" class="detail-section" {% if loop.first %}open{% endif %}><summary><span>Stage {{ section.number }}</span><strong>{{ section.name }}</strong><em>{{ section['items']|length }} checks</em></summary>
+    <div class="detail-checks">
+    {% if section.name == 'Stringer/Cell cutting section' %}
+      {% set track_fields = ['Stringer 1 - Track A','Stringer 1 - Track B','Stringer 2 - Track A','Stringer 2 - Track B','Stringer 3 - Track A','Stringer 3 - Track B'] %}
+      {% set track_labels = ['Stringer 1A','Stringer 1B','Stringer 2A','Stringer 2B','Stringer 3A','Stringer 3B'] %}
+      {% set width_tracks = ['Stringer 1 - A','Stringer 1 - B','Stringer 2 - A','Stringer 2 - B','Stringer 3 - A','Stringer 3 - B'] %}
+      {% set process_ids = ['R32','R33','R34','R35','R36','R24','R23','R25','R26','R27','R27B','R30'] %}
+      {% set set_power_ids = ['R38','R39','R40','R41','R42','R43','R44','R45','R46','R47','R48','R49','R50','R51','R52','R53','R54'] %}
+      {% set standby_power_ids = ['R55','R56','R57','R58','R59','R60','R61','R62','R63','R64','R65','R66','R67','R68','R69','R70','R71'] %}
 
-{% if report.status in ['Draft','Returned for Correction'] and report.owner==user.id %}<form method="post" action="{{ url_for('delete_report',report_id=report.id) }}" data-delete-draft class="delete-row"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Delete this draft</button></form>{% endif %}
+      {% for item in section['items'] %}{% if item.id == 'R20' %}
+      <article class="matrix-card read-matrix-card"><div class="matrix-heading"><div><span>Six-track measurement</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div></div><div class="matrix-scroll"><table class="stringer-matrix width-matrix"><thead><tr><th>Stringer / track</th><th>Top</th><th>Middle</th><th>Bottom</th></tr></thead><tbody>
+      {% for track in width_tracks %}<tr><th>{{ track_labels[loop.index0] }}</th>{% for position in ['top','middle','bottom'] %}<td>{{ read_value(item,track ~ ' ' ~ position) }}</td>{% endfor %}</tr>{% endfor %}
+      </tbody></table></div></article>
+      {% endif %}{% endfor %}
 
-<section class="panel history"><div class="panel-head"><div><p class="eyebrow">AUDIT TRAIL</p><h2>Record history</h2></div></div><ol>{% for item in history %}<li><i></i><div><strong>{{ item.action }}</strong><span>{{ item.actor_name }} · {{ item.time }}</span>{% if item.comment %}<blockquote>{{ item.comment }}</blockquote>{% endif %}</div></li>{% endfor %}</ol></section>
+      <article class="matrix-card read-matrix-card"><div class="matrix-heading"><div><span>Six-track process matrix</span><h3>Stringer process parameters</h3></div></div><div class="matrix-scroll"><table class="stringer-matrix process-matrix"><thead><tr><th>Parameter</th>{% for label in track_labels %}<th>{{ label }}</th>{% endfor %}</tr></thead><tbody>
+      {% for item in section['items'] %}{% if item.id in process_ids %}<tr><th><strong>{{ item.parameter }}</strong><small>{{ item.acceptance }}</small></th>{% for field in track_fields %}<td>{{ read_value(item,field) }}</td>{% endfor %}</tr>{% endif %}{% endfor %}
+      </tbody></table></div></article>
+
+      <article class="matrix-card read-matrix-card"><div class="matrix-heading"><div><span>Power matrix</span><h3>Set power</h3></div></div><div class="matrix-scroll"><table class="stringer-matrix lamp-matrix"><thead><tr><th>Stringer / track</th>{% for item in section['items'] %}{% if item.id in set_power_ids %}<th>SP{{ item.parameter|replace('Set Power # ','') }}</th>{% endif %}{% endfor %}</tr></thead><tbody>
+      {% for field in track_fields %}<tr><th>{{ track_labels[loop.index0] }}</th>{% for item in section['items'] %}{% if item.id in set_power_ids %}<td>{{ read_value(item,field) }}</td>{% endif %}{% endfor %}</tr>{% endfor %}
+      </tbody></table></div></article>
+
+      <article class="matrix-card read-matrix-card"><div class="matrix-heading"><div><span>Power matrix</span><h3>Standby power</h3></div></div><div class="matrix-scroll"><table class="stringer-matrix lamp-matrix"><thead><tr><th>Stringer / track</th>{% for item in section['items'] %}{% if item.id in standby_power_ids %}<th>SB{{ item.parameter|replace('Standby Power # ','') }}</th>{% endif %}{% endfor %}</tr></thead><tbody>
+      {% for field in track_fields %}<tr><th>{{ track_labels[loop.index0] }}</th>{% for item in section['items'] %}{% if item.id in standby_power_ids %}<td>{{ read_value(item,field) }}</td>{% endif %}{% endfor %}</tr>{% endfor %}
+      </tbody></table></div></article>
+
+      {% for item in section['items'] %}{% if item.id != 'R20' and item.id not in process_ids and item.id not in set_power_ids and item.id not in standby_power_ids %}{{ standard_read_item(item,loop.index) }}{% endif %}{% endfor %}
+    {% elif section.name == 'Laminator' %}
+      {% for item in section['items'] %}
+      <div class="laminator-matrix-group read-matrix-card"><div class="matrix-heading"><div><span>Four-laminator matrix</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div><em>{{ item.frequency }}</em></div>
+      <div class="laminator-chamber-stack">
+      {% if item.observations %}{% for chamber in ['Chamber 1'] %}
+        <article class="matrix-card read-matrix-card laminator-matrix-card">
+          <div class="laminator-chamber-title"><span>{{ chamber }}</span><small>Recipe parameters</small></div>
+          <div class="matrix-scroll"><table class="stringer-matrix laminator-matrix"><thead><tr><th>Parameter</th>{% for observation in item.observations %}<th>{{ observation.label }}</th>{% endfor %}</tr></thead><tbody>
+          {% for field in item.observations[0]['values'].keys() %}{% if field.startswith(chamber ~ ' · ') %}<tr><th><strong>{{ field|replace(chamber ~ ' · ','') }}</strong></th>{% for observation in item.observations %}<td>{{ read_observation_value(item,loop.index0,field) }}</td>{% endfor %}</tr>{% endif %}{% endfor %}
+          </tbody></table></div>
+        </article>
+      {% endfor %}{% endif %}
+      </div></div>
+      {% endfor %}
+    {% else %}
+      {% for item in section['items'] %}{{ standard_read_item(item,loop.index) }}{% endfor %}
+    {% endif %}
+    </div>
+  </details>
+  {% endfor %}
+{% elif r['kind'] in ctq_kinds and payload.get('format')=='ctq-v1' %}
+  {% include 'ctq_detail.html' %}
+{% else %}
+  <section class="panel"><h2>Readings</h2><div class="detail-checks">
+  {% for row in payload.rows %}<article class="read-check"><div class="read-check-head"><span>{{ loop.index }}</span><div><h3>Reading {{ loop.index }}</h3></div><mark class="result result-{{ row.Result|lower|replace(' ','-') }}">{{ row.Result }}</mark></div><dl class="simple-reading">{% for label in payload.labels %}<div><dt>{{ label }}</dt><dd>{{ row[label] }}</dd></div>{% endfor %}</dl></article>{% endfor %}
+  </div></section>
+{% endif %}
+
+<section class="panel history"><h2>Approval history</h2>
+  <ol>{% for h in history %}<li><span></span><div><strong>{{ h['action'] }}</strong><p>{{ h['actor_name'] }} · {{ h['time'] }}</p>{% if h['comment'] %}<blockquote>{{ h['comment'] }}</blockquote>{% endif %}</div></li>{% endfor %}</ol>
+</section>
 {% endblock %}
+

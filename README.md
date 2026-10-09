@@ -1,87 +1,48 @@
-# Quality System Demo
+# Your Company QMS — Commercial Demo 1.3.0
 
-A generic commercial demonstration of digital quality-process documentation for manufacturing companies. The interface uses **Your Company** and contains no customer-specific brand.
+This independent demo uses the original QMS interface, navigation, tables, approval workflow and PDF formatting. It contains generic company branding and reduced example fields. It does not connect to the Navitas production installation.
 
-## Version 1.2.0
+## Demo scope
 
-Bright day theme with JetBrains Mono / Consolas, separate IPQC and CTQ workspaces and separate summaries. CTQ reports appear in order: Gel, Ribbon Peel, Adhesion, Busbar Peel. The IPQC checkpoint strip supports direct selection, mobile swipe and completion tracking. Checkpoints and limits are illustrative demo content, not a customer production specification. Existing databases are preserved.
+- Separate IPQC and CTQ main tabs, summaries, records and daily PDF downloads.
+- The original 36 process stages, plus Basic Information and Review, with the original sliding navigation.
+- One representative parameter in most stages; three small Stringer tables and two recipe parameters across four Laminators.
+- CTQ in order: Gel, Ribbon Peel, Adhesion, Busbar Peel. Reduced sample counts retain the same table layouts, approval controls and calculations.
+- Original sidebar, theme switch, account menu, password change, draft deletion and audit history.
+- Light theme is the default; the original dark theme remains selectable.
+- All values and criteria are demonstration content rather than a validated customer specification.
 
-## Demonstrated workflow
+## Windows
 
-1. Operator creates a report or saves a draft.
-2. Operator submits the completed record to a selected incharge or administrator.
-3. The reviewer approves, approves with remarks, returns for correction, or rejects it.
-4. Every action is stored in the audit history.
-5. The controlled record can be downloaded as a PDF.
+Install Python 3.12 or newer, extract this project into its own folder, then run `start_demo.bat`. The first run needs internet to install dependencies.
 
-## Demo reports
+Open `http://127.0.0.1:8080`; other devices on the same network use `http://SERVER-IP:8080`.
 
-- IPQC Checksheet — 37 illustrative checkpoints with sliding Previous/Next navigation
-- Gel Content Test — one controlled percentage result
-- Adhesion Test — one controlled strength result
-- Ribbon Peel Test — one average force with automatic N/mm calculation
-- Busbar Peel Test — one average force with automatic N/mm calculation
+## Accounts
 
-## Demo accounts
+Password for all demo accounts: `Demo123`.
 
-All three accounts use password `Demo123`.
-
-| Role | Employee ID |
+| Employee ID | Role |
 |---|---|
-| Operator | `OP100` |
-| Shift incharge | `IC100` |
-| Administrator | `AD100` |
+| OP100 | Operator — entry and drafts |
+| IC100 | Shift incharge — assigned approvals |
+| AD100 | Administrator — review and monitoring |
+| 0001 | Super User — account management only |
 
-These credentials are for demonstration only and must not be used for a live production installation.
+## Render or Railway
 
-## Run on Windows
+Build: `pip install -r requirements.txt`
 
-Install Python 3.12 or newer, extract the complete project and double-click:
+Start: `python app.py`
 
-```text
-start_demo.bat
-```
+The server binds to `0.0.0.0` and uses the host-provided `PORT`, or local port 8080.
 
-Open on the server:
+Use a persistent writable directory and set `QUALITYSYSTEM_DATA` to that directory. Set `QUALITYSYSTEM_HTTPS=1` when the site uses HTTPS.
 
-```text
-http://127.0.0.1:8080
-```
+## Updating the earlier demo
 
-Other computers on the same network open:
+Stop the demo server. Back up its `data` folder, then replace only application files. Keep the `data` folder in the new demo folder.
 
-```text
-http://SERVER-IP:8080
-```
+The new database is `data/commercial-demo.db`. On first startup, an existing `data/qualitysystem.db` is imported without modifying or deleting it. Earlier record values, accounts and audit history are retained. No production database or production QMS environment variables are used.
 
-Allow inbound TCP port 8080 in Windows Firewall and configure a static IP or DHCP reservation for the server computer.
-
-## Manual start
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
-```
-
-Linux/macOS activation uses `source .venv/bin/activate`.
-
-## Railway
-
-The included `railway.json` starts the Flask application through Waitress. Attach a persistent volume at `/app/data` and set:
-
-```text
-QUALITYSYSTEM_DATA=/app/data
-QUALITYSYSTEM_SECRET=<a-long-random-secret>
-QUALITYSYSTEM_HTTPS=1
-```
-
-## Storage
-
-The application stores its SQLite database at `data/qualitysystem.db`. Keep it on the same computer as the application. Back up the `data` directory regularly; never replace the live database during an application update.
-
-## Commercialisation note
-
-This repository is a demonstration, not a validated production QMS. A customer deployment should add company configuration, controlled master-data management, HTTPS, automated backups, a signed installer/service, licence controls, validation documentation and an agreed retention policy.
-
+Earlier drafts can be updated using the new reduced form, which requires the current demo fields before resubmission.

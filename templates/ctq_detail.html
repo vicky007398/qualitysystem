@@ -1,0 +1,44 @@
+{% set values = payload.get('values',{}) %}
+{% set calculated = payload.get('calculated',{}) %}
+<section class="ctq-detail-header panel">
+  <div><p class="eyebrow">CONTROLLED CTQ RECORD</p><h2>{{ ctq.document.title }}</h2><p>{{ ctq.acceptance }}</p></div>
+  <dl><div><dt>Document No.</dt><dd>{{ ctq.document.document_no }}</dd></div><div><dt>Issue Date</dt><dd>{{ ctq.document.issue_date }}</dd></div><div><dt>Revision</dt><dd>{{ ctq.document.revision_no }}</dd></div></dl>
+</section>
+
+{% for section in ctq.sections %}
+<section class="panel ctq-read-section"><div class="panel-heading"><div><p class="eyebrow">SECTION {{ loop.index }}</p><h2>{{ section.title }}</h2></div></div>
+  {% if section.type == 'fields' %}
+  <dl class="detail-grid ctq-read-fields">{% for field in section.fields %}<div><dt>{{ field.label }}{% if field.unit %} ({{ field.unit }}){% endif %}</dt><dd>{{ values.get(field.key) or '-' }}</dd></div>{% endfor %}</dl>
+  {% elif section.type == 'matrix' %}
+  <div class="matrix-scroll"><table class="stringer-matrix ctq-matrix"><thead><tr><th>Parameter</th>{% for column in section.columns %}<th>{{ column.label }}</th>{% endfor %}</tr></thead><tbody>
+  {% for row in section.rows %}<tr><th>{{ row.label }}{% if row.unit %}<small>{{ row.unit }}</small>{% endif %}</th>{% for column in section.columns %}{% if not row.columns or column.key in row.columns %}<td>{{ values.get(column.key ~ '_' ~ row.key) or '-' }}</td>{% else %}<td>Not applicable</td>{% endif %}{% endfor %}</tr>{% endfor %}
+  </tbody></table></div>
+  {% elif section.type == 'gel_samples' %}
+  <div class="matrix-scroll"><table class="stringer-matrix ctq-sample-table"><thead><tr><th>Sample</th><th>W1 (g)</th><th>W2 (g)</th><th>W3 (g)</th><th>Dried Sample (g)</th><th>Gel Content (%)</th><th>Remarks</th></tr></thead><tbody>
+  {% for sample in range(1,section.count+1) %}<tr><th>Sample {{ sample }}</th><td>{{ values.get('sample_' ~ sample ~ '_w1') or '-' }}</td><td>{{ values.get('sample_' ~ sample ~ '_w2') or '-' }}</td><td>{{ values.get('sample_' ~ sample ~ '_w3') or '-' }}</td><td>{{ calculated.get('sample_' ~ sample ~ '_dried','-') }}</td><td>{{ calculated.get('sample_' ~ sample ~ '_gel','-') }}</td><td>{{ values.get('sample_' ~ sample ~ '_remarks') or '-' }}</td></tr>{% endfor %}
+  </tbody><tfoot><tr><th colspan="5">Average Gel Content</th><td>{{ calculated.get('average_gel','-') }}</td><td>{{ calculated.get('overall_result','Pending') }}</td></tr></tfoot></table></div>
+  {% elif section.type == 'ribbon_peel_matrix' %}
+  <div class="ribbon-track-list ribbon-track-readonly">
+  {% for track in section.tracks %}
+    <details class="ribbon-track" {% if loop.first %}open{% endif %}><summary><span>Stringer {{ track.label }}</span><em>N/mm divisor 0.24 mm</em><b>Front + Back · {{ section.count }} positions</b></summary>
+      <div class="ribbon-side-grid">
+      {% for side in section.sides %}<div class="matrix-card ctq-matrix-card ribbon-side-card"><div class="ribbon-side-heading"><strong>{{ side.label }}</strong><span>Stringer {{ track.label }}</span></div><div class="matrix-scroll"><table class="stringer-matrix ctq-ribbon-table"><thead><tr><th>Sl No.</th>{% for peak in range(1,section.peaks+1) %}<th>Peak {{ peak }} (N)</th>{% endfor %}<th>Average (N)</th><th>N/mm</th></tr></thead><tbody>
+      {% for position in range(1,section.count+1) %}{% set calc_prefix='rp_' ~ track.key ~ '_' ~ side.key ~ '_s' ~ position %}<tr><th>{{ position }}</th>{% for peak in range(1,section.peaks+1) %}{% set nr=position in track.get('not_required',{}).get('positions',[]) and peak in track.get('not_required',{}).get('peaks',[]) %}{% set field_key=calc_prefix ~ '_p' ~ peak %}{% if nr %}<td class="ribbon-nr">NR</td>{% else %}<td class="{% if values.get(field_key) and values.get(field_key)|float < section.minimum %}ribbon-below-limit{% endif %}">{{ values.get(field_key) or '-' }}</td>{% endif %}{% endfor %}<td class="calculated-cell">{{ calculated.get(calc_prefix ~ '_average','-') }}</td><td class="calculated-cell">{{ calculated.get(calc_prefix ~ '_n_per_mm','-') }}</td></tr>{% endfor %}
+      </tbody></table></div></div>{% endfor %}
+      </div>
+    </details>
+  {% endfor %}
+  </div>
+  <div class="ribbon-assessment"><span>Overall Assessment</span><small>Every measured peak must be ≥ {{ section.minimum }} N</small><strong class="ctq-result" data-result="{{ calculated.get('overall_result','Pending')|lower }}">{{ calculated.get('overall_result','Pending') }}</strong></div>
+  {% elif section.type == 'adhesion_readings' %}
+  <div class="matrix-scroll"><table class="stringer-matrix ctq-adhesion-table"><thead><tr><th>Test Interface</th>{% for reading in range(1,section.count+1) %}<th>Reading {{ reading }} (N/cm)</th>{% endfor %}<th>Average</th><th>Criterion</th></tr></thead><tbody>
+  {% for group in section.groups %}<tr><th>{{ group.label }}</th>{% for reading in range(1,section.count+1) %}<td>{{ values.get(group.key ~ '_' ~ reading) or '-' }}</td>{% endfor %}<td>{{ calculated.get(group.key ~ '_average','-') }}</td><td>≥ {{ group.minimum }} N/cm</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% elif section.type == 'busbar_matrix' %}
+  <div class="matrix-scroll"><table class="stringer-matrix ctq-busbar-table"><thead><tr><th>Interconnector Type</th>{% for reading in range(1,section.count+1) %}<th>R{{ reading }}</th>{% endfor %}<th>Average (N)</th><th>N/mm <small>Avg ÷ 0.24</small></th></tr></thead><tbody>
+  {% for row in section.rows %}<tr><th>{{ row.label }}</th>{% for reading in range(1,section.count+1) %}<td>{{ values.get(row.key ~ '_r' ~ reading) or '-' }}</td>{% endfor %}<td>{{ calculated.get(row.key ~ '_average','-') }}</td><td>{{ calculated.get(row.key ~ '_n_per_mm','-') }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% elif section.type == 'empty' %}<div class="ctq-empty"><span>Controlled sheet is blank</span><strong>No test fields added</strong><p>{{ section.message }}</p></div>{% endif %}
+</section>
+{% endfor %}
+

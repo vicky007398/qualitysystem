@@ -1,22 +1,37 @@
-{% extends 'base.html' %}
-{% block title %}Sign in · Your Company Quality System{% endblock %}
+{% extends "base.html" %}
+{% block title %}Log in · Company QMS{% endblock %}
 {% block pageclass %}login-page{% endblock %}
 {% block content %}
 <section class="login-shell">
-  <div class="login-story">
-    <div class="login-brand"><span>YC</span><strong>YOUR COMPANY</strong></div>
-    <div class="login-copy"><p>QUALITY PROCESS DOCUMENTATION</p><h1>Quality assurance,<br><span>without paperwork.</span></h1><p>Capture solar-process checks at the source, route every record for review and retain a complete digital trail.</p></div>
-    <div class="login-metrics"><div><strong>37</strong><span>IPQC checkpoints</span></div><div><strong>04</strong><span>CTQ test reports</span></div><div><strong>100%</strong><span>Traceable workflow</span></div></div>
+  <div class="login-showcase">
+    <div class="login-brand"><span><img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Your Company"></span><strong>QUALITY CONTROL</strong></div>
+    <div class="network-chip"><i></i> Commercial demonstration</div>
+    <div class="login-message">
+      <p class="eyebrow">IN-PROCESS QUALITY CONTROL</p>
+      <h1>Controlled inspection.<br>Clear approval.<br><span>Complete traceability.</span></h1>
+      <p>One secure workspace for operators and shift incharges to complete, verify and retrieve IPQC records.</p>
+    </div>
+    <div class="login-metrics" aria-label="System features">
+      <div><strong>36</strong><span>Process stages</span></div>
+      <div><strong>A · B · C</strong><span>Shift coverage</span></div>
+      <div><strong>PDF</strong><span>Controlled reports</span></div>
+    </div>
   </div>
   <div class="login-access">
-    <form method="post" class="login-card">
-      <input type="hidden" name="csrf" value="{{ csrf }}">
-      <span class="login-mark">Q</span><p class="eyebrow">CUSTOMER PREVIEW</p><h2>Explore the workflow</h2><p class="muted">Choose a demonstration account and experience the complete quality cycle.</p>
-      <label>Employee ID<input name="employee" autocomplete="username" placeholder="Enter employee ID" required autofocus></label>
-      <label>Password<input type="password" name="password" autocomplete="current-password" placeholder="Enter password" required></label>
-      <button class="button primary full">Enter Quality System →</button>
-      <div class="demo-accounts"><strong>Demo accounts · Password: Demo123</strong><span>Operator: OP100</span><span>Incharge: IC100</span><span>Administrator: AD100</span></div>
-    </form>
+    <button class="login-theme-button" type="button" data-theme-toggle aria-label="Change colour theme">◐</button>
+    <section class="login-card">
+      <div class="login-card-mark">QMS</div>
+      <p class="eyebrow">SECURE ACCESS</p>
+      <h2>Welcome back</h2>
+      <p class="muted">Sign in with your individual employee account.</p>
+      <form method="post" class="form-stack">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <label>Employee ID<input name="employee" autocomplete="username" maxlength="80" placeholder="Enter employee ID" required autofocus></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password" placeholder="Enter password" required></label>
+        <button class="button primary full" type="submit">Enter Quality Portal →</button>
+      </form>
+      <p class="network-note"><span></span> Demo accounts: OP100 · IC100 · AD100 / Demo123</p>
+    </section>
   </div>
 </section>
 {% endblock %}
