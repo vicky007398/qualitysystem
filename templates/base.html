@@ -27,6 +27,7 @@
       {% if user['role'] in ['incharge','admin'] and not is_superuser(user) %}<a href="{{ url_for('home') }}#records"><span class="nav-icon">✓</span><span>Approvals</span></a>{% endif %}
       {% if is_superuser(user) %}<a class="{% if request.endpoint == 'users' %}active{% endif %}" href="{{ url_for('users') }}"><span class="nav-icon">◎</span><span>User Management</span></a>{% endif %}
       <a class="{% if request.endpoint == 'password' %}active{% endif %}" href="{{ url_for('password') }}"><span class="nav-icon">◇</span><span>Change Password</span></a>
+      <a class="{% if request.endpoint == 'appearance' %}active{% endif %}" href="{{ url_for('appearance') }}"><span class="nav-icon" aria-hidden="true">◐</span><span>Appearance & colours</span></a>
     </nav>
     <div class="sidebar-footer"><strong>Company QMS</strong><span>Commercial demonstration</span><small>© 2026 Quality Control</small></div>
   </aside>
