@@ -13,11 +13,24 @@
       button.setAttribute('title', theme === 'dark' ? 'Use light theme' : 'Use dark theme');
     });
   }
-  applyTheme(savedTheme || systemTheme);
+  applyTheme(root.dataset.accountTheme || savedTheme || systemTheme);
   themeButtons.forEach(button => button.addEventListener('click', () => {
     const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
     localStorage.setItem('commercial-demo-theme', theme);
     applyTheme(theme);
+    if (root.dataset.accountTheme) {
+      const csrf = document.querySelector('input[name="csrf"]')?.value;
+      fetch('/appearance', {
+        method: 'POST',
+        body: new URLSearchParams({csrf, theme_mode: theme}),
+      }).then(response => {
+        if (!response.ok) throw new Error('Theme save failed');
+        root.dataset.accountTheme = theme;
+      }).catch(() => {
+        applyTheme(root.dataset.accountTheme);
+        window.alert('Your display mode could not be saved. Please try Appearance & colours in your account menu.');
+      });
+    }
   }));
   const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
   if (sidebarToggle) {

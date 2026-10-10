@@ -477,6 +477,10 @@ def init_db():
         user_columns = {row['name'] for row in db().execute('PRAGMA table_info(users)').fetchall()}
         if 'is_superuser' not in user_columns:
             db().execute('ALTER TABLE users ADD COLUMN is_superuser INTEGER NOT NULL DEFAULT 0')
+        if 'theme_color' not in user_columns:
+            db().execute("ALTER TABLE users ADD COLUMN theme_color TEXT NOT NULL DEFAULT 'red'")
+        if 'theme_mode' not in user_columns:
+            db().execute("ALTER TABLE users ADD COLUMN theme_mode TEXT NOT NULL DEFAULT 'dark'")
         # Employee 0001 is the single, fixed user-management custodian.  Keeping
         # this as a flag preserves the existing role CHECK and all report FKs.
         db().execute("UPDATE users SET is_superuser=CASE WHEN employee='0001' THEN 1 ELSE 0 END")
@@ -533,7 +537,7 @@ def security():
     uid = session.get('uid')
     if uid is not None:
         g.user = db().execute(
-            'SELECT id,employee,name,password,role,active,is_superuser FROM users WHERE id=? AND active=1',
+            'SELECT id,employee,name,password,role,active,is_superuser,theme_color,theme_mode FROM users WHERE id=? AND active=1',
             (uid,),
         ).fetchone()
     session.setdefault('csrf', secrets.token_urlsafe(32))
@@ -573,6 +577,21 @@ def helpers():
                 ctq_definitions=CTQ_DEF, ctq_material_options=CTQ_MATERIAL_OPTIONS,
                 observation_unit=observation_unit, display_observation_value=display_observation_value,
                 is_superuser=is_superuser)
+
+@app.route('/appearance', methods=['GET', 'POST'])
+@require()
+def appearance():
+    if request.method == 'POST':
+        color = request.form.get('theme_color', g.user['theme_color'])
+        mode = request.form.get('theme_mode', g.user['theme_mode'])
+        if color not in ('red', 'blue', 'green', 'purple') or mode not in ('light', 'dark'):
+            abort(400, 'Choose a supported theme colour and mode.')
+        with db():
+            db().execute('UPDATE users SET theme_color=?,theme_mode=? WHERE id=?',
+                         (color, mode, g.user['id']))
+        flash('Your appearance settings have been saved.')
+        return redirect(url_for('appearance'))
+    return render_template('appearance.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

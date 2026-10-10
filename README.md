@@ -9,7 +9,7 @@ This independent system retains the full forms from `vicky007398/qms`, with gene
 - Full IPQC: 166 parameters and 860 observation fields across 36 stages, including all Stringer tables, three chambers across four Laminators, and the HV / IR / Ground Continuity matrix.
 - Full CTQ: five Gel samples; Ribbon Peel with six tracks, both sides, 16 positions and seven peaks; four Adhesion readings per group; 16 Busbar readings per enabled interconnector.
 - Original sidebar, theme switch, account menu, password change, draft deletion and audit history.
-- Dark navy theme is the default; light mode remains selectable.
+- Red accents on a dark background are the default. Every account can choose Red, Blue, Green, or Purple and light/dark mode under Account menu → Appearance & colours. Settings are saved to the account and follow the user across devices.
 - Field labels, criteria, supplier options, sample counts, and calculations are preserved from the original QMS. Company identifiers use generic QMS branding.
 
 ## Windows

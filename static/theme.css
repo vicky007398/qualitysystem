@@ -50,3 +50,14 @@ input,select,textarea{border-radius:9px;background:var(--card);font-weight:400}i
 /* Supersede the earlier monospace heading rules, including specific page headings. */
 .page h1,.page h2,.page h3,.panel-heading h2,.dashboard-heading h2,.check-title h3,.read-check-head h3,.detail-section summary strong,.login-card h2,.login-message h1{font-family:var(--font-ui)!important}
 @media(min-width:1000px){.authenticated .stepper,.authenticated .dashboard-module-tabs{top:68px}}
+/* Per-account accent palettes: red is the default. Status colours retain their meaning. */
+:root,[data-accent="red"]{--accent:#c92d3e;--accent-bright:#ff8d9a;--accent-soft:#fff0f2}
+[data-accent="blue"]{--accent:#2154ed;--accent-bright:#7dd3fc;--accent-soft:#eff5ff}
+[data-accent="green"]{--accent:#087f5b;--accent-bright:#6ee7b7;--accent-soft:#ecfdf5}
+[data-accent="purple"]{--accent:#7435c9;--accent-bright:#c4b5fd;--accent-soft:#f5f0ff}
+[data-accent]{--blue:var(--accent);--teal:var(--accent);--gold:var(--accent);--soft-blue:var(--accent-soft)}
+[data-theme="dark"][data-accent]{--blue:var(--accent-bright);--teal:var(--accent-bright);--gold:var(--accent-bright);--soft-blue:color-mix(in srgb,var(--accent) 20%,#182338)}
+.button.primary,.primary,[data-theme="dark"] .button.primary,[data-theme="dark"] .primary{background:var(--accent);box-shadow:0 3px 12px color-mix(in srgb,var(--accent) 18%,transparent);color:#fff}
+[data-theme="dark"] .portal-hero h1{background-image:linear-gradient(100deg,#f1f5f9 12%,var(--accent-bright) 65%,var(--accent) 100%)}
+@media(min-width:1000px){.desktop-sidebar,[data-theme="dark"] .desktop-sidebar{background:color-mix(in srgb,var(--accent) 8%,#10192b)}.sidebar-brand .sidebar-brand-mark,.sidebar-nav a.active,[data-theme="dark"] .sidebar-nav a.active{background:var(--accent)}}
+.appearance-form{max-width:720px}.colour-options{display:flex;flex-wrap:wrap;gap:12px;border:0;padding:0;margin:0}.colour-options legend{margin-bottom:14px;font-weight:600}.colour-option{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:14px;border-radius:12px;cursor:pointer}.colour-option:has(input:checked){border-color:var(--blue);background:var(--soft-blue)}.colour-option input{width:18px;height:18px;min-height:0;margin:0;accent-color:var(--accent)}.colour-swatch{width:20px;height:20px;border-radius:50%}.swatch-red{background:#c92d3e}.swatch-blue{background:#2154ed}.swatch-green{background:#087f5b}.swatch-purple{background:#7435c9}
