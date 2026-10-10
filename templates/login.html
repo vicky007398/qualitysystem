@@ -2,7 +2,20 @@
 {% block title %}Log in · Company QMS{% endblock %}
 {% block pageclass %}login-page{% endblock %}
 {% block content %}
-<section class="login-shell">
+<section class="welcome-screen" data-welcome-screen hidden role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+  <div class="welcome-glow" aria-hidden="true"></div>
+  <div class="welcome-content">
+    <img class="welcome-logo" src="{{ url_for('static', filename='xyz-solar-logo.svg') }}" alt="XYZ Solar logo" width="112" height="112">
+    <p class="welcome-eyebrow">POWERING QUALITY. BUILDING TRUST.</p>
+    <h1 id="welcome-title">XYZ Solar <span>Pvt Limited</span></h1>
+    <p class="welcome-message">Welcomes you</p>
+    <p class="welcome-caption">Your quality journey starts here.</p>
+    <div class="welcome-progress" aria-hidden="true"><span></span></div>
+    <button class="welcome-skip" type="button" data-welcome-skip>Continue to sign in →</button>
+  </div>
+</section>
+<script defer src="{{ url_for('static', filename='welcome.js', v='solar-welcome-1') }}"></script>
+<section class="login-shell" data-login-shell>
   <div class="login-showcase">
     <div class="login-brand"><span><img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Your Company"></span><strong>QUALITY CONTROL</strong></div>
     <div class="network-chip"><i></i> Commercial demonstration</div>

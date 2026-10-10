@@ -99,7 +99,7 @@ assert "background-image:url('login-factory.png')" in login_style
 assert "position:fixed;inset:0;width:100vw" in login_style
 assert "height:100dvh" in login_style and "background-size:cover" in login_style
 assert_complete_png(Path(__file__).resolve().parents[1] / "static" / "login-factory.png")
-assert b"theme.css?v=account-colours-1" in login_page.data
+assert b"theme.css?v=solar-welcome-1" in login_page.data
 assert b"Navitas" not in login_page.data
 versioned_static = client.get("/static/style.css?v=1.27")
 assert versioned_static.status_code == 200

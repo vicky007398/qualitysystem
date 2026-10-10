@@ -61,3 +61,21 @@ input,select,textarea{border-radius:9px;background:var(--card);font-weight:400}i
 [data-theme="dark"] .portal-hero h1{background-image:linear-gradient(100deg,#f1f5f9 12%,var(--accent-bright) 65%,var(--accent) 100%)}
 @media(min-width:1000px){.desktop-sidebar,[data-theme="dark"] .desktop-sidebar{background:color-mix(in srgb,var(--accent) 8%,#10192b)}.sidebar-brand .sidebar-brand-mark,.sidebar-nav a.active,[data-theme="dark"] .sidebar-nav a.active{background:var(--accent)}}
 .appearance-form{max-width:720px}.colour-options{display:flex;flex-wrap:wrap;gap:12px;border:0;padding:0;margin:0}.colour-options legend{margin-bottom:14px;font-weight:600}.colour-option{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:14px;border-radius:12px;cursor:pointer}.colour-option:has(input:checked){border-color:var(--blue);background:var(--soft-blue)}.colour-option input{width:18px;height:18px;min-height:0;margin:0;accent-color:var(--accent)}.colour-swatch{width:20px;height:20px;border-radius:50%}.swatch-red{background:#c92d3e}.swatch-blue{background:#2154ed}.swatch-green{background:#087f5b}.swatch-purple{background:#7435c9}
+/* Solar welcome screen: progressive enhancement; sign-in works without JavaScript. */
+.welcome-screen[hidden]{display:none!important}
+.welcome-screen{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;overflow:auto;padding:28px;background:#10121f;color:#f8fafc;isolation:isolate;opacity:1;transition:opacity .35s ease}
+.welcome-screen::before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:44px 44px}
+.welcome-glow{position:absolute;z-index:-1;width:min(800px,100vw);height:700px;background:radial-gradient(ellipse,rgba(201,45,62,.22),transparent 65%);pointer-events:none}
+.welcome-content{text-align:center;max-width:760px;animation:welcome-rise .65s ease both}
+.welcome-logo{display:block;width:112px;height:112px;margin:0 auto 30px;filter:drop-shadow(0 12px 30px rgba(201,45,62,.2))}
+.welcome-eyebrow{font-size:11px;letter-spacing:.2em;color:#fda4af;font-weight:600;margin:0 0 18px}
+.page .welcome-content h1{font-size:clamp(38px,6vw,68px);line-height:1.1;letter-spacing:-.04em;margin:0;font-weight:750;color:#fff}
+.welcome-content h1 span{display:block;font-size:.56em;color:#cbd5e1;letter-spacing:-.02em;margin-top:12px}
+.welcome-message{color:#fda4af;font-size:28px;font-weight:600;margin:30px 0 10px}.welcome-caption{font-size:15px;color:#a0aec2;margin:0}
+.welcome-progress{width:180px;height:3px;margin:34px auto 22px;overflow:hidden;border-radius:99px;background:#334155}.welcome-progress span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#c92d3e,#ffb454);transform-origin:left;animation:welcome-progress 4.15s linear both}
+.welcome-skip{border:1px solid #4b3445;border-radius:999px;background:transparent;color:#cbd5e1;padding:10px 20px;font-size:12px;cursor:pointer}.welcome-skip:hover,.welcome-skip:focus-visible{background:#342030;color:#fff;outline:2px solid #fda4af;outline-offset:4px}
+.welcome-screen.welcome-leaving{opacity:0}
+@keyframes welcome-rise{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes welcome-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.welcome-content,.welcome-progress span{animation:none}.welcome-screen{transition:none}}
+@media(max-width:600px){.welcome-logo{width:90px;height:90px}.welcome-eyebrow{font-size:9px;letter-spacing:.12em}.welcome-message{font-size:24px}}
