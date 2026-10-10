@@ -113,7 +113,7 @@
       {% for item in section['items'] %}
       <div class="laminator-matrix-group read-matrix-card"><div class="matrix-heading"><div><span>Four-laminator matrix</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div><em>{{ item.frequency }}</em></div>
       <div class="laminator-chamber-stack">
-      {% if item.observations %}{% for chamber in ['Chamber 1'] %}
+      {% if item.observations %}{% for chamber in ['Chamber 1','Chamber 2','Chamber 3'] %}
         <article class="matrix-card read-matrix-card laminator-matrix-card">
           <div class="laminator-chamber-title"><span>{{ chamber }}</span><small>Recipe parameters</small></div>
           <div class="matrix-scroll"><table class="stringer-matrix laminator-matrix"><thead><tr><th>Parameter</th>{% for observation in item.observations %}<th>{{ observation.label }}</th>{% endfor %}</tr></thead><tbody>
@@ -124,7 +124,7 @@
       </div></div>
       {% endfor %}
     {% else %}
-      {% for item in section['items'] %}{{ standard_read_item(item,loop.index) }}{% endfor %}
+      {% for item in section['items'] %}{% if item.id == 'R183' %}{{ hv_read_item(item,loop.index) }}{% else %}{{ standard_read_item(item,loop.index) }}{% endif %}{% endfor %}
     {% endif %}
     </div>
   </details>
@@ -141,4 +141,3 @@
   <ol>{% for h in history %}<li><span></span><div><strong>{{ h['action'] }}</strong><p>{{ h['actor_name'] }} · {{ h['time'] }}</p>{% if h['comment'] %}<blockquote>{{ h['comment'] }}</blockquote>{% endif %}</div></li>{% endfor %}</ol>
 </section>
 {% endblock %}
-

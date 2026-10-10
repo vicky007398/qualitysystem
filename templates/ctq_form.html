@@ -88,7 +88,7 @@
       </tbody><tfoot><tr><th colspan="5">Average Gel Content</th><td class="calculated-cell"><output data-ctq-calc="average_gel">{{ ctq_calculated.get('average_gel','—') }}</output></td><td><span class="ctq-result" data-ctq-assessment>{{ ctq_calculated.get('overall_result','Pending') }}</span></td></tr></tfoot></table></div></div>
 
     {% elif section.type == 'ribbon_peel_matrix' %}
-      <p class="ctq-help">Enter the displayed peel-force peaks for each serial position. N/mm is calculated automatically as Average (N) ÷ 0.24 mm.</p>
+      <p class="ctq-help">Enter all seven peel-force peaks for each serial position. N/mm is calculated automatically as Average (N) ÷ 0.24 mm.</p>
       <div class="ribbon-track-list">
       {% for track in section.tracks %}
         <details class="ribbon-track" {% if loop.first %}open{% endif %}>
@@ -123,7 +123,7 @@
       </tbody><tfoot><tr><th colspan="6">Overall Assessment</th><td colspan="2"><span class="ctq-result" data-ctq-assessment>{{ ctq_calculated.get('overall_result','Pending') }}</span></td></tr></tfoot></table></div></div>
 
     {% elif section.type == 'busbar_matrix' %}
-      <p class="ctq-help">Enable each interconnector type used in this test, then enter the displayed ribbon readings. N/mm is calculated automatically as Average (N) ÷ 0.24 mm.</p>
+      <p class="ctq-help">Enable each interconnector type used in this test, then enter all 16 ribbon readings. N/mm is calculated automatically as Average (N) ÷ 0.24 mm.</p>
       <div class="matrix-card ctq-matrix-card busbar-matrix-card"><div class="matrix-scroll"><table class="stringer-matrix ctq-busbar-table"><thead><tr><th>Interconnector Type</th>{% for reading in range(1, section.count + 1) %}<th>R{{ reading }}</th>{% endfor %}<th>Average <small>N</small></th><th>N/mm <small>Avg ÷ 0.24</small></th></tr></thead><tbody>
       {% for row in section.rows %}{% set enabled_key = row.key ~ '_enabled' %}<tr data-busbar-row="{{ row.key }}"><th><label class="busbar-enable"><input type="checkbox" data-ctq-field="{{ enabled_key }}" value="1" {% if ctq_values.get(enabled_key) == '1' %}checked{% endif %}><span>{{ row.label }}</span></label></th>
         {% for reading in range(1, section.count + 1) %}<td><input type="number" step="any" inputmode="decimal" data-ctq-field="{{ row.key }}_r{{ reading }}" data-ctq-label="{{ row.label }} Ribbon {{ reading }}" value="{{ ctq_values.get(row.key ~ '_r' ~ reading,'') }}" aria-label="{{ row.label }} ribbon {{ reading }}"></td>{% endfor %}
@@ -138,4 +138,3 @@
   </article>
 {% endfor %}
 </div>
-

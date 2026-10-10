@@ -3,48 +3,159 @@
   "display_rule": "Supplier and manufacturer names only, shown in proper case",
   "categories": {
     "cell_connector": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Taicang Juren PV Material Co., Ltd.",
+      "Suzhou Your Best New Material Co., Ltd.",
+      "Xi'an Telison New Materials Co., Ltd.",
+      "Shanghai SunBy Solar Technology Co., Ltd.",
+      "Vidya Wires Pvt. Ltd.",
+      "Ferron Industires Pvt. Ltd.",
+      "Wuxi Sveck Technology Co., Ltd.",
+      "Valeo Products LLP",
+      "Solar City India Pvt. Ltd.",
+      "Dhash PV Tech. Ltd.",
+      "Sukriti Vidyut Udyog Pvt. Ltd.",
+      "Geba Cables and Wires India Pvt. Ltd."
     ],
     "string_connector": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Taicang Juren PV Material Co., Ltd.",
+      "Suzhou Your Best New Material Co., Ltd.",
+      "Xi'an Telison New Materials Co., Ltd.",
+      "Shanghai SunBy Solar Technology Co., Ltd.",
+      "Vidya Wires Pvt. Ltd.",
+      "Ferron Industires Pvt. Ltd.",
+      "Wuxi Sveck Technology Co., Ltd.",
+      "Valeo Products LLP",
+      "Solar City India Pvt. Ltd.",
+      "Dhash PV Tech. Ltd.",
+      "Sukriti Vidyut Udyog Pvt. Ltd.",
+      "Geba Cables and Wires India Pvt. Ltd."
     ],
     "frame": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Tianjin Jinpeng Aluminium Profiles Manufacture Co., Ltd.",
+      "Jiangyin Sulv Aluminium Co., Ltd.",
+      "Lead Solar Holding Co., Ltd.",
+      "Jiangyin Lutong Industrial Co., Ltd.",
+      "Changshu Jingcheng Aluminium Co., Ltd.",
+      "Zhejiang Jiaxing Taihe New Energy Technologies Co.",
+      "Jiangyin Haihong New Energy Technology Co., Ltd.",
+      "Jiangyin Wangfa Technology Co., Ltd.",
+      "Jiangyin East-China Aluminum Technology Co., Ltd.",
+      "Jiangsu Sulv New Material Technology Co., Ltd.",
+      "Xiangyang Precision Industry Co., Ltd.",
+      "Jiangsu Jiachen Aluminium Technology Co., Ltd.",
+      "Sudarshan Alluminium India Ltd.",
+      "Vinitech Metal Private Limited",
+      "Ngai Wah Com Ltd.",
+      "SST Renewables India Private Limited",
+      "Jiangsu Dinghao Aluminum Technology Co., Ltd.",
+      "Mum Group Co., Ltd.",
+      "Jiangsu Davin Solar Aluminium Technology Co., Ltd.",
+      "Changshu Dongneng Solar Technogogy Co., Ltd.",
+      "Akcome Metals Technology (Nantong) Co., Ltd.",
+      "Excellence Engimac Private Limited (INEX)",
+      "Jiangsu Kuna New Enegy Co., Ltd.",
+      "Jiangyin Tinze New Energy Tech. Co., Ltd.",
+      "Xiamen Xiangyu New Energy Co., Ltd.",
+      "Angel Extrusion Private Limited",
+      "Regal Aluminium Company",
+      "Hindalco Industries Ltd.",
+      "Galco Extrusions Pvt. Ltd.",
+      "Vishakha Renewables Pvt. Ltd.",
+      "Alumsun Technology Sole Co., Ltd.",
+      "Cambodian Kuna New Energy Co., Ltd.",
+      "Anhui Krant Aluminum Products Co., Ltd.",
+      "Anhui Xinbo Technology Co., Ltd.",
+      "Global Aluminium Pvt. Ltd.",
+      "Dinghao International Advanced Materials and Technology (Thailand) Co., Ltd.",
+      "JM Aluminium Pvt. Ltd.",
+      "Alom Extrusions Ltd.",
+      "Yonz Technology (Vietnam) Investment Co., Ltd.",
+      "Jiangyin Yuanshuo Metal Technology Co., Ltd.",
+      "Rhine Precision Alloy (Viet Nam) Company Limited",
+      "Majestic Star Aluminum Extrusion Co. L. L. C. S. O. C",
+      "Jiangsu Yuejia Metallic Technology Co., Ltd.",
+      "Aluvoltec Industrial Co., Ltd.",
+      "Future Aluminum New Materials Sdn Bhd",
+      "Do Thanh Aluminium Joint Stock Company",
+      "Jiangsu Sulv Precision Technology Co., Ltd.",
+      "Avimet Alucoat Private Limited",
+      "H & H Aluminium Private Limited"
     ],
     "jb": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Suzhou UKT New Energy Technology Co., Ltd.",
+      "Zhejiang Sivosola Technology Co., Ltd. (Sinotech)",
+      "Zerun Co., Ltd.",
+      "GenX PV India Pvt. Ltd.",
+      "Zhejiang Zhonghuan Sunter PV Technology Co., Ltd.",
+      "Radial Solar System",
+      "Orin PV Materials",
+      "Dhash PV Technologies Ltd."
     ],
     "encapsulant": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Hangzhou First Applied Material Co., Ltd.",
+      "Vietnam Advance Film Material Company Limited",
+      "First Material Science (Thailand) Co., Ltd."
     ],
     "adhesive": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Chengdu Guibao Science and Technology Co., Ltd.",
+      "Shanghai Huitian New Material Co., Ltd.",
+      "H.B. Fuller India Adhesives Private Limited (Tonson)"
     ],
     "potting": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Chengdu Guibao Science and Technology Co., Ltd.",
+      "Shanghai Huitian New Material Co., Ltd.",
+      "H.B. Fuller India Adhesives Private Limited (Tonson)"
     ],
     "front_glass": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Dongguan CSG Solar Glass Co., Ltd.",
+      "Flat Glass Group Co., Ltd.",
+      "Xinyi Energy Holdings Limited",
+      "Gujarat Borosil Limited",
+      "Triveni Renewables Pvt. Ltd.",
+      "Gobind Glass and Industries Limited",
+      "Henan Ancai Hi-Tech Co., Ltd.",
+      "Changzhou Simba Solar Tech Co., Ltd.",
+      "Qingdao Jinxin Glass Co., Ltd.",
+      "IRICO Group New Energy Co., Ltd.",
+      "Hunan Kibing Solar Technology Co., Ltd.",
+      "Changzhou Huamei Photoelectric New Material Co., Ltd.",
+      "RSD Solar Technology Co., Ltd.",
+      "Gold Plus Float Glass Pvt. Ltd.",
+      "Shenzhen Topray Solar Co., Ltd.",
+      "Vishakha Renewables Pvt. Ltd."
     ],
     "rear_glass": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Dongguan CSG Solar Glass Co., Ltd.",
+      "Flat Glass Group Co., Ltd.",
+      "Xinyi Energy Holdings Limited",
+      "Gujarat Borosil Limited",
+      "Triveni Renewables Pvt. Ltd.",
+      "Gobind Glass and Industries Limited",
+      "Henan Ancai Hi-Tech Co., Ltd.",
+      "Changzhou Simba Solar Tech Co., Ltd.",
+      "Qingdao Jinxin Glass Co., Ltd.",
+      "IRICO Group New Energy Co., Ltd.",
+      "Hunan Kibing Solar Technology Co., Ltd.",
+      "Changzhou Huamei Photoelectric New Material Co., Ltd.",
+      "RSD Solar Technology Co., Ltd.",
+      "Gold Plus Float Glass Pvt. Ltd.",
+      "Shenzhen Topray Solar Co., Ltd.",
+      "Vishakha Renewables Pvt. Ltd."
     ],
     "solar_cell": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Jietai New Energy Technology Co., Ltd.",
+      "Tongwei Solar (Chengdu) Co., Ltd.",
+      "AIKO Solar",
+      "SolarSpace Technology (Laos) Sole Co., Ltd.",
+      "Solar N Plus",
+      "PT Bintan Cellular Indonesia (Yingfa)",
+      "Waaree Energies Ltd."
     ],
     "flux": [
-      "Sample Supplier A",
-      "Sample Supplier B"
+      "Reality Chemicals Pvt. Ltd.",
+      "Kester",
+      "Arbital Solutions",
+      "Huizhou Huaihui New Material Technology Co., Ltd."
     ]
   }
 }

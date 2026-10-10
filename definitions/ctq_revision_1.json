@@ -4,7 +4,7 @@
     "description": "Record laminator settings, EVA sample weights, and automatically calculated gel content.",
     "document": {
       "title": "Gel Content Test",
-      "document_no": "DEMO/QMS/GEL/001",
+      "document_no": "QMS/QAD/FM/L3/001",
       "issue_date": "01-02-2026",
       "revision_no": "0",
       "revision_date": "-"
@@ -17,22 +17,14 @@
         "title": "Test and material information",
         "type": "fields",
         "fields": [
-          {
-            "key": "test_type",
-            "label": "Type of Test",
-            "type": "select",
-            "options": [
-              "IPQC",
-              "IQC"
-            ],
-            "required": true
-          },
-          {
-            "key": "lamination_no",
-            "label": "Lamination No.",
-            "type": "text",
-            "required": true
-          }
+          {"key": "test_type", "label": "Type of Test", "type": "select", "options": ["IPQC", "IQC"], "required": true},
+          {"key": "lamination_no", "label": "Lamination No.", "type": "text", "required": true},
+          {"key": "stage", "label": "Stage", "type": "text", "required": true},
+          {"key": "eva_manufacturer", "label": "EVA Manufacturer", "type": "text", "required": true},
+          {"key": "lot_batch_no", "label": "Lot / Batch No.", "type": "text", "required": true},
+          {"key": "mfg_date", "label": "Manufacturing Date", "type": "date", "required": true},
+          {"key": "exp_date", "label": "Expiry Date", "type": "date", "required": true},
+          {"key": "module_position", "label": "Module Position", "type": "text", "required": true}
         ]
       },
       {
@@ -40,23 +32,32 @@
         "title": "Laminator parameters",
         "type": "matrix",
         "columns": [
-          {
-            "key": "chamber_1",
-            "label": "Chamber 1"
-          },
-          {
-            "key": "chamber_2",
-            "label": "Chamber 2"
-          }
+          {"key": "chamber_1", "label": "Chamber 1"},
+          {"key": "chamber_2", "label": "Chamber 2"}
         ],
         "rows": [
-          {
-            "key": "total_vacuum_time",
-            "label": "Total Vacuum Time",
-            "type": "number",
-            "unit": "s",
-            "required": true
-          }
+          {"key": "total_vacuum_time", "label": "Total Vacuum Time", "type": "number", "unit": "s", "required": true},
+          {"key": "total_vacuum_delay", "label": "Total Vacuum Delay", "type": "number", "unit": "s", "required": true},
+          {"key": "upper_vac_time", "label": "Upper Vacuum Time", "type": "number", "unit": "s", "required": true},
+          {"key": "pressure_1", "label": "Pressure 1", "type": "number", "unit": "kPa", "required": true},
+          {"key": "pressure_hold_1", "label": "Pressure Hold 1", "type": "number", "unit": "s", "required": true},
+          {"key": "pressure_2", "label": "Pressure 2", "type": "number", "unit": "kPa", "required": true},
+          {"key": "pressure_hold_2", "label": "Pressure Hold 2", "type": "number", "unit": "s", "required": true},
+          {"key": "pressure_3", "label": "Pressure 3", "type": "number", "unit": "kPa", "required": true},
+          {"key": "pressure_hold_3", "label": "Pressure Hold 3", "type": "number", "unit": "s", "required": true},
+          {"key": "lower_vacuum_time", "label": "Lower Vacuum Time", "type": "number", "unit": "s", "required": true},
+          {"key": "lower_vent_time", "label": "Lower Vent Time", "type": "number", "unit": "s", "required": true},
+          {"key": "temperature_setting", "label": "Temperature Setting", "type": "number", "unit": "°C", "required": true},
+          {"key": "temperature_upper_limit", "label": "Temperature Upper Limit", "type": "number", "unit": "°C", "required": true},
+          {"key": "temperature_lower_limit", "label": "Temperature Lower Limit", "type": "number", "unit": "°C", "required": true},
+          {"key": "temperature_range", "label": "Temperature Range", "type": "number", "unit": "°C", "required": true},
+          {"key": "recipe_selection", "label": "Recipe Selection", "type": "text", "required": true},
+          {"key": "upper_temperature_setting", "label": "Upper Temperature Setting", "type": "number", "unit": "°C", "required": true},
+          {"key": "upper_temperature_upper_limit", "label": "Upper Temperature Upper Limit", "type": "number", "unit": "°C", "required": true},
+          {"key": "upper_temperature_lower_limit", "label": "Upper Temperature Lower Limit", "type": "number", "unit": "°C", "required": true},
+          {"key": "deviation_limit_value", "label": "Deviation Limit Value", "type": "number", "columns": ["chamber_2"], "required": true},
+          {"key": "edge_temperature_upper_limit", "label": "Edge Temperature Upper Limit", "type": "number", "unit": "°C", "required": true},
+          {"key": "edge_temperature_lower_limit", "label": "Edge Temperature Lower Limit", "type": "number", "unit": "°C", "required": true}
         ]
       },
       {
@@ -64,25 +65,20 @@
         "title": "Testing details",
         "type": "fields",
         "fields": [
-          {
-            "key": "heating_start_time",
-            "label": "Sample Heating Start Time",
-            "type": "datetime-local",
-            "required": true
-          },
-          {
-            "key": "heating_end_time",
-            "label": "Sample Removal Time",
-            "type": "datetime-local",
-            "required": true
-          }
+          {"key": "heating_start_time", "label": "Sample Heating Start Time", "type": "datetime-local", "required": true},
+          {"key": "heating_end_time", "label": "Sample Removal Time", "type": "datetime-local", "required": true},
+          {"key": "heating_temperature", "label": "Heating Temperature", "type": "number", "unit": "°C", "default": "60", "required": true},
+          {"key": "heating_duration", "label": "Total Sample Heating Time", "type": "number", "unit": "hours", "default": "20", "required": true},
+          {"key": "drying_duration", "label": "Sample Drying Time", "type": "number", "unit": "hours", "default": "4", "required": true},
+          {"key": "drying_temperature", "label": "Drying Temperature in Oven", "type": "number", "unit": "°C", "default": "105", "required": true},
+          {"key": "lamination_cycle_time", "label": "Lamination Cycle Time", "type": "number", "unit": "minutes", "default": "20", "required": true}
         ]
       },
       {
         "id": "samples",
         "title": "Sample readings",
         "type": "gel_samples",
-        "count": 2
+        "count": 5
       }
     ]
   },
@@ -91,7 +87,7 @@
     "description": "Record Front and Back Cell-to-Ribbon peel readings for all six Stringer tracks, with automatic average and N/mm calculations.",
     "document": {
       "title": "Cell To Ribbon Peel Test Report",
-      "document_no": "DEMO/QMS/RIBBON_PEEL/001",
+      "document_no": "QMS/QAD/FM/L3/007",
       "issue_date": "01-02-2026",
       "revision_no": "0",
       "revision_date": "00/00/0000",
@@ -105,69 +101,29 @@
         "title": "Material information",
         "type": "fields",
         "fields": [
-          {
-            "key": "cell_make",
-            "label": "Cell Make",
-            "type": "text",
-            "required": true
-          },
-          {
-            "key": "ribbon_make",
-            "label": "Ribbon Make",
-            "type": "text",
-            "required": true
-          }
+          {"key": "cell_make", "label": "Cell Make", "type": "text", "required": true},
+          {"key": "ribbon_make", "label": "Ribbon Make", "type": "text", "required": true}
         ]
       },
       {
         "id": "peel_readings",
         "title": "Stringer track peel readings",
         "type": "ribbon_peel_matrix",
-        "count": 2,
-        "peaks": 3,
+        "count": 16,
+        "peaks": 7,
         "minimum": 0.8,
         "divisor_mm": 0.24,
         "sides": [
-          {
-            "key": "front",
-            "label": "Front"
-          },
-          {
-            "key": "back",
-            "label": "Back"
-          }
+          {"key": "front", "label": "Front"},
+          {"key": "back", "label": "Back"}
         ],
         "tracks": [
-          {
-            "key": "1a",
-            "label": "1A",
-            "ribbon_width_mm": 0.24
-          },
-          {
-            "key": "1b",
-            "label": "1B",
-            "ribbon_width_mm": 0.24
-          },
-          {
-            "key": "2a",
-            "label": "2A",
-            "ribbon_width_mm": 0.24
-          },
-          {
-            "key": "2b",
-            "label": "2B",
-            "ribbon_width_mm": 0.24
-          },
-          {
-            "key": "3a",
-            "label": "3A",
-            "ribbon_width_mm": 0.24
-          },
-          {
-            "key": "3b",
-            "label": "3B",
-            "ribbon_width_mm": 0.24
-          }
+          {"key": "1a", "label": "1A", "ribbon_width_mm": 0.24},
+          {"key": "1b", "label": "1B", "ribbon_width_mm": 0.24},
+          {"key": "2a", "label": "2A", "ribbon_width_mm": 0.24},
+          {"key": "2b", "label": "2B", "ribbon_width_mm": 0.24},
+          {"key": "3a", "label": "3A", "ribbon_width_mm": 0.24},
+          {"key": "3b", "label": "3B", "ribbon_width_mm": 0.24}
         ]
       }
     ]
@@ -177,7 +133,7 @@
     "description": "Record material lots, laminator recipe, and EVA / EPE adhesion force readings.",
     "document": {
       "title": "Adhesion Test",
-      "document_no": "DEMO/QMS/ADHESION/001",
+      "document_no": "QMS/QC/CS/L3/002",
       "issue_date": "02-01-2026",
       "revision_no": "0",
       "revision_date": "-"
@@ -190,18 +146,13 @@
         "title": "Material and equipment information",
         "type": "fields",
         "fields": [
-          {
-            "key": "front_glass_supplier",
-            "label": "Front Glass Supplier",
-            "type": "text",
-            "required": true
-          },
-          {
-            "key": "front_glass_lot",
-            "label": "Front Glass Lot No.",
-            "type": "text",
-            "required": true
-          }
+          {"key": "front_glass_supplier", "label": "Front Glass Supplier", "type": "text", "required": true},
+          {"key": "front_glass_lot", "label": "Front Glass Lot No.", "type": "text", "required": true},
+          {"key": "eva_poe_supplier", "label": "EVA / POE Supplier", "type": "text", "required": true},
+          {"key": "eva_poe_lot", "label": "EVA / POE Lot No.", "type": "text", "required": true},
+          {"key": "rear_side_supplier", "label": "Rear Side Supplier", "type": "text", "required": true},
+          {"key": "rear_side_lot", "label": "Rear Side Lot No.", "type": "text", "required": true},
+          {"key": "laminator_no", "label": "Laminator No.", "type": "text", "required": true}
         ]
       },
       {
@@ -209,43 +160,32 @@
         "title": "Laminator recipe",
         "type": "matrix",
         "columns": [
-          {
-            "key": "zone_1",
-            "label": "Zone 1"
-          },
-          {
-            "key": "zone_2",
-            "label": "Zone 2"
-          }
+          {"key": "zone_1", "label": "Zone 1"},
+          {"key": "zone_2", "label": "Zone 2"}
         ],
         "rows": [
-          {
-            "key": "set_temperature",
-            "label": "Set Temperature",
-            "type": "number",
-            "unit": "°C",
-            "required": true
-          }
+          {"key": "set_temperature", "label": "Set Temperature", "type": "number", "unit": "°C", "required": true},
+          {"key": "total_vacuum_time", "label": "Total Vacuum Time", "type": "number", "unit": "s", "required": true},
+          {"key": "upper_vacuum_delay", "label": "Upper Vacuum Delay", "type": "number", "unit": "s", "required": true},
+          {"key": "upper_vent_1", "label": "Upper Vent 1", "type": "number", "unit": "kPa", "required": true},
+          {"key": "lamination_1", "label": "Lamination 1", "type": "number", "unit": "s", "required": true},
+          {"key": "upper_vent_2", "label": "Upper Vent 2", "type": "number", "unit": "kPa", "required": true},
+          {"key": "lamination_2", "label": "Lamination 2", "type": "number", "unit": "s", "required": true},
+          {"key": "upper_vent_3", "label": "Upper Vent 3", "type": "number", "unit": "kPa", "required": true},
+          {"key": "lamination_3", "label": "Lamination 3", "type": "number", "unit": "s", "required": true},
+          {"key": "lower_vent_time", "label": "Lower Vent Time", "type": "number", "unit": "s", "required": true},
+          {"key": "lift_pin_time", "label": "Lift Pin Time", "type": "number", "unit": "s", "columns": ["zone_1"], "required": true},
+          {"key": "total_cycle_time", "label": "Total Cycle Time", "type": "number", "unit": "minutes", "required": true}
         ]
       },
       {
         "id": "peel_readings",
         "title": "Peel force readings",
         "type": "adhesion_readings",
-        "count": 2,
+        "count": 4,
         "groups": [
-          {
-            "key": "glass",
-            "label": "EVA / EPE to Glass",
-            "unit": "N/cm",
-            "minimum": 60
-          },
-          {
-            "key": "backsheet",
-            "label": "EVA / EPE to Backsheet",
-            "unit": "N/cm",
-            "minimum": 40
-          }
+          {"key": "glass", "label": "EVA / EPE to Glass", "unit": "N/cm", "minimum": 60},
+          {"key": "backsheet", "label": "EVA / EPE to Backsheet", "unit": "N/cm", "minimum": 40}
         ]
       }
     ]
@@ -255,7 +195,7 @@
     "description": "Record 16 ribbon-to-busbar peel readings with automatic Average and N/mm calculations for each applicable interconnector type.",
     "document": {
       "title": "Ribbon to Busbar Peel Test",
-      "document_no": "DEMO/QMS/BUSBAR_PEEL/001",
+      "document_no": "QMS/QAD/FM/L3/008",
       "issue_date": "02-01-2026",
       "revision_no": "0",
       "revision_date": "-"
@@ -268,45 +208,24 @@
         "title": "Material and machine information",
         "type": "fields",
         "fields": [
-          {
-            "key": "cell_ribbon",
-            "label": "Cell Ribbon (Make / Specification)",
-            "type": "text",
-            "required": true
-          },
-          {
-            "key": "busbar",
-            "label": "Busbar (Make / Specification)",
-            "type": "text",
-            "required": true
-          }
+          {"key": "cell_ribbon", "label": "Cell Ribbon (Make / Specification)", "type": "text", "required": true},
+          {"key": "busbar", "label": "Busbar (Make / Specification)", "type": "text", "required": true},
+          {"key": "autobussing_number", "label": "Autobussing Number", "type": "text", "required": true},
+          {"key": "ribbon_spec", "label": "Ribbon Specification / Interconnector Ribbon / Cell Ribbon", "type": "text", "required": true}
         ]
       },
       {
         "id": "peel_matrix",
         "title": "Ribbon peel readings",
         "type": "busbar_matrix",
-        "count": 3,
+        "count": 16,
         "minimum": 2,
         "divisor_mm": 0.24,
         "rows": [
-          {
-            "key": "long",
-            "label": "Long Busbar Interconnector",
-            "default_enabled": true
-          },
-          {
-            "key": "short",
-            "label": "Short Busbar Interconnector"
-          },
-          {
-            "key": "top",
-            "label": "I Busbar Interconnector Top"
-          },
-          {
-            "key": "bottom",
-            "label": "I Busbar Interconnector Bottom"
-          }
+          {"key": "long", "label": "Long Busbar Interconnector", "default_enabled": true},
+          {"key": "short", "label": "Short Busbar Interconnector"},
+          {"key": "top", "label": "I Busbar Interconnector Top"},
+          {"key": "bottom", "label": "I Busbar Interconnector Bottom"}
         ]
       }
     ]

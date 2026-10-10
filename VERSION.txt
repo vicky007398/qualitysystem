@@ -1,4 +1,4 @@
-Quality System Customer Demo
-Version 1.3.0
+Quality System
+Version 1.4.0
 
-Original QMS interface and workflow, reduced demo fields, generic company branding.
+Full original QMS fields, tables, sample counts and calculations; generic branding; navy theme.

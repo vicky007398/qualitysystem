@@ -1,16 +1,16 @@
-# Your Company QMS — Commercial Demo 1.3.0
+# Your Company QMS — QMS 1.4.0
 
-This independent demo uses the original QMS interface, navigation, tables, approval workflow and PDF formatting. It contains generic company branding and reduced example fields. It does not connect to the Navitas production installation.
+This independent system retains the full forms from `vicky007398/qms`, with generic company branding and the navy, emerald, and cyan theme. It uses its own local database and does not connect to the original installation.
 
 ## Demo scope
 
 - Separate IPQC and CTQ main tabs, summaries, records and daily PDF downloads.
 - The original 36 process stages, plus Basic Information and Review, with the original sliding navigation.
-- One representative parameter in most stages; three small Stringer tables and two recipe parameters across four Laminators.
-- CTQ in order: Gel, Ribbon Peel, Adhesion, Busbar Peel. Reduced sample counts retain the same table layouts, approval controls and calculations.
+- Full IPQC: 166 parameters and 860 observation fields across 36 stages, including all Stringer tables, three chambers across four Laminators, and the HV / IR / Ground Continuity matrix.
+- Full CTQ: five Gel samples; Ribbon Peel with six tracks, both sides, 16 positions and seven peaks; four Adhesion readings per group; 16 Busbar readings per enabled interconnector.
 - Original sidebar, theme switch, account menu, password change, draft deletion and audit history.
-- Light theme is the default; the original dark theme remains selectable.
-- All values and criteria are demonstration content rather than a validated customer specification.
+- Dark navy theme is the default; light mode remains selectable.
+- Field labels, criteria, supplier options, sample counts, and calculations are preserved from the original QMS. Company identifiers use generic QMS branding.
 
 ## Windows
 
@@ -45,4 +45,8 @@ Stop the demo server. Back up its `data` folder, then replace only application f
 
 The new database is `data/commercial-demo.db`. On first startup, an existing `data/qualitysystem.db` is imported without modifying or deleting it. Earlier record values, accounts and audit history are retained. No production database or production QMS environment variables are used.
 
-Earlier drafts can be updated using the new reduced form, which requires the current demo fields before resubmission.
+Existing records retain their saved values. Earlier reduced drafts must have the restored required fields completed before submission.
+
+## Validation
+
+Run `.venv/bin/python tools/smoke_test.py` from the project directory. The suite uses a temporary database and checks full IPQC fields, CTQ calculations and submissions, approvals, access controls, dashboards, and PDFs.

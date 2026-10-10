@@ -121,7 +121,7 @@
         <label>Production date<input type="date" name="day" value="{{ record.day }}" required></label>
         <label>Shift<select name="shift" required>{% for s in ['A','B','C'] %}<option value="{{ s }}" {% if record.shift==s %}selected{% endif %}>Shift {{ s }}</option>{% endfor %}</select></label>
         <label>Line<input name="line" value="{{ record.line }}" maxlength="100" required></label>
-        <label>Machine / test location<input name="machine" value="{{ record.machine }}" maxlength="150" required placeholder="e.g. Line 1 shop floor"></label>
+        <label>Machine / test location<input name="machine" value="{{ record.machine }}" maxlength="150" required placeholder="e.g. Line 3 shop floor"></label>
         <label>Inspection time<input type="datetime-local" name="inspection_time" value="{{ record.inspection_time }}" required></label>
         <label>Shift incharge<select name="approver" required><option value="">Select incharge</option>{% for p in approvers %}<option value="{{ p['id'] }}" {% if record.approver|string==p['id']|string %}selected{% endif %}>{{ p['name'] }} · {{ p['employee'] }}</option>{% endfor %}</select></label>
         {% if kind=='ipqc' %}
@@ -188,7 +188,7 @@
         <div class="laminator-matrix-group" data-ipqc-item="{{ item.id }}" data-source-row="{{ item.source_row }}">
           <div class="matrix-heading"><div><span>Four-laminator matrix</span><h3>{{ item.parameter }}</h3><p>{{ item.acceptance }}</p></div><em>{{ item.frequency }}</em></div>
           <div class="laminator-chamber-stack">
-          {% for chamber in ['Chamber 1'] %}
+          {% for chamber in ['Chamber 1','Chamber 2','Chamber 3'] %}
             <article class="matrix-card laminator-matrix-card">
               <div class="laminator-chamber-title"><span>{{ chamber }}</span><small>Recipe parameters</small></div>
               <div class="matrix-scroll"><table class="stringer-matrix laminator-matrix"><thead><tr><th>Parameter</th>{% for observation in item.observations %}<th>{{ observation.label }}</th>{% endfor %}</tr></thead><tbody>
@@ -201,7 +201,7 @@
         {% endfor %}
       {% else %}
         {% for item in section['items'] %}{% set saved = saved_rows.get(item.id,{}) %}
-          {{ standard_ipqc_item(item,saved,material_options,loop.index) }}
+          {% if item.id == 'R183' %}{{ hv_matrix_item(item,saved,material_options,loop.index) }}{% else %}{{ standard_ipqc_item(item,saved,material_options,loop.index) }}{% endif %}
         {% endfor %}
       {% endif %}
       <div class="step-actions"><button type="button" class="button ghost" data-back>Back</button><button type="submit" name="action" value="draft" class="button secondary">Save draft</button><button type="button" class="button primary" data-next>Next</button></div>
@@ -232,4 +232,3 @@
   </section>
 </form>
 {% endblock %}
-
