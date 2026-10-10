@@ -481,6 +481,11 @@ def init_db():
             db().execute("ALTER TABLE users ADD COLUMN theme_color TEXT NOT NULL DEFAULT 'red'")
         if 'theme_mode' not in user_columns:
             db().execute("ALTER TABLE users ADD COLUMN theme_mode TEXT NOT NULL DEFAULT 'dark'")
+        if 'appearance' not in user_columns:
+            db().execute("ALTER TABLE users ADD COLUMN appearance TEXT NOT NULL DEFAULT 'midnight'")
+            db().execute("""UPDATE users SET appearance=CASE theme_color
+                WHEN 'blue' THEN 'ocean' WHEN 'green' THEN 'emerald' WHEN 'purple' THEN 'plum'
+                ELSE CASE theme_mode WHEN 'light' THEN 'daylight' ELSE 'midnight' END END""")
         # Employee 0001 is the single, fixed user-management custodian.  Keeping
         # this as a flag preserves the existing role CHECK and all report FKs.
         db().execute("UPDATE users SET is_superuser=CASE WHEN employee='0001' THEN 1 ELSE 0 END")
@@ -537,7 +542,7 @@ def security():
     uid = session.get('uid')
     if uid is not None:
         g.user = db().execute(
-            'SELECT id,employee,name,password,role,active,is_superuser,theme_color,theme_mode FROM users WHERE id=? AND active=1',
+            'SELECT id,employee,name,password,role,active,is_superuser,theme_color,theme_mode,appearance FROM users WHERE id=? AND active=1',
             (uid,),
         ).fetchone()
     session.setdefault('csrf', secrets.token_urlsafe(32))
@@ -582,15 +587,13 @@ def helpers():
 @require()
 def appearance():
     if request.method == 'POST':
-        color = request.form.get('theme_color', g.user['theme_color'])
-        mode = request.form.get('theme_mode', g.user['theme_mode'])
-        if color not in ('red', 'blue', 'green', 'purple') or mode not in ('light', 'dark'):
-            abort(400, 'Choose a supported theme colour and mode.')
+        selected = request.form.get('appearance', '').strip().lower()
+        if selected not in ('midnight', 'daylight', 'ocean', 'emerald', 'plum', 'amber'):
+            abort(400, 'Choose a supported appearance.')
         with db():
-            db().execute('UPDATE users SET theme_color=?,theme_mode=? WHERE id=?',
-                         (color, mode, g.user['id']))
+            db().execute('UPDATE users SET appearance=? WHERE id=?', (selected, g.user['id']))
         flash('Your appearance settings have been saved.')
-        return redirect(url_for('appearance'))
+        return redirect(url_for('home') if request.form.get('from_menu') else url_for('appearance'))
     return render_template('appearance.html')
 
 @app.route('/login', methods=['GET', 'POST'])

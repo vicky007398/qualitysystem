@@ -1,35 +1,28 @@
 (() => {
   const root = document.documentElement;
-  const savedTheme = localStorage.getItem('commercial-demo-theme');
-  const systemTheme = 'dark';
   const themeMeta = document.querySelector('[data-theme-color]');
   const themeButtons = [...document.querySelectorAll('[data-theme-toggle]')];
-  function applyTheme(theme) {
-    root.dataset.theme = theme;
-    if (themeMeta) themeMeta.content = theme === 'dark' ? '#10192b' : '#f7f9fc';
-    themeButtons.forEach(button => {
-      button.textContent = theme === 'dark' ? '☀' : '◐';
-      button.setAttribute('aria-label', theme === 'dark' ? 'Use light theme' : 'Use dark theme');
-      button.setAttribute('title', theme === 'dark' ? 'Use light theme' : 'Use dark theme');
-    });
+  const appearanceColours = {midnight: '#0d1117', daylight: '#f4f6fa', ocean: '#eef8fc', emerald: '#eff9f3', plum: '#f7f2fb', amber: '#fff8ec'};
+  function applyGuestAppearance(appearance) {
+    root.dataset.appearance = appearance;
+    root.dataset.theme = appearance === 'midnight' ? 'dark' : 'light';
+    if (themeMeta) themeMeta.content = appearanceColours[appearance] || appearanceColours.midnight;
   }
-  applyTheme(root.dataset.accountTheme || savedTheme || systemTheme);
-  themeButtons.forEach(button => button.addEventListener('click', () => {
-    const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('commercial-demo-theme', theme);
-    applyTheme(theme);
-    if (root.dataset.accountTheme) {
-      const csrf = document.querySelector('input[name="csrf"]')?.value;
-      fetch('/appearance', {
-        method: 'POST',
-        body: new URLSearchParams({csrf, theme_mode: theme}),
-      }).then(response => {
-        if (!response.ok) throw new Error('Theme save failed');
-        root.dataset.accountTheme = theme;
-      }).catch(() => {
-        applyTheme(root.dataset.accountTheme);
-        window.alert('Your display mode could not be saved. Please try Appearance & colours in your account menu.');
-      });
+  if (root.dataset.appearanceOwner) {
+    if (themeMeta) themeMeta.content = appearanceColours[root.dataset.appearance] || appearanceColours.midnight;
+  } else {
+    let saved; try { saved = localStorage.getItem('qms-theme:guest'); } catch (_) {}
+    applyGuestAppearance(saved || root.dataset.appearance || 'midnight');
+  }
+  themeButtons.forEach(button => button.addEventListener('click', event => {
+    if (root.dataset.appearanceOwner) {
+      event.stopPropagation();
+      const menu = document.querySelector('[data-account-menu]');
+      if (menu) { menu.hidden = false; document.querySelector('[data-menu-toggle]')?.setAttribute('aria-expanded','true'); }
+    } else {
+      const appearance = root.dataset.appearance === 'midnight' ? 'daylight' : 'midnight';
+      try { localStorage.setItem('qms-theme:guest', appearance); } catch (_) {}
+      applyGuestAppearance(appearance);
     }
   }));
   const sidebarToggle = document.querySelector('[data-sidebar-toggle]');

@@ -1,15 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}Appearance · Company QMS{% endblock %}
 {% block content %}
-<div class="page-heading"><div><p class="eyebrow">YOUR ACCOUNT</p><h1>Make it yours</h1><p class="muted">Choose your colour and display mode. Your settings follow your account on every device.</p></div></div>
-<form method="post" class="panel form-stack appearance-form">
-  <input type="hidden" name="csrf" value="{{ csrf }}">
-  <fieldset class="colour-options"><legend>Theme colour</legend>
-    {% for colour in ['red','blue','green','purple'] %}
-    <label class="colour-option"><input type="radio" name="theme_color" value="{{ colour }}" {% if user['theme_color']==colour %}checked{% endif %}><span class="colour-swatch swatch-{{ colour }}" aria-hidden="true"></span>{{ colour|title }}</label>
-    {% endfor %}
-  </fieldset>
-  <label>Display mode<select name="theme_mode"><option value="dark" {% if user['theme_mode']=='dark' %}selected{% endif %}>Dark</option><option value="light" {% if user['theme_mode']=='light' %}selected{% endif %}>Light</option></select></label>
-  <div class="action-row"><button class="button primary" type="submit">Save appearance</button><a class="button ghost" href="{{ url_for('home') }}">Back to dashboard</a></div>
-</form>
+<div class="page-heading"><div><p class="eyebrow">YOUR ACCOUNT</p><h1>Appearance</h1><p class="muted">Choose the same appearance presets as the original QMS. Only your account changes.</p></div></div>
+<section class="panel appearance-form">
+ <div class="appearance-options">
+ {% for key,label in [('midnight','Midnight'),('daylight','Daylight'),('ocean','Ocean'),('emerald','Emerald'),('plum','Plum'),('amber','Amber')] %}
+ <form method="post"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit" name="appearance" value="{{ key }}" class="appearance-option appearance-{{ key }}{% if user['appearance']==key %} selected{% endif %}" aria-pressed="{{ 'true' if user['appearance']==key else 'false' }}"><i aria-hidden="true"></i><span>{{ label }}</span></button></form>
+ {% endfor %}
+ </div>
+ <p class="muted">Saved to your account and available on every device.</p>
+ <a class="button ghost" href="{{ url_for('home') }}">Back to dashboard</a>
+</section>
 {% endblock %}
