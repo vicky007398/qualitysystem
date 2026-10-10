@@ -1,0 +1,52 @@
+/* Reference theme: navy workspace, emerald/cyan accents, locally hosted Inter. */
+@font-face{font-family:Inter;src:url('InterVariable.woff2') format('woff2');font-weight:100 900;font-display:swap}
+:root{--bg:#f7f9fc;--card:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0;--navy:#0d1e3a;--blue:#2154ed;--teal:#0d9488;--green:#059669;--amber:#d97706;--red:#e11d48;--gold:#0d9488;--soft-blue:#eff5ff;--radius:18px;--shadow:0 2px 3px rgba(15,23,42,.06);--font-ui:Inter,Arial,sans-serif;--font-display:var(--font-ui);--font-data:var(--font-ui)}
+[data-theme="dark"]{--bg:#10192b;--card:#182338;--text:#f1f5f9;--muted:#a0aec2;--line:#334155;--navy:#0d1729;--blue:#38bdf8;--teal:#2dd4bf;--green:#34d399;--amber:#fbbf24;--red:#fb7185;--gold:#2dd4bf;--soft-blue:#1c3045;--shadow:0 4px 18px rgba(3,10,22,.16)}
+html,body,body *,button,input,select,textarea,option{font-family:var(--font-ui)!important}
+html{background:var(--bg)}body{background:var(--bg);font-size:14px;-webkit-font-smoothing:antialiased}
+[data-theme="dark"] body{background-image:linear-gradient(rgba(148,163,184,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.025) 1px,transparent 1px);background-size:28px 28px}
+h1,h2,h3,h4,h5,h6,.portal-hero h1,.report-tile strong,.section-head h2,.matrix-heading h3{font-family:var(--font-ui)!important;font-weight:700;letter-spacing:-.025em}
+.page h1{font-size:clamp(28px,3vw,38px)}.page h2{font-size:20px}.page h3{font-size:15px}
+.eyebrow,.tile-number,.parameter-strip span,.matrix-heading>div>span,.signature-panel span{font-family:var(--font-ui)!important;color:var(--muted);font-weight:600;letter-spacing:.075em}
+.topbar,.authenticated .topbar{background:var(--card);border-color:var(--line);height:68px;backdrop-filter:none}
+.desktop-user strong{color:var(--text)}.desktop-user span{color:var(--muted)}
+.icon-button,.sidebar-toggle{background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:11px;box-shadow:none}.avatar{background:var(--soft-blue);color:var(--teal);border:1px solid var(--line)}
+.button{border-radius:11px;font-weight:600}.button.primary,.primary{background:#2154ed;color:#fff;box-shadow:0 2px 3px rgba(33,84,237,.18)}
+[data-theme="dark"] .button.primary,[data-theme="dark"] .primary{background:#00ad83;color:#fff;box-shadow:0 6px 22px rgba(0,173,131,.16)}
+.button.secondary,.secondary,.ghost{background:var(--card);border:1px solid var(--line);color:var(--text);box-shadow:none}
+.button.success,.success{background:#059669;color:white}
+input,select,textarea{border-radius:9px;background:var(--card);font-weight:400}input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 18%,transparent);border-color:var(--teal)}
+.panel,.form-card,.review-panel,.module-panel,.stat,.report-tile,.detail-section,.signature-panel,.generic-row,.check-card,.matrix-card{border-radius:var(--radius);border-color:var(--line);box-shadow:var(--shadow)}
+.portal-hero{background:transparent;border:0;box-shadow:none;border-radius:0;padding:12px 0 20px;color:var(--text)}
+.portal-hero::before,.portal-hero::after{display:none}.portal-hero h1{color:var(--text)}.portal-hero .eyebrow{color:var(--muted)}.portal-hero>p:not(.eyebrow){color:var(--muted);font-size:14px;line-height:1.7}.portal-hero .ghost{background:var(--card);color:var(--text);border-color:var(--line)}
+[data-theme="dark"] .portal-hero h1{background:linear-gradient(100deg,#f1f5f9 12%,#00d6a3 48%,#22bdf5 90%);background-clip:text;-webkit-background-clip:text;color:transparent}
+.module-panel{padding:24px}.module-panel .report-tile{padding:18px;background:var(--card);border:1px solid var(--line)}.module-panel .report-tile strong{font-size:15px}.module-panel .report-tile>span:nth-of-type(2){font-size:12px}.tile-icon{background:var(--soft-blue);color:var(--teal);border:1px solid var(--line)}
+.status-grid{gap:14px}.status-grid .stat{min-height:115px;padding:20px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);border-radius:18px;flex-direction:column;align-items:flex-start;gap:14px}.stat::after{display:none}.status-grid .stat strong{font-size:30px;color:var(--text);font-variant-numeric:tabular-nums}.status-grid .stat span{font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.dashboard-heading{border:0;padding-left:0;margin-top:28px}.module-tabs{background:var(--card);border-color:var(--line);border-radius:12px}.module-tabs a{font-size:12px;border-radius:9px}.module-tabs a.active{background:var(--soft-blue);color:var(--blue)}
+.section-head,.detail-section summary,.matrix-heading,.ribbon-side-heading{background:var(--soft-blue);color:var(--text);border-color:var(--line);box-shadow:none}.section-head h2,.section-head span,.section-head p,.matrix-heading>div>span,.ribbon-side-heading span{color:var(--muted)}.section-head h2,.matrix-heading h3{color:var(--text)}
+.matrix-card thead th,.ctq-busbar-table thead th:first-child,.ctq-ribbon-table thead th:first-child{background:var(--soft-blue);color:var(--muted);border-color:var(--line)}.matrix-card th{letter-spacing:.025em}.matrix-card td{border-color:var(--line)}
+.badge{font-weight:600;border:1px solid transparent}.status-approved,.status-approved-with-remarks{color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--card));border-color:color-mix(in srgb,var(--green) 28%,var(--line))}.status-pending-approval{color:var(--amber);background:color-mix(in srgb,var(--amber) 10%,var(--card));border-color:color-mix(in srgb,var(--amber) 28%,var(--line))}
+.login-card{border-radius:20px;background:var(--card)}.login-card h2{color:var(--text)}.login-message h1{font-weight:750;letter-spacing:-.04em}
+@media(min-width:1000px){
+ .desktop-sidebar,[data-theme="dark"] .desktop-sidebar{width:220px;padding:20px 12px;background:#0d1e3a;border-right:1px solid #22334e;box-shadow:none}
+ .authenticated .topbar{margin-left:220px;height:68px;padding-inline:28px}.authenticated .page{margin-left:220px;padding:26px 30px 60px}
+ .sidebar-brand{height:auto;min-height:55px;margin:0 4px 32px;padding:0;display:flex;gap:10px;background:transparent;box-shadow:none;border:0;justify-content:flex-start}
+ .sidebar-brand .sidebar-brand-mark{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:11px;background:#2154ed;color:white;font-size:20px;letter-spacing:0}
+ .sidebar-brand .sidebar-brand-copy{display:flex;flex-direction:column;gap:5px;letter-spacing:0;text-align:left}.sidebar-brand-copy strong{font-size:14px;color:#f1f5f9}.sidebar-brand-copy small{font-size:10px;font-weight:400;color:#94a3b8}
+ .sidebar-nav{gap:7px}.sidebar-nav a,[data-theme="dark"] .sidebar-nav a{min-height:42px;padding:9px 10px;border-radius:10px;font-size:12px;color:#a8b7cd}
+ .sidebar-nav a:hover,[data-theme="dark"] .sidebar-nav a:hover{background:#1b2e4a;color:white}.sidebar-nav a.active,[data-theme="dark"] .sidebar-nav a.active{background:#2154ed;color:white;box-shadow:none}
+ .sidebar-nav a .nav-icon,[data-theme="dark"] .sidebar-nav a .nav-icon{background:transparent;border:0;color:inherit;flex-basis:22px;width:22px;height:22px;font-size:17px}
+ .sidebar-footer{padding:16px;border:1px solid #2c3c55;border-radius:16px;background:#182a45;color:#94a3b8}.sidebar-footer strong{color:#e2e8f0}
+ .stepper{top:68px}
+}
+@media(max-width:999px){.stepper{top:68px}.module-panel{padding:18px}.status-grid .stat{padding:16px;min-height:100px}.portal-hero{padding:10px 0 18px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
+/* Keep the toolbar visible and aligned with the sidebar. */
+@media(min-width:1000px){
+ .authenticated .topbar{position:sticky;left:auto;right:auto;top:0;transform:none;margin-left:220px}
+ .authenticated .topbar::after{display:none}
+ .authenticated.sidebar-collapsed .topbar,.authenticated.sidebar-collapsed .page{margin-left:0}
+}
+/* Supersede the earlier monospace heading rules, including specific page headings. */
+.page h1,.page h2,.page h3,.panel-heading h2,.dashboard-heading h2,.check-title h3,.read-check-head h3,.detail-section summary strong,.login-card h2,.login-message h1{font-family:var(--font-ui)!important}
+@media(min-width:1000px){.authenticated .stepper,.authenticated .dashboard-module-tabs{top:68px}}

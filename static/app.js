@@ -1,12 +1,12 @@
 (() => {
   const root = document.documentElement;
   const savedTheme = localStorage.getItem('commercial-demo-theme');
-  const systemTheme = 'light';
+  const systemTheme = 'dark';
   const themeMeta = document.querySelector('[data-theme-color]');
   const themeButtons = [...document.querySelectorAll('[data-theme-toggle]')];
   function applyTheme(theme) {
     root.dataset.theme = theme;
-    if (themeMeta) themeMeta.content = theme === 'dark' ? '#0d1117' : '#f4f6fa';
+    if (themeMeta) themeMeta.content = theme === 'dark' ? '#10192b' : '#f7f9fc';
     themeButtons.forEach(button => {
       button.textContent = theme === 'dark' ? '☀' : '◐';
       button.setAttribute('aria-label', theme === 'dark' ? 'Use light theme' : 'Use dark theme');
