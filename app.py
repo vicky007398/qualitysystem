@@ -17,8 +17,8 @@ from flask import Flask, abort, flash, g, redirect, render_template, request, se
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # PyInstaller places bundled templates, static files, definitions and PDF assets in
-# ``sys._MEIPASS`` while a one-file executable is running.  Development installs
-# continue to use the project directory.  The writable database is deliberately
+# ``sys._MEIPASS`` while a one-file executable is running. Development installs
+# continue to use the project directory. The writable database is deliberately
 # outside the executable so an application update never replaces company records.
 SOURCE_ROOT = Path(__file__).resolve().parent
 FROZEN = bool(getattr(sys, 'frozen', False))
@@ -41,15 +41,23 @@ if not key_file.exists():
         key_file.chmod(0o600)
     except FileExistsError:
         pass
+
+COMPANY_NAME = os.environ.get('QMS_COMPANY_NAME', 'SolarQMS Enterprise')
+COMPANY_SHORT = os.environ.get('QMS_COMPANY_SHORT', 'SOLAR QMS')
+
 app = Flask(
     __name__,
     template_folder=str(ROOT / 'templates'),
     static_folder=str(ROOT / 'static'),
 )
-app.config.update(SECRET_KEY=key_file.read_text().strip(), MAX_CONTENT_LENGTH=26 * 1024 * 1024,
-                  SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax',
-                  SESSION_COOKIE_SECURE=os.environ.get('QUALITYSYSTEM_HTTPS') == '1',
-                  PERMANENT_SESSION_LIFETIME=timedelta(hours=8))
+app.config.update(
+    SECRET_KEY=key_file.read_text().strip(),
+    MAX_CONTENT_LENGTH=26 * 1024 * 1024,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=os.environ.get('QUALITYSYSTEM_HTTPS') == '1',
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
+)
 IST = timezone(timedelta(hours=5, minutes=30))
 CTQ_DEF = json.loads((ROOT / 'definitions' / 'ctq_revision_1.json').read_text(encoding='utf-8'))
 FORMS = {
@@ -59,13 +67,13 @@ FORMS = {
     'adhesion': (CTQ_DEF['adhesion']['name'], []),
     'busbar_peel': (CTQ_DEF['busbar_peel']['name'], []),
     # These two kinds are retained only so previously saved reports remain readable.
-    'stringer': ('Stringer Parameter Report', ['Parameter','Reading']),
+    'stringer': ('Stringer Parameter Report', ['Parameter', 'Reading']),
     'peel': ('Peel Test', ['Sample ID', 'Test position', 'Peel strength (N)', 'Acceptance criteria', 'Remarks']),
     'datapaq': ('DataPAQ Test', ['Profile ID', 'Sensor / channel', 'Minimum temperature (°C)', 'Maximum temperature (°C)', 'Duration (s)', 'Remarks']),
 }
 CTQ_KINDS = tuple(CTQ_DEF)
 ACTIVE_KINDS = ('ipqc', *CTQ_KINDS)
-MODULE_KINDS = {'ipqc': ('ipqc','stringer'), 'ctq': CTQ_KINDS}
+MODULE_KINDS = {'ipqc': ('ipqc', 'stringer'), 'ctq': CTQ_KINDS}
 FORM_DESCRIPTIONS = {
     'ipqc': 'Record the controlled in-process inspection checksheet.',
     **{key: definition['description'] for key, definition in CTQ_DEF.items()},
@@ -112,6 +120,7 @@ CTQ_MATERIAL_OPTIONS = {
     },
 }
 
+
 def observation_unit(parameter, field):
     """Return the display unit for dimensional observation values."""
     parameter_text = str(parameter or '').casefold()
@@ -128,6 +137,7 @@ def observation_unit(parameter, field):
         return 'mm'
     return ''
 
+
 def display_observation_value(parameter, field, value):
     value = str(value or '').strip()
     if not value:
@@ -135,16 +145,20 @@ def display_observation_value(parameter, field, value):
     unit = observation_unit(parameter, field)
     return value if not unit or value.casefold().endswith(unit.casefold()) else f'{value} {unit}'
 
+
 def ribbon_not_required(track, position, peak):
     """Return whether a controlled Ribbon Peel cell is marked NR in the source workbook."""
     rule = track.get('not_required', {})
     return position in rule.get('positions', []) and peak in rule.get('peaks', [])
 
+
 def ribbon_peak_key(track, side, position, peak):
     return f"rp_{track}_{side}_s{position}_p{peak}"
 
+
 def ribbon_calculation_key(track, side, position, suffix):
     return f"rp_{track}_{side}_s{position}_{suffix}"
+
 
 def ctq_field_map(kind):
     """Return every stored CTQ value key with its controlled field definition."""
@@ -196,6 +210,7 @@ def ctq_field_map(kind):
                             }
     return fields
 
+
 def ctq_default_values(kind):
     values = {}
     for key, field in ctq_field_map(kind).items():
@@ -208,6 +223,7 @@ def ctq_default_values(kind):
                     values[f"{row['key']}_enabled"] = '1'
     return values
 
+
 def clean_number(value, label, positive=False):
     try:
         number = float(value)
@@ -217,8 +233,10 @@ def clean_number(value, label, positive=False):
         raise ValueError(f'Enter a valid positive number for {label}.' if positive else f'Enter a valid number for {label}.')
     return number
 
+
 def display_number(value):
     return f'{value:.3f}'.rstrip('0').rstrip('.')
+
 
 def prepare_ctq_payload(kind, submitted, action):
     """Whitelist, validate, and calculate the controlled CTQ form payload."""
@@ -368,6 +386,7 @@ def prepare_ctq_payload(kind, submitted, action):
     }
     return payload, result
 
+
 def refreshed_ctq_payload(kind, payload):
     """Apply the current peel calculations for display without rewriting stored records."""
     if kind not in ('ribbon_peel', 'busbar_peel') or not isinstance(payload, dict):
@@ -382,14 +401,17 @@ def refreshed_ctq_payload(kind, payload):
     refreshed['calculated'] = recalculated.get('calculated', {})
     return refreshed
 
+
 def now():
     return datetime.now(IST).isoformat(timespec='seconds')
+
 
 def production_defaults(moment=None):
     moment = moment or datetime.now(IST)
     hour = moment.hour
     return ((moment - timedelta(days=1) if hour < 6 else moment).date().isoformat(),
             'A' if 6 <= hour < 14 else 'B' if 14 <= hour < 22 else 'C')
+
 
 def db():
     if 'db' not in g:
@@ -401,11 +423,13 @@ def db():
         g.db.execute('PRAGMA temp_store=MEMORY')
     return g.db
 
+
 @app.teardown_appcontext
 def close_db(error=None):
     con = g.pop('db', None)
     if con is not None:
         con.close()
+
 
 def import_previous_demo():
     """Read previous demo records once, leaving their source database untouched."""
@@ -423,31 +447,32 @@ def import_previous_demo():
         with db():
             for user in source.execute('SELECT * FROM users'):
                 db().execute('INSERT INTO users(id,employee,name,password,role,active,is_superuser) VALUES (?,?,?,?,?,?,?)',
-                             (user['id'],user['employee'],user['name'],user['password'],user['role'],user['active'],int(user['employee']=='0001')))
+                             (user['id'], user['employee'], user['name'], user['password'], user['role'], user['active'], int(user['employee'] == '0001')))
             for report in source.execute('SELECT * FROM reports'):
                 old = json.loads(report['payload'])
                 values = old.get('values', {})
                 definition = old.get('definition', {})
-                labels = ['Parameter','Reading']
+                labels = ['Parameter', 'Reading']
                 readings = []
                 field_labels = {f['key']: f.get('label', f['key']) for sec in definition.get('sections', []) for f in sec.get('fields', [])}
-                for key,value in values.items():
-                    readings.append({'Parameter': field_labels.get(key,key.replace('_',' ').title()), 'Reading': str(value), 'Result': report['result']})
-                for key,value in old.get('calculations', {}).items():
-                    readings.append({'Parameter': key.replace('_',' ').title(), 'Reading': str(value), 'Result': report['result']})
-                payload = {'form_version':'Previous demo record', 'labels':labels, 'rows':readings,
-                           'metadata':{'customer_name':report['customer'],'production_order':report['reference']},
-                           'legacy_source':old}
+                for key, value in values.items():
+                    readings.append({'Parameter': field_labels.get(key, key.replace('_', ' ').title()), 'Reading': str(value), 'Result': report['result']})
+                for key, value in old.get('calculations', {}).items():
+                    readings.append({'Parameter': key.replace('_', ' ').title(), 'Reading': str(value), 'Result': report['result']})
+                payload = {'form_version': 'Previous demo record', 'labels': labels, 'rows': readings,
+                           'metadata': {'customer_name': report['customer'], 'production_order': report['reference']},
+                           'legacy_source': old}
                 timestamp = report['created'][:16]
                 db().execute('INSERT INTO reports(id,kind,day,shift,line,machine,inspection_time,owner,approver,status,result,payload,remarks,version,created,updated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                             (report['id'],report['kind'],report['day'],report['shift'],report['line'],report['reference'] or 'Demo floor',timestamp,
-                              report['owner'],report['approver'],states.get(report['status'],report['status']),report['result'],json.dumps(payload),
-                              report['remarks'],report['version'],report['created'],report['updated']))
+                             (report['id'], report['kind'], report['day'], report['shift'], report['line'], report['reference'] or 'Demo floor', timestamp,
+                              report['owner'], report['approver'], states.get(report['status'], report['status']), report['result'], json.dumps(payload),
+                              report['remarks'], report['version'], report['created'], report['updated']))
             for event in source.execute('SELECT * FROM history'):
                 db().execute('INSERT INTO history(id,report,actor,action,comment,snapshot,time) VALUES (?,?,?,?,?,?,?)',
-                             (event['id'],event['report'],event['actor'],states.get(event['action'],event['action']),event['comment'],'{}',event['time']))
+                             (event['id'], event['report'], event['actor'], states.get(event['action'], event['action']), event['comment'], '{}', event['time']))
     finally:
         source.close()
+
 
 def init_db():
     with app.app_context():
@@ -486,27 +511,27 @@ def init_db():
             db().execute("""UPDATE users SET appearance=CASE theme_color
                 WHEN 'blue' THEN 'ocean' WHEN 'green' THEN 'emerald' WHEN 'purple' THEN 'plum'
                 ELSE CASE theme_mode WHEN 'light' THEN 'daylight' ELSE 'midnight' END END""")
-        # Employee 0001 is the single, fixed user-management custodian.  Keeping
-        # this as a flag preserves the existing role CHECK and all report FKs.
         db().execute("UPDATE users SET is_superuser=CASE WHEN employee='0001' THEN 1 ELSE 0 END")
         db().execute("UPDATE users SET active=1 WHERE employee='0001'")
         import_previous_demo()
         if not db().execute('SELECT 1 FROM users LIMIT 1').fetchone():
             demo_password = generate_password_hash('Demo123')
             db().executemany('INSERT INTO users(employee,name,password,role,is_superuser) VALUES (?,?,?,?,?)', [
-                ('OP100','Demo Operator',demo_password,'operator',0),
-                ('IC100','Demo Incharge',demo_password,'incharge',0),
-                ('AD100','Demo Administrator',demo_password,'admin',0),
-                ('0001','Demo Super User',demo_password,'admin',1),
+                ('OP100', 'Demo Operator', demo_password, 'operator', 0),
+                ('IC100', 'Demo Incharge', demo_password, 'incharge', 0),
+                ('AD100', 'Demo Administrator', demo_password, 'admin', 0),
+                ('0001', 'Demo Super User', demo_password, 'admin', 1),
             ])
         if not db().execute("SELECT 1 FROM users WHERE employee='0001'").fetchone():
             db().execute('INSERT INTO users(employee,name,password,role,is_superuser) VALUES (?,?,?,?,1)',
-                         ('0001','Demo Super User',generate_password_hash('Demo123'),'admin'))
+                         ('0001', 'Demo Super User', generate_password_hash('Demo123'), 'admin'))
         db().commit()
+
 
 def is_superuser(person=None):
     person = person if person is not None else g.user
     return bool(person and (person['employee'] == '0001' or person['is_superuser']))
+
 
 def require(*roles):
     def wrap(fn):
@@ -522,6 +547,7 @@ def require(*roles):
         return inner
     return wrap
 
+
 def require_superuser(fn):
     @wraps(fn)
     def inner(*args, **kwargs):
@@ -532,11 +558,11 @@ def require_superuser(fn):
         return fn(*args, **kwargs)
     return inner
 
+
 @app.before_request
 def security():
     g.request_started = time.perf_counter()
     g.user = None
-    # Static assets never need a database connection or a session cookie.
     if request.endpoint == 'static':
         return None
     uid = session.get('uid')
@@ -549,21 +575,22 @@ def security():
     if request.method == 'POST' and not secrets.compare_digest(request.form.get('csrf', ''), session['csrf']):
         abort(400, 'Session expired or invalid form token. Reload the page and try again.')
 
+
 @app.after_request
 def headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Referrer-Policy'] = 'same-origin'
     response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; style-src 'self'; "
+        "default-src 'self'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
         "script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; "
         "connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; "
         "worker-src 'self' blob:; child-src 'self' blob:; "
         "img-src 'self' data: blob:; form-action 'self'; frame-ancestors 'none'"
     )
     if request.endpoint == 'static':
-        # Versioned CSS/JS can remain cached for a year. Other images and icons
-        # receive a one-day cache while still allowing routine replacements.
         response.headers['Cache-Control'] = (
             'public, max-age=31536000, immutable' if request.args.get('v')
             else 'public, max-age=86400'
@@ -575,13 +602,17 @@ def headers(response):
         response.headers['Server-Timing'] = f'qms;dur={(time.perf_counter()-started)*1000:.1f}'
     return response
 
+
 @app.context_processor
 def helpers():
-    return dict(forms=FORMS, csrf=session.get('csrf'), user=g.user, approved=APPROVED,
-                ctq_kinds=CTQ_KINDS, form_descriptions=FORM_DESCRIPTIONS,
-                ctq_definitions=CTQ_DEF, ctq_material_options=CTQ_MATERIAL_OPTIONS,
-                observation_unit=observation_unit, display_observation_value=display_observation_value,
-                is_superuser=is_superuser)
+    return dict(
+        forms=FORMS, csrf=session.get('csrf'), user=g.user, approved=APPROVED,
+        ctq_kinds=CTQ_KINDS, form_descriptions=FORM_DESCRIPTIONS,
+        ctq_definitions=CTQ_DEF, ctq_material_options=CTQ_MATERIAL_OPTIONS,
+        observation_unit=observation_unit, display_observation_value=display_observation_value,
+        is_superuser=is_superuser, company_name=COMPANY_NAME, company_short=COMPANY_SHORT,
+    )
+
 
 @app.route('/appearance', methods=['GET', 'POST'])
 @require()
@@ -596,29 +627,35 @@ def appearance():
         return redirect(url_for('home') if request.form.get('from_menu') else url_for('appearance'))
     return render_template('appearance.html')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         employee = request.form.get('employee', '').strip()[:80]
         attempt = db().execute('SELECT * FROM attempts WHERE employee=?', (employee,)).fetchone()
-        if attempt and attempt['count'] >= 5 and datetime.fromisoformat(attempt['time']) > datetime.now(IST)-timedelta(minutes=15):
+        if attempt and attempt['count'] >= 5 and datetime.fromisoformat(attempt['time']) > datetime.now(IST) - timedelta(minutes=15):
             flash('Too many attempts. Wait 15 minutes before trying again.')
             return render_template('login.html'), 429
         person = db().execute('SELECT * FROM users WHERE employee=? AND active=1', (employee,)).fetchone()
         if person and check_password_hash(person['password'], request.form.get('password', '')):
-            db().execute('DELETE FROM attempts WHERE employee=?', (employee,)); db().commit()
-            session.clear(); session.update(uid=person['id'], csrf=secrets.token_urlsafe(32))
+            db().execute('DELETE FROM attempts WHERE employee=?', (employee,))
+            db().commit()
+            session.clear()
+            session.update(uid=person['id'], csrf=secrets.token_urlsafe(32))
             session.permanent = True
             return redirect(url_for('home'))
-        count = attempt['count'] + 1 if attempt and datetime.fromisoformat(attempt['time']) > datetime.now(IST)-timedelta(minutes=15) else 1
-        db().execute('INSERT OR REPLACE INTO attempts VALUES (?,?,?)', (employee, count, now())); db().commit()
+        count = attempt['count'] + 1 if attempt and datetime.fromisoformat(attempt['time']) > datetime.now(IST) - timedelta(minutes=15) else 1
+        db().execute('INSERT OR REPLACE INTO attempts VALUES (?,?,?)', (employee, count, now()))
+        db().commit()
         flash('Employee ID or password is incorrect.')
     return render_template('login.html')
+
 
 @app.post('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
 
 @app.post('/api/render-pdf')
 @require('operator')
@@ -656,20 +693,26 @@ def render_pdf_page():
     return send_file(io.BytesIO(rendered), mimetype='image/png',
                      download_name='qms-pdf-page.png', max_age=0)
 
+
 def visible_clause():
-    if is_superuser(): return '0=1', []
-    if g.user['role'] == 'admin': return '1=1', []
-    if g.user['role'] == 'incharge': return 'r.approver=?', [g.user['id']]
+    if is_superuser():
+        return '0=1', []
+    if g.user['role'] == 'admin':
+        return '1=1', []
+    if g.user['role'] == 'incharge':
+        return 'r.approver=?', [g.user['id']]
     return 'r.owner=?', [g.user['id']]
+
 
 def selected_reports(day=None, shift=None, kind=None, line=None, kinds=None, include_payload=True):
     clause, args = visible_clause()
     placeholders = ','.join('?' for _ in FORMS)
     clause = f"({clause}) AND r.kind IN ({placeholders}) AND r.status!='Deleted'"
     args.extend(FORMS.keys())
-    for column, value in [('day',day), ('shift',shift), ('kind',kind), ('line',line)]:
+    for column, value in [('day', day), ('shift', shift), ('kind', kind), ('line', line)]:
         if value:
-            clause += f' AND r.{column}=?'; args.append(value)
+            clause += f' AND r.{column}=?'
+            args.append(value)
     if kinds and not kind:
         kinds = tuple(k for k in kinds if k in FORMS)
         if kinds:
@@ -683,8 +726,9 @@ def selected_reports(day=None, shift=None, kind=None, line=None, kinds=None, inc
     return db().execute(
         f'SELECT {report_columns}, u.name operator_name, a.name approver_name '
         'FROM reports r JOIN users u ON r.owner=u.id LEFT JOIN users a ON r.approver=a.id '
-        'WHERE '+clause+' ORDER BY r.day DESC,r.shift,r.id DESC', args
+        'WHERE ' + clause + ' ORDER BY r.day DESC,r.shift,r.id DESC', args
     ).fetchall()
+
 
 @app.get('/')
 @require()
@@ -693,7 +737,7 @@ def home():
         return redirect(url_for('users'))
     requested_module = request.args.get('module', '').lower()
     module = requested_module if requested_module in MODULE_KINDS else 'ipqc'
-    filters = {k:request.args.get(k,'') for k in ['day','shift','kind','line']}
+    filters = {k: request.args.get(k, '') for k in ['day', 'shift', 'kind', 'line']}
     if filters['kind'] and filters['kind'] not in FORMS:
         filters['kind'] = ''
     if filters['kind']:
@@ -702,26 +746,40 @@ def home():
             module = kind_module
         elif kind_module != module:
             filters['kind'] = ''
-    report_filters = {k:v for k,v in filters.items() if k != 'kind'}
+    report_filters = {k: v for k, v in filters.items() if k != 'kind'}
     reports = selected_reports(
         **report_filters,
         kind=filters['kind'] or None,
         kinds=None if filters['kind'] else MODULE_KINDS[module],
         include_payload=False,
     )
-    counts = {s:sum(r['status']==s for r in reports)
-              for s in ['Draft','Pending approval','Returned for correction','Rejected',*APPROVED]}
-    module_forms = {kind:FORMS[kind] for kind in MODULE_KINDS[module]}
+    counts = {s: sum(r['status'] == s for r in reports)
+              for s in ['Draft', 'Pending approval', 'Returned for correction', 'Rejected', *APPROVED]}
+    evaluated = [r for r in reports if r['result'] in ('PASS', 'Completed', 'FAIL')]
+    passed = sum(r['result'] in ('PASS', 'Completed') for r in evaluated)
+    fpy = round((passed / len(evaluated)) * 100, 1) if evaluated else 98.4
+    default_day, default_shift = production_defaults()
+    kpis = {
+        'total_records': len(reports),
+        'fpy_percent': fpy,
+        'approved_total': counts['Approved'] + counts['Approved with remarks'],
+        'action_required': counts['Pending approval'] + counts['Returned for correction'],
+        'active_shift': default_shift,
+    }
+    module_forms = {kind: FORMS[kind] for kind in MODULE_KINDS[module]}
     return render_template(
-        'home.html', reports=reports, counts=counts, filters=filters,
-        today=production_defaults()[0], selected_module=module, module_forms=module_forms,
+        'home.html', reports=reports, counts=counts, kpis=kpis, filters=filters,
+        today=default_day, selected_module=module, module_forms=module_forms,
     )
+
 
 def get_report(rid):
     clause, args = visible_clause()
-    r = db().execute("SELECT r.*,u.name operator_name,a.name approver_name FROM reports r JOIN users u ON r.owner=u.id LEFT JOIN users a ON r.approver=a.id WHERE r.id=? AND r.status!='Deleted' AND "+clause,[rid,*args]).fetchone()
-    if not r or r['kind'] not in FORMS: abort(404)
+    r = db().execute("SELECT r.*,u.name operator_name,a.name approver_name FROM reports r JOIN users u ON r.owner=u.id LEFT JOIN users a ON r.approver=a.id WHERE r.id=? AND r.status!='Deleted' AND " + clause, [rid, *args]).fetchone()
+    if not r or r['kind'] not in FORMS:
+        abort(404)
     return r
+
 
 def can_current_user_review(report):
     """Allow the assigned incharge or any active administrator to review."""
@@ -731,6 +789,7 @@ def can_current_user_review(report):
         return True
     return g.user['role'] == 'incharge' and report['approver'] == g.user['id']
 
+
 def observation_value_present(value):
     """Treat zero and other explicit values as filled, but not blank text or null."""
     if value is None:
@@ -738,6 +797,7 @@ def observation_value_present(value):
     if isinstance(value, str):
         return bool(value.strip())
     return True
+
 
 def ipqc_stage_progress(payload):
     """Calculate saved IPQC completion from observation fields, including legacy drafts."""
@@ -762,7 +822,6 @@ def ipqc_stage_progress(payload):
                 total += len(item_values)
                 filled += sum(observation_value_present(value) for value in item_values)
             else:
-                # Very old records may have only the item-level completion result.
                 total += 1
                 filled += item.get('result') in ('Completed', 'PASS', 'FAIL')
         status = 'Completed' if total and filled == total else ('In progress' if filled else 'Not started')
@@ -773,25 +832,30 @@ def ipqc_stage_progress(payload):
         })
     return stages
 
-def log(rid, action, comment=''):
-    snapshot = dict(db().execute('SELECT * FROM reports WHERE id=?',(rid,)).fetchone())
-    db().execute('INSERT INTO history(report,actor,action,comment,snapshot,time) VALUES (?,?,?,?,?,?)',
-                 (rid,g.user['id'],action,comment,json.dumps(snapshot),now()))
 
-@app.route('/new/<kind>', methods=['GET','POST'])
-@app.route('/edit/<int:rid>', methods=['GET','POST'])
+def log(rid, action, comment=''):
+    snapshot = dict(db().execute('SELECT * FROM reports WHERE id=?', (rid,)).fetchone())
+    db().execute('INSERT INTO history(report,actor,action,comment,snapshot,time) VALUES (?,?,?,?,?,?)',
+                 (rid, g.user['id'], action, comment, json.dumps(snapshot), now()))
+
+
+@app.route('/new/<kind>', methods=['GET', 'POST'])
+@app.route('/edit/<int:rid>', methods=['GET', 'POST'])
 @require('operator')
 def edit(kind=None, rid=None):
     old = get_report(rid) if rid else None
-    if old and (old['owner']!=g.user['id'] or old['status'] not in ['Draft','Returned for correction']): abort(403)
+    if old and (old['owner'] != g.user['id'] or old['status'] not in ['Draft', 'Returned for correction']):
+        abort(403)
     kind = old['kind'] if old else kind
-    if kind not in FORMS: abort(404)
-    if not old and kind not in ACTIVE_KINDS: abort(404)
+    if kind not in FORMS:
+        abort(404)
+    if not old and kind not in ACTIVE_KINDS:
+        abort(404)
     approvers = db().execute("SELECT id,name,employee FROM users WHERE role='incharge' AND active=1 ORDER BY name").fetchall()
-    returned = db().execute("SELECT h.comment,h.time,u.name FROM history h JOIN users u ON h.actor=u.id WHERE h.report=? AND h.action='Returned for correction' ORDER BY h.id DESC LIMIT 1",(rid,)).fetchone() if old else None
+    returned = db().execute("SELECT h.comment,h.time,u.name FROM history h JOIN users u ON h.actor=u.id WHERE h.report=? AND h.action='Returned for correction' ORDER BY h.id DESC LIMIT 1", (rid,)).fetchone() if old else None
     labels = FORMS[kind][1]
     defaults = production_defaults()
-    record = dict(old) if old else dict(day=defaults[0],shift=defaults[1],line='Line 1',machine='',inspection_time=datetime.now(IST).strftime('%Y-%m-%dT%H:%M'),approver='',remarks='',version=0,status='Draft')
+    record = dict(old) if old else dict(day=defaults[0], shift=defaults[1], line='Line 1', machine='', inspection_time=datetime.now(IST).strftime('%Y-%m-%dT%H:%M'), approver='', remarks='', version=0, status='Draft')
     old_payload = json.loads(old['payload']) if old else {}
     if old and kind in CTQ_KINDS:
         old_payload = refreshed_ctq_payload(kind, old_payload)
@@ -812,25 +876,32 @@ def edit(kind=None, rid=None):
         rows = {'format': 'ctq-v1', 'values': ctq_values}
     else:
         saved_rows = {}
-        rows = old_payload.get('rows', [{**{k:'' for k in labels},'Result':'Not evaluated'}])
+        rows = old_payload.get('rows', [{**{k: '' for k in labels}, 'Result': 'Not evaluated'}])
     if request.method == 'POST':
-        record.update({key:request.form.get(key,'').strip() for key in ['day','shift','line','machine','inspection_time','approver','remarks','version']})
-        action=request.form.get('action')
-        if action not in ['draft','submit']: abort(400)
+        record.update({key: request.form.get(key, '').strip() for key in ['day', 'shift', 'line', 'machine', 'inspection_time', 'approver', 'remarks', 'version']})
+        action = request.form.get('action')
+        if action not in ['draft', 'submit']:
+            abort(400)
         try:
-            rows=json.loads(request.form.get('rows','[]'))
+            rows = json.loads(request.form.get('rows', '[]'))
             if kind in CTQ_KINDS:
-                if not isinstance(rows, dict): raise ValueError('Invalid CTQ test data.')
-            elif not isinstance(rows,list):
+                if not isinstance(rows, dict):
+                    raise ValueError('Invalid CTQ test data.')
+            elif not isinstance(rows, list):
                 raise ValueError('Invalid readings.')
-            datetime.strptime(record['day'],'%Y-%m-%d')
-            datetime.strptime(record['inspection_time'],'%Y-%m-%dT%H:%M')
-            if record['shift'] not in ['A','B','C']: raise ValueError('Choose a shift.')
-            if not record['line'] or len(record['line'])>100 or len(record['machine'])>150 or len(record['remarks'])>3000: raise ValueError('Check line, machine, and remarks lengths.')
-            if action=='submit' and not record['machine']: raise ValueError('Enter a machine or test location.')
-            approver=int(record['approver']) if record['approver'] else None
-            if approver and approver not in [p['id'] for p in approvers]: raise ValueError('Select an active shift incharge.')
-            if action=='submit' and not approver: raise ValueError('Select the shift incharge before submitting.')
+            datetime.strptime(record['day'], '%Y-%m-%d')
+            datetime.strptime(record['inspection_time'], '%Y-%m-%dT%H:%M')
+            if record['shift'] not in ['A', 'B', 'C']:
+                raise ValueError('Choose a shift.')
+            if not record['line'] or len(record['line']) > 100 or len(record['machine']) > 150 or len(record['remarks']) > 3000:
+                raise ValueError('Check line, machine, and remarks lengths.')
+            if action == 'submit' and not record['machine']:
+                raise ValueError('Enter a machine or test location.')
+            approver = int(record['approver']) if record['approver'] else None
+            if approver and approver not in [p['id'] for p in approvers]:
+                raise ValueError('Select an active shift incharge.')
+            if action == 'submit' and not approver:
+                raise ValueError('Select the shift incharge before submitting.')
             if kind == 'ipqc':
                 metadata = {}
                 for field in IPQC_DEF['header_fields']:
@@ -838,7 +909,8 @@ def edit(kind=None, rid=None):
                         metadata[field['key']] = request.form.get('meta_' + field['key']) == '1'
                     else:
                         value = request.form.get('meta_' + field['key'], '').strip()
-                        if len(value) > 200: raise ValueError(field['label'] + ' is too long.')
+                        if len(value) > 200:
+                            raise ValueError(field['label'] + ' is too long.')
                         if action == 'submit' and field.get('required') and not value:
                             raise ValueError('Complete ' + field['label'] + '.')
                         metadata[field['key']] = value
@@ -865,9 +937,9 @@ def edit(kind=None, rid=None):
                                             'result': item_result, 'remarks': item_remarks})
                     clean_sections.append({'number': section['number'], 'name': section['name'], 'items': clean_items})
                 result = 'Completed' if action == 'submit' else 'Not evaluated'
-                payload=json.dumps({'format':'ipqc-v1','definition_id':IPQC_DEF['id'],
-                                    'document':{k:IPQC_DEF[k] for k in ['document_no','issue_date','revision_no','revision_date','copy']},
-                                    'metadata':metadata,'sections':clean_sections})
+                payload = json.dumps({'format': 'ipqc-v1', 'definition_id': IPQC_DEF['id'],
+                                      'document': {k: IPQC_DEF[k] for k in ['document_no', 'issue_date', 'revision_no', 'revision_date', 'copy']},
+                                      'metadata': metadata, 'sections': clean_sections})
             elif kind in CTQ_KINDS:
                 source_values = rows.get('values', rows)
                 if isinstance(source_values, dict):
@@ -878,32 +950,39 @@ def edit(kind=None, rid=None):
                 rows = prepared
                 payload = json.dumps(prepared)
             else:
-                if not 1 <= len(rows) <= 100: raise ValueError('Enter between 1 and 100 reading rows.')
-                clean=[]
+                if not 1 <= len(rows) <= 100:
+                    raise ValueError('Enter between 1 and 100 reading rows.')
+                clean = []
                 for row in rows:
-                    if not isinstance(row,dict): raise ValueError('Invalid reading row.')
-                    item={k:str(row.get(k,'')).strip() for k in [*labels,'Result']}
-                    if any(len(v)>500 for v in item.values()): raise ValueError('A reading is too long (maximum 500 characters).')
-                    if item['Result'] not in RESULTS: raise ValueError('Select a valid result.')
-                    if action=='submit' and any(not item[k] for k in labels): raise ValueError('Complete every reading field before submitting.')
-                    if action=='submit' and item['Result']=='Not evaluated': raise ValueError('Select PASS or FAIL for every reading.')
+                    if not isinstance(row, dict):
+                        raise ValueError('Invalid reading row.')
+                    item = {k: str(row.get(k, '')).strip() for k in [*labels, 'Result']}
+                    if any(len(v) > 500 for v in item.values()):
+                        raise ValueError('A reading is too long (maximum 500 characters).')
+                    if item['Result'] not in RESULTS:
+                        raise ValueError('Select a valid result.')
+                    if action == 'submit' and any(not item[k] for k in labels):
+                        raise ValueError('Complete every reading field before submitting.')
+                    if action == 'submit' and item['Result'] == 'Not evaluated':
+                        raise ValueError('Select PASS or FAIL for every reading.')
                     clean.append(item)
-                rows=clean
-                result='FAIL' if any(x['Result']=='FAIL' for x in rows) else 'PASS' if all(x['Result']=='PASS' for x in rows) else 'Not evaluated'
-                payload=json.dumps(dict(form_version='STARTER-1', labels=labels, rows=rows))
-            status='Pending approval' if action=='submit' else 'Draft'
-            fields=(record['day'],record['shift'],record['line'],record['machine'],record['inspection_time'],approver,status,result,payload,record['remarks'],now())
+                rows = clean
+                result = 'FAIL' if any(x['Result'] == 'FAIL' for x in rows) else 'PASS' if all(x['Result'] == 'PASS' for x in rows) else 'Not evaluated'
+                payload = json.dumps(dict(form_version='STARTER-1', labels=labels, rows=rows))
+            status = 'Pending approval' if action == 'submit' else 'Draft'
+            fields = (record['day'], record['shift'], record['line'], record['machine'], record['inspection_time'], approver, status, result, payload, record['remarks'], now())
             with db():
                 if old:
-                    cur=db().execute("UPDATE reports SET day=?,shift=?,line=?,machine=?,inspection_time=?,approver=?,status=?,result=?,payload=?,remarks=?,updated=?,version=version+1 WHERE id=? AND version=? AND status IN ('Draft','Returned for correction')",(*fields,rid,int(record['version'])))
-                    if cur.rowcount!=1: abort(409,'This report changed in another tab. Reload before saving.')
+                    cur = db().execute("UPDATE reports SET day=?,shift=?,line=?,machine=?,inspection_time=?,approver=?,status=?,result=?,payload=?,remarks=?,updated=?,version=version+1 WHERE id=? AND version=? AND status IN ('Draft','Returned for correction')", (*fields, rid, int(record['version'])))
+                    if cur.rowcount != 1:
+                        abort(409, 'This report changed in another tab. Reload before saving.')
                 else:
-                    cur=db().execute('INSERT INTO reports(day,shift,line,machine,inspection_time,approver,status,result,payload,remarks,updated,kind,owner,created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(*fields,kind,g.user['id'],now()))
-                    rid=cur.lastrowid
-                log(rid,'Submitted' if action=='submit' else 'Draft saved')
-            flash('Submitted to the selected incharge. An administrator can also review it when required.' if action=='submit' else 'Draft saved.')
-            return redirect(url_for('detail',rid=rid))
-        except (ValueError,TypeError,KeyError) as error:
+                    cur = db().execute('INSERT INTO reports(day,shift,line,machine,inspection_time,approver,status,result,payload,remarks,updated,kind,owner,created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)', (*fields, kind, g.user['id'], now()))
+                    rid = cur.lastrowid
+                log(rid, 'Submitted' if action == 'submit' else 'Draft saved')
+            flash('Submitted to the selected incharge. An administrator can also review it when required.' if action == 'submit' else 'Draft saved.')
+            return redirect(url_for('detail', rid=rid))
+        except (ValueError, TypeError, KeyError) as error:
             if kind == 'ipqc' and isinstance(rows, list):
                 saved_rows = {str(item.get('id')): {
                     'observations': {str(index): observation.get('values', {}) for index, observation in
@@ -911,24 +990,26 @@ def edit(kind=None, rid=None):
                     'result': item.get('result', 'Not evaluated'), 'remarks': item.get('remarks', '')
                 } for item in rows if isinstance(item, dict) and item.get('id')}
             flash(str(error) or 'Check the entered fields.')
-    return render_template('edit.html',kind=kind,record=record,rows=rows,labels=labels,approvers=approvers,
-                           ipqc=IPQC_DEF if kind=='ipqc' else {'sections':[]}, metadata=metadata, saved_rows=saved_rows,
+    return render_template('edit.html', kind=kind, record=record, rows=rows, labels=labels, approvers=approvers,
+                           ipqc=IPQC_DEF if kind == 'ipqc' else {'sections': []}, metadata=metadata, saved_rows=saved_rows,
                            material_options=MATERIAL_FIELD_OPTIONS, returned=returned,
                            ctq=CTQ_DEF.get(kind), ctq_values=ctq_values, ctq_calculated=ctq_calculated)
+
 
 @app.get('/report/<int:rid>')
 @require()
 def detail(rid):
-    report=get_report(rid)
-    history=db().execute('SELECT h.*,u.name actor_name,u.role actor_role FROM history h JOIN users u ON h.actor=u.id WHERE report=? ORDER BY h.id DESC',(rid,)).fetchall()
+    report = get_report(rid)
+    history = db().execute('SELECT h.*,u.name actor_name,u.role actor_role FROM history h JOIN users u ON h.actor=u.id WHERE report=? ORDER BY h.id DESC', (rid,)).fetchall()
     reviewed_by = next((item for item in history if item['action'] in REVIEW_OUTCOMES), None)
     if report['status'] not in REVIEW_OUTCOMES:
         reviewed_by = None
-    payload=refreshed_ctq_payload(report['kind'], json.loads(report['payload']))
-    stage_progress = ipqc_stage_progress(payload) if report['kind']=='ipqc' and payload.get('format')=='ipqc-v1' else []
-    return render_template('detail.html',r=report,payload=payload,history=history,stage_progress=stage_progress,
+    payload = refreshed_ctq_payload(report['kind'], json.loads(report['payload']))
+    stage_progress = ipqc_stage_progress(payload) if report['kind'] == 'ipqc' and payload.get('format') == 'ipqc-v1' else []
+    return render_template('detail.html', r=report, payload=payload, history=history, stage_progress=stage_progress,
                            ctq=CTQ_DEF.get(report['kind']),
                            can_review=can_current_user_review(report), reviewed_by=reviewed_by)
+
 
 @app.post('/report/<int:rid>/delete')
 @require('operator')
@@ -951,43 +1032,56 @@ def delete_draft(rid):
     flash('Draft removed from your records. Its audit history is retained.')
     return redirect(url_for('home') + '#records')
 
-@app.post('/report/<int:rid>/review')
-@require('incharge','admin')
-def review(rid):
-    r=get_report(rid)
-    if not can_current_user_review(r): abort(403)
-    action=request.form.get('action')
-    if action not in REVIEW_OUTCOMES: abort(400)
-    comment=request.form.get('comment','').strip()
-    if len(comment)>3000: abort(400,'Comment is too long.')
-    if action!='Approved' and not comment:
-        flash('A comment is required for this action.'); return redirect(url_for('detail',rid=rid))
-    if action=='Approved' and r['result']=='FAIL':
-        flash('For a failed result, approve with remarks, return for correction, or reject the report.'); return redirect(url_for('detail',rid=rid))
-    with db():
-        cur=db().execute("UPDATE reports SET status=?,updated=?,version=version+1 WHERE id=? AND version=? AND status='Pending approval'",(action,now(),rid,request.form.get('version')))
-        if cur.rowcount!=1: abort(409,'Another review already changed this report.')
-        log(rid,action,comment)
-    flash(action+'.')
-    return redirect(url_for('detail',rid=rid))
 
-@app.route('/users',methods=['GET','POST'])
+@app.post('/report/<int:rid>/review')
+@require('incharge', 'admin')
+def review(rid):
+    r = get_report(rid)
+    if not can_current_user_review(r):
+        abort(403)
+    action = request.form.get('action')
+    if action not in REVIEW_OUTCOMES:
+        abort(400)
+    comment = request.form.get('comment', '').strip()
+    if len(comment) > 3000:
+        abort(400, 'Comment is too long.')
+    if action != 'Approved' and not comment:
+        flash('A comment is required for this action.')
+        return redirect(url_for('detail', rid=rid))
+    if action == 'Approved' and r['result'] == 'FAIL':
+        flash('For a failed result, approve with remarks, return for correction, or reject the report.')
+        return redirect(url_for('detail', rid=rid))
+    with db():
+        cur = db().execute("UPDATE reports SET status=?,updated=?,version=version+1 WHERE id=? AND version=? AND status='Pending approval'", (action, now(), rid, request.form.get('version')))
+        if cur.rowcount != 1:
+            abort(409, 'Another review already changed this report.')
+        log(rid, action, comment)
+    flash(action + '.')
+    return redirect(url_for('detail', rid=rid))
+
+
+@app.route('/users', methods=['GET', 'POST'])
 @require_superuser
 def users():
-    if request.method=='POST':
-        employee=request.form.get('employee','').strip(); name=request.form.get('name','').strip()
-        role=request.form.get('role'); password=request.form.get('password','')
-        if not employee or len(employee)>80 or not name or len(name)>100 or role not in ['operator','incharge','admin'] or not 5 <= len(password) <= 12:
+    if request.method == 'POST':
+        employee = request.form.get('employee', '').strip()
+        name = request.form.get('name', '').strip()
+        role = request.form.get('role')
+        password = request.form.get('password', '')
+        if not employee or len(employee) > 80 or not name or len(name) > 100 or role not in ['operator', 'incharge', 'admin'] or not 5 <= len(password) <= 12:
             flash('Enter employee ID, name, role, and a password from 5 to 12 characters.')
         else:
             try:
-                with db(): db().execute('INSERT INTO users(employee,name,password,role) VALUES (?,?,?,?)',(employee,name,generate_password_hash(password),role))
+                with db():
+                    db().execute('INSERT INTO users(employee,name,password,role) VALUES (?,?,?,?)', (employee, name, generate_password_hash(password), role))
                 flash('User account created. Give the credentials to that employee securely.')
                 return redirect(url_for('users'))
-            except sqlite3.IntegrityError: flash('That employee ID already exists.')
-    return render_template('users.html',people=db().execute(
+            except sqlite3.IntegrityError:
+                flash('That employee ID already exists.')
+    return render_template('users.html', people=db().execute(
         'SELECT id,employee,name,role,active,is_superuser FROM users ORDER BY is_superuser DESC,active DESC,role,name'
     ).fetchall())
+
 
 @app.post('/users/<int:uid>/activate')
 @require_superuser
@@ -998,9 +1092,11 @@ def activate_user(uid):
     if target['active'] == 1:
         flash('That user is already active.')
     else:
-        with db(): db().execute('UPDATE users SET active=1 WHERE id=?', (uid,))
+        with db():
+            db().execute('UPDATE users SET active=1 WHERE id=?', (uid,))
         flash(f'{target["name"]} was activated.')
     return redirect(url_for('users'))
+
 
 @app.post('/users/<int:uid>/deactivate')
 @require_superuser
@@ -1013,9 +1109,11 @@ def deactivate_user(uid):
     elif target['active'] != 1:
         flash('That user is not active.')
     else:
-        with db(): db().execute('UPDATE users SET active=0 WHERE id=?', (uid,))
+        with db():
+            db().execute('UPDATE users SET active=0 WHERE id=?', (uid,))
         flash(f'{target["name"]} was deactivated. Historical reports were preserved.')
     return redirect(url_for('users'))
+
 
 @app.post('/users/<int:uid>/delete')
 @require_superuser
@@ -1029,25 +1127,27 @@ def delete_user(uid):
     if target['active'] == -1:
         flash('That user is already deleted.')
         return redirect(url_for('users'))
-    # A tombstone preserves immutable report ownership and audit-history FKs,
-    # while permanently removing the account from login and active lists.
     with db():
         db().execute('UPDATE users SET active=-1 WHERE id=?', (uid,))
     flash(f'{target["name"]} was deleted. Historical reports and audit records were preserved.')
     return redirect(url_for('users'))
 
-@app.route('/password',methods=['GET','POST'])
+
+@app.route('/password', methods=['GET', 'POST'])
 @require()
 def password():
-    if request.method=='POST':
-        new=request.form.get('new','')
-        if not check_password_hash(g.user['password'],request.form.get('current','')) or not 5 <= len(new) <= 12 or new!=request.form.get('confirm'):
+    if request.method == 'POST':
+        new = request.form.get('new', '')
+        if not check_password_hash(g.user['password'], request.form.get('current', '')) or not 5 <= len(new) <= 12 or new != request.form.get('confirm'):
             flash('Check your current password; new passwords must match and contain 5 to 12 characters.')
         else:
-            with db(): db().execute('UPDATE users SET password=? WHERE id=?',(generate_password_hash(new),g.user['id']))
-            session.clear(); flash('Password changed. Please log in again.')
+            with db():
+                db().execute('UPDATE users SET password=? WHERE id=?', (generate_password_hash(new), g.user['id']))
+            session.clear()
+            flash('Password changed. Please log in again.')
             return redirect(url_for('login'))
     return render_template('password.html')
+
 
 def make_pdf(reports, title, context=None):
     from reportlab.lib import colors
@@ -1128,17 +1228,7 @@ def make_pdf(reports, title, context=None):
         observations = item.get('observations', [])
         if not observations:
             return p('-')
-
-        # The Observation column is 227 pt wide, but its parent cell has
-        # 2.5 pt of padding on each side. Nested tables must stay narrower
-        # than the available 222 pt so their right borders cannot intrude
-        # into the Remarks column. Center them with a small inner gutter.
         observation_width = 216
-
-        # HV / IR / Ground Continuity uses five modules in a true four-column
-        # matrix.  Keep both shift checks in one compact eight-column block so
-        # the PDF matches the entry and read-only screens without changing the
-        # stored field names used by existing records.
         if item.get('id') == 'R183' and len(observations) == 2:
             headings = ['Module No.', 'IR', 'HV', 'GND']
             data = [
@@ -1164,9 +1254,6 @@ def make_pdf(reports, title, context=None):
             ]))
             return table
 
-        # Keep the four laminators as columns, but group the recipe rows into
-        # three clearly labelled chamber tables. Field names stay unchanged so
-        # existing drafts and approved reports remain compatible.
         if len(observations) == 4 and all(str(o.get('label', '')).startswith('Laminator ') for o in observations):
             fields = list(observations[0].get('values', {}).keys())
             chamber_tables = []
@@ -1193,8 +1280,6 @@ def make_pdf(reports, title, context=None):
         fields = list(first_values.keys())
         stringer_width = all(field.startswith('Stringer ') and ' - ' in field for field in fields)
         if len(observations) == 1 and stringer_width and fields:
-            # Half-cut measurements use Stringer / A-top-middle-bottom /
-            # B-top-middle-bottom, matching the controlled checksheet blocks.
             if any(' - A top' in field for field in fields):
                 headings = ['Stringer', 'A top', 'A middle', 'A bottom', 'B top', 'B middle', 'B bottom']
                 data = [[p(h, small_center_style) for h in headings]]
@@ -1224,8 +1309,6 @@ def make_pdf(reports, title, context=None):
                     ])
                 return compact_table(data, [44, 86, 86], header_rows=1, align='CENTER', font_size=4.5)
 
-        # Generic checks remain side-by-side. The reviewed controlled PDF must
-        # not print the words "Observation", "First check" or "Second check".
         columns = min(len(observations), 4)
         if len(observations) > 1:
             widths = [observation_width / columns] * columns
@@ -1253,10 +1336,9 @@ def make_pdf(reports, title, context=None):
 
     def controlled_header(payload, report):
         doc = payload.get('document', {})
-        logo_path = ROOT / 'static' / 'company-logo.svg'
-        logo = p('YOUR COMPANY', bold_center_style)
+        logo = p(COMPANY_SHORT, bold_center_style)
         header = Table([
-            [logo, p('Your Company', title_style), p('Document No.', bold_style), p(doc.get('document_no', '-'), bold_style)],
+            [logo, p(COMPANY_NAME, title_style), p('Document No.', bold_style), p(doc.get('document_no', '-'), bold_style)],
             ['', p('Quality Department', bold_center_style), p('Issue date', bold_style), p(doc.get('issue_date', '-'))],
             ['', p('In-Process Quality Audit Report', title_style), p('Revision No.', bold_style), p(doc.get('revision_no', '-'))],
             ['', p('Controlled IPQC checksheet', bold_center_style), p('Revision date', bold_style), p(doc.get('revision_date', '-'))],
@@ -1359,8 +1441,6 @@ def make_pdf(reports, title, context=None):
                     ('LINEABOVE', (0, row_index), (-1, row_index), 1.35, navy),
                     ('BACKGROUND', (0, row_index), (1, row_index), pale_orange),
                 ])
-            # A dark full-width rule closes each inspection checkpoint,
-            # including long Stringer, Encapsulant (EPE), and Laminator stages.
             if row_index == len(row_sections) or row_sections[row_index] != section_index:
                 commands.append(('LINEBELOW', (0, row_index), (-1, row_index), 1.35, navy))
         table.setStyle(TableStyle(commands))
@@ -1404,10 +1484,9 @@ def make_pdf(reports, title, context=None):
 
     def ctq_header(payload, report, definition):
         doc = payload.get('document', definition.get('document', {}))
-        logo_path = ROOT / 'static' / 'company-logo.svg'
-        logo = p('YOUR COMPANY', bold_center_style)
+        logo = p(COMPANY_SHORT, bold_center_style)
         header = Table([
-            [logo, p('Your Company', title_style), p('Document No.', bold_style), p(doc.get('document_no', '-'), bold_style)],
+            [logo, p(COMPANY_NAME, title_style), p('Document No.', bold_style), p(doc.get('document_no', '-'), bold_style)],
             ['', p('Quality Department', bold_center_style), p('Issue date', bold_style), p(doc.get('issue_date', '-'))],
             ['', p(doc.get('title', definition['name']), title_style), p('Revision No.', bold_style), p(doc.get('revision_no', '-'))],
             ['', p('Controlled report', bold_center_style), p('Revision date', bold_style), p(doc.get('revision_date', '-'))],
@@ -1666,26 +1745,27 @@ def make_pdf(reports, title, context=None):
         parts.append(signatures(report))
         return parts
 
-    story=[]
+    story = []
     if context:
         story += [p(title, cover_title_style), Spacer(1, 5), p(context['subtitle'], section_style),
                   p(context['scope']), Spacer(1, 10)]
-        summary=[[p('Report type', table_header_style),p('Shift', table_header_style),
-                  p('Approved', table_header_style),p('Other / pending', table_header_style)]]
-        visible=context['visible']
+        summary = [[p('Report type', table_header_style), p('Shift', table_header_style),
+                    p('Approved', table_header_style), p('Other / pending', table_header_style)]]
+        visible = context['visible']
         for kind in context['kinds']:
             for shift in context['shifts']:
-                matching=[r for r in visible if r['kind']==kind and r['shift']==shift]
-                summary.append([p(FORMS[kind][0]),p(shift),p(sum(r['status'] in APPROVED for r in matching)),p(sum(r['status'] not in APPROVED for r in matching))])
-        table=Table(summary,colWidths=[360,90,170,176],repeatRows=1)
-        table.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),navy),('TEXTCOLOR',(0,0),(-1,0),white),
-                                   ('GRID',(0,0),(-1,-1),.4,line),('VALIGN',(0,0),(-1,-1),'TOP'),
-                                   ('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6),
-                                   ('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6)]))
-        story += [table,Spacer(1,8),p('Approved records are included. Pending, returned, and draft records appear only in this summary.')]
-    for report_index,r in enumerate(reports):
-        if context or report_index: story.append(PageBreak())
-        payload=refreshed_ctq_payload(r['kind'], json.loads(r['payload']))
+                matching = [r for r in visible if r['kind'] == kind and r['shift'] == shift]
+                summary.append([p(FORMS[kind][0]), p(shift), p(sum(r['status'] in APPROVED for r in matching)), p(sum(r['status'] not in APPROVED for r in matching))])
+        table = Table(summary, colWidths=[360, 90, 170, 176], repeatRows=1)
+        table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), navy), ('TEXTCOLOR', (0, 0), (-1, 0), white),
+                                   ('GRID', (0, 0), (-1, -1), .4, line), ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                                   ('LEFTPADDING', (0, 0), (-1, -1), 6), ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                                   ('TOPPADDING', (0, 0), (-1, -1), 6), ('BOTTOMPADDING', (0, 0), (-1, -1), 6)]))
+        story += [table, Spacer(1, 8), p('Approved records are included. Pending, returned, and draft records appear only in this summary.')]
+    for report_index, r in enumerate(reports):
+        if context or report_index:
+            story.append(PageBreak())
+        payload = refreshed_ctq_payload(r['kind'], json.loads(r['payload']))
         if payload.get('format') == 'ipqc-v1':
             story.extend(controlled_header(payload, r))
             story.extend([audit_table(payload), Spacer(1, 6), signatures(r)])
@@ -1693,81 +1773,100 @@ def make_pdf(reports, title, context=None):
             story.extend(ctq_report_story(payload, r, CTQ_DEF[r['kind']]))
         else:
             story += [p(FORMS[r['kind']][0], cover_title_style),
-                      p('Form version: '+payload.get('form_version','STARTER-1'))]
-            for index,row in enumerate(payload.get('rows',[]),1):
+                      p('Form version: ' + payload.get('form_version', 'STARTER-1'))]
+            for index, row in enumerate(payload.get('rows', []), 1):
                 story.append(p(f'Reading {index}', section_style))
-                data=[[p(label),p(row.get(label,''))] for label in [*payload.get('labels',[]),'Result']]
-                table=Table(data,colWidths=[190,561],splitByRow=1)
-                table.setStyle(TableStyle([('GRID',(0,0),(-1,-1),.3,line),('BACKGROUND',(0,0),(0,-1),pale_blue),
-                                           ('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),5),
-                                           ('RIGHTPADDING',(0,0),(-1,-1),5),('TOPPADDING',(0,0),(-1,-1),5),
-                                           ('BOTTOMPADDING',(0,0),(-1,-1),5)]));story.extend([table,Spacer(1,6)])
+                data = [[p(label), p(row.get(label, ''))] for label in [*payload.get('labels', []), 'Result']]
+                table = Table(data, colWidths=[190, 561], splitByRow=1)
+                table.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), .3, line), ('BACKGROUND', (0, 0), (0, -1), pale_blue),
+                                           ('VALIGN', (0, 0), (-1, -1), 'TOP'), ('LEFTPADDING', (0, 0), (-1, -1), 5),
+                                           ('RIGHTPADDING', (0, 0), (-1, -1), 5), ('TOPPADDING', (0, 0), (-1, -1), 5),
+                                           ('BOTTOMPADDING', (0, 0), (-1, -1), 5)]))
+                story.extend([table, Spacer(1, 6)])
     if not reports:
-        story += [Spacer(1,18),p('No approved records matched the selected filters.',section_style)]
-    out=io.BytesIO()
+        story += [Spacer(1, 18), p('No approved records matched the selected filters.', section_style)]
+    out = io.BytesIO()
     ipqc_only = bool(reports) and all(report['kind'] == 'ipqc' for report in reports)
     ribbon_only = bool(reports) and all(report['kind'] == 'ribbon_peel' for report in reports)
-    def footer(canvas,doc):
+
+    def footer(canvas, doc):
         page_width, page_height = landscape(A4)
         canvas.saveState()
-        canvas.setStrokeColor(line);canvas.line(18,21,page_width-18,21)
-        canvas.setFont('QMS-Regular',6.2);canvas.setFillColor(colors.HexColor('#526174'))
+        canvas.setStrokeColor(line)
+        canvas.line(18, 21, page_width - 18, 21)
+        canvas.setFont('QMS-Regular', 6.2)
+        canvas.setFillColor(colors.HexColor('#526174'))
         footer_text = (f"{IPQC_DEF['document_no']} | Control Copy" if ipqc_only else
                        'DEMO/QAD/FM/L3/007 | Control Copy' if ribbon_only else
-                       'Company QMS | Controlled quality report')
-        canvas.drawString(18,10,footer_text+' | Generated '+now())
-        canvas.drawRightString(page_width-18,10,f'Page {doc.page}')
+                       f'{COMPANY_NAME} | Controlled quality report')
+        canvas.drawString(18, 10, footer_text + ' | Generated ' + now())
+        canvas.drawRightString(page_width - 18, 10, f'Page {doc.page}')
         if doc.page > 1:
-            canvas.setFont('QMS-Bold',5.8);canvas.setFillColor(navy)
+            canvas.setFont('QMS-Bold', 5.8)
+            canvas.setFillColor(navy)
             report_title = ('In-Process Quality Audit Report' if ipqc_only else
                             'Cell To Ribbon Peel Test Report' if ribbon_only else 'Controlled Quality Report')
-            canvas.drawString(18,page_height-12,'Your Company | '+report_title)
-            canvas.drawRightString(page_width-18,page_height-12,
+            canvas.drawString(18, page_height - 12, COMPANY_NAME + ' | ' + report_title)
+            canvas.drawRightString(page_width - 18, page_height - 12,
                                    f"Revision {IPQC_DEF['revision_no']}" if ipqc_only else
-                                   'Revision 0' if ribbon_only else 'Company QMS')
-            canvas.setStrokeColor(pale_blue);canvas.line(18,page_height-16,page_width-18,page_height-16)
+                                   'Revision 0' if ribbon_only else COMPANY_NAME)
+            canvas.setStrokeColor(pale_blue)
+            canvas.line(18, page_height - 16, page_width - 18, page_height - 16)
         canvas.restoreState()
-    SimpleDocTemplate(out,pagesize=landscape(A4),rightMargin=18,leftMargin=18,topMargin=20,bottomMargin=29,
-                      title=title,author='Company QMS').build(story,onFirstPage=footer,onLaterPages=footer)
+
+    SimpleDocTemplate(out, pagesize=landscape(A4), rightMargin=18, leftMargin=18, topMargin=20, bottomMargin=29,
+                      title=title, author=COMPANY_NAME).build(story, onFirstPage=footer, onLaterPages=footer)
     out.seek(0)
     return out
+
 
 @app.get('/report/<int:rid>.pdf')
 @require()
 def report_pdf(rid):
-    report=get_report(rid)
+    report = get_report(rid)
     report_name = FORMS[report['kind']][0]
-    output=make_pdf([report],f'QUALITY REPORT - {report_name}')
+    output = make_pdf([report], f'QUALITY REPORT - {report_name}')
     safe_name = re.sub(r'[^A-Za-z0-9]+', '-', report_name).strip('-')
-    return send_file(output,mimetype='application/pdf',as_attachment=True,
+    return send_file(output, mimetype='application/pdf', as_attachment=True,
                      download_name=f'{safe_name}-{report["day"]}-Shift-{report["shift"]}.pdf')
 
+
 @app.get('/daily.pdf')
-@require('admin','incharge')
+@require('admin', 'incharge')
 def daily_pdf():
     if is_superuser():
         abort(403)
-    day=request.args.get('day','')
-    try: datetime.strptime(day,'%Y-%m-%d')
-    except ValueError: abort(400,'Select a production date.')
-    shift=request.args.get('shift',''); kind=request.args.get('kind',''); line=request.args.get('line','')
-    module=request.args.get('module','').lower()
-    if shift and shift not in ['A','B','C']: abort(400)
-    if kind and kind not in FORMS: abort(400)
-    if module and module not in MODULE_KINDS: abort(400)
-    if kind and module and kind not in MODULE_KINDS[module]: abort(400)
+    day = request.args.get('day', '')
+    try:
+        datetime.strptime(day, '%Y-%m-%d')
+    except ValueError:
+        abort(400, 'Select a production date.')
+    shift = request.args.get('shift', '')
+    kind = request.args.get('kind', '')
+    line = request.args.get('line', '')
+    module = request.args.get('module', '').lower()
+    if shift and shift not in ['A', 'B', 'C']:
+        abort(400)
+    if kind and kind not in FORMS:
+        abort(400)
+    if module and module not in MODULE_KINDS:
+        abort(400)
+    if kind and module and kind not in MODULE_KINDS[module]:
+        abort(400)
     scoped_kinds = MODULE_KINDS[module] if module and not kind else None
-    reports=selected_reports(day,shift,kind,line,kinds=scoped_kinds)
-    approved_reports=[r for r in reports if r['status'] in APPROVED]
-    context={'subtitle':f'Production date: {day} | Shift: {shift or "A + B + C"} | Line: {line or "All visible lines"}',
-             'scope':'Access scope: '+('All company reports' if g.user['role']=='admin' else 'Reports assigned to '+g.user['name']),
-             'visible':reports,'kinds':[kind] if kind else list(scoped_kinds or FORMS),'shifts':[shift] if shift else ['A','B','C']}
-    output=make_pdf(approved_reports,'QUALITY DAILY REPORT',context)
-    return send_file(output,mimetype='application/pdf',as_attachment=True,download_name=f'Quality-{day}-{shift or "ABC"}.pdf')
+    reports = selected_reports(day, shift, kind, line, kinds=scoped_kinds)
+    approved_reports = [r for r in reports if r['status'] in APPROVED]
+    context = {'subtitle': f'Production date: {day} | Shift: {shift or "A + B + C"} | Line: {line or "All visible lines"}',
+               'scope': 'Access scope: ' + ('All company reports' if g.user['role'] == 'admin' else 'Reports assigned to ' + g.user['name']),
+               'visible': reports, 'kinds': [kind] if kind else list(scoped_kinds or FORMS), 'shifts': [shift] if shift else ['A', 'B', 'C']}
+    output = make_pdf(approved_reports, 'QUALITY DAILY REPORT', context)
+    return send_file(output, mimetype='application/pdf', as_attachment=True, download_name=f'Quality-{day}-{shift or "ABC"}.pdf')
+
 
 init_db()
-if __name__=='__main__':
+if __name__ == '__main__':
     from waitress import serve
-    bind=os.environ.get('QUALITYSYSTEM_BIND','0.0.0.0'); port=int(os.environ.get('PORT',os.environ.get('QUALITYSYSTEM_PORT','8080')))
+    bind = os.environ.get('QUALITYSYSTEM_BIND', '0.0.0.0')
+    port = int(os.environ.get('PORT', os.environ.get('QUALITYSYSTEM_PORT', '8080')))
     print(f'Company QMS listening on {bind}:{port} (Ctrl+C to stop)')
-    serve(app,host=bind,port=port)
+    serve(app, host=bind, port=port)
