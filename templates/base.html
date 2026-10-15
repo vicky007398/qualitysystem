@@ -11,9 +11,175 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='qms-appearance-2') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='theme.css', v='qms-appearance-2') }}">
-  <script defer src="{{ url_for('static', filename='app.js', v='qms-appearance-2') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='qms-appearance-1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme.css', v='qms-appearance-1') }}">
+  <script defer src="{{ url_for('static', filename='app.js', v='qms-appearance-1') }}"></script>
+  <style>
+    /* ==========================================================================
+       SOLARQMS™ ENTERPRISE PITCH UI — MERGED MASTER STYLES
+       ========================================================================== */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      letter-spacing: -0.011em;
+      -webkit-font-smoothing: antialiased;
+    }
+    .report-id, code, .mono-badge {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace !important;
+    }
+    /* Sidebar & Topbar Polish */
+    .sidebar-brand-mark {
+      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+      color: #090d16 !important;
+      font-weight: 800 !important;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.38) !important;
+    }
+    .topbar {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    /* Executive Hero Banner */
+    .portal-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px !important;
+      box-shadow: 0 22px 48px -14px rgba(2, 6, 23, 0.45) !important;
+      border: 1px solid rgba(245, 158, 11, 0.28) !important;
+    }
+    .portal-hero::after {
+      content: "";
+      position: absolute;
+      top: -35%;
+      right: -8%;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-telemetry-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .iec-compliance-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.74rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.38);
+      color: #10b981;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .iec-compliance-pill i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+      box-shadow: 0 0 8px #10b981;
+    }
+    /* Executive KPI Strip */
+    .status-grid .stat {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px !important;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease !important;
+    }
+    .status-grid .stat:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.35) !important;
+      border-color: rgba(245, 158, 11, 0.5) !important;
+    }
+    .status-grid .stat strong {
+      font-size: 1.9rem !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.03em;
+    }
+    /* IPQC & CTQ Launch Cards */
+    .report-tile {
+      border-radius: 16px !important;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+    }
+    .report-tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 36px -12px rgba(2, 6, 23, 0.45) !important;
+      border-color: rgba(245, 158, 11, 0.55) !important;
+    }
+    .tile-icon {
+      font-weight: 800 !important;
+      letter-spacing: -0.02em;
+      box-shadow: 0 6px 16px -4px rgba(245, 158, 11, 0.35);
+    }
+    /* Audit Table Rows */
+    .report-entry {
+      border-radius: 12px !important;
+      transition: transform 0.15s ease, border-color 0.15s ease !important;
+    }
+    .report-entry:hover {
+      transform: translateX(3px);
+      border-color: rgba(245, 158, 11, 0.45) !important;
+    }
+    /* High-Contrast Semantic Status & Result Badges */
+    .result-pass, .result-completed, .status-approved, .status-approved-with-remarks {
+      background: rgba(16, 185, 129, 0.15) !important;
+      color: #10b981 !important;
+      border: 1px solid rgba(16, 185, 129, 0.35) !important;
+      font-weight: 700 !important;
+    }
+    .result-fail, .status-rejected {
+      background: rgba(244, 63, 94, 0.15) !important;
+      color: #f43f5e !important;
+      border: 1px solid rgba(244, 63, 94, 0.35) !important;
+      font-weight: 700 !important;
+    }
+    .status-pending-approval, .status-returned-for-correction {
+      background: rgba(245, 158, 11, 0.16) !important;
+      color: #f59e0b !important;
+      border: 1px solid rgba(245, 158, 11, 0.38) !important;
+      font-weight: 700 !important;
+    }
+    /* Login Quick-Switch Pitch Bar */
+    .pitch-role-box {
+      margin-top: 1.15rem;
+      padding-top: 0.95rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+    }
+    .pitch-role-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.45rem;
+      margin-top: 0.5rem;
+    }
+    .pitch-role-btn {
+      cursor: pointer;
+      padding: 0.42rem 0.25rem;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      color: inherit;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: center;
+      transition: transform 0.14s ease, background 0.14s ease, border-color 0.14s ease;
+    }
+    .pitch-role-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(245, 158, 11, 0.22);
+      border-color: rgba(245, 158, 11, 0.6);
+    }
+    .pitch-role-btn small {
+      display: block;
+      font-size: 0.63rem;
+      font-weight: 500;
+      opacity: 0.78;
+    }
+  </style>
 </head>
 <body class="{% if user %}authenticated{% endif %}">
   {% if user %}
@@ -70,7 +236,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <strong>{{ company_name | default('XYZ Solar Pvt Ltd') }}</strong>
+      <strong>{{ company_name | default('XYZ Solar Pvt Limited') }}</strong>
       <span>IEC 61215 · ISO 9001 Digital QMS</span>
       <small>© 2026 Enterprise Quality Suite</small>
     </div>
@@ -84,7 +250,7 @@
     <a class="brand" href="{{ url_for('home') }}" aria-label="QMS home">
       <img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Company Logo">
       <span>
-        <strong>{{ company_name | default('SolarQMS™ Enterprise') }}</strong>
+        <strong>{{ company_name | default('XYZ Solar Pvt Limited') }}</strong>
         <small>In-Process &amp; CTQ Quality Intelligence</small>
       </span>
     </a>
