@@ -91,7 +91,7 @@ login_page = client.get("/login")
 assert login_page.status_code == 200
 assert b"login-shell" in login_page.data and b"data-theme-color" in login_page.data
 assert b"Controlled inspection" in login_page.data
-assert b"style.css?v=qms-appearance-1" in login_page.data and b"app.js?v=qms-appearance-1" in login_page.data
+assert b"style.css?v=sans-serif-1" in login_page.data and b"app.js?v=qms-appearance-1" in login_page.data
 login_style = (Path(__file__).resolve().parents[1] / "static" / "style.css").read_text(encoding="utf-8")
 assert "v1.23 — edge-to-edge login photograph" in login_style
 assert "v1.24 — keep every login element above one complete full-screen photograph" in login_style

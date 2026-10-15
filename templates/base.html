@@ -8,10 +8,7 @@
   <link rel="icon" href="{{ url_for('static', filename='company-logo.svg') }}">
   <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='company-logo.svg') }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='qms-appearance-1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='sans-serif-1') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='theme.css', v='qms-appearance-1') }}">
   <script defer src="{{ url_for('static', filename='app.js', v='qms-appearance-1') }}"></script>
   <style>
@@ -24,7 +21,8 @@
       -webkit-font-smoothing: antialiased;
     }
     .report-id, code, .mono-badge {
-      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace !important;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+      font-variant-numeric: tabular-nums;
     }
     /* Sidebar & Topbar Polish */
     .sidebar-brand-mark {
