@@ -16,10 +16,6 @@ from xml.sax.saxutils import escape
 from flask import Flask, abort, flash, g, redirect, render_template, request, send_file, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
-# PyInstaller places bundled templates, static files, definitions and PDF assets in
-# ``sys._MEIPASS`` while a one-file executable is running. Development installs
-# continue to use the project directory. The writable database is deliberately
-# outside the executable so an application update never replaces company records.
 SOURCE_ROOT = Path(__file__).resolve().parent
 FROZEN = bool(getattr(sys, 'frozen', False))
 ROOT = Path(getattr(sys, '_MEIPASS', SOURCE_ROOT)).resolve()
@@ -42,7 +38,7 @@ if not key_file.exists():
     except FileExistsError:
         pass
 
-COMPANY_NAME = os.environ.get('QMS_COMPANY_NAME', 'SolarQMS Enterprise')
+COMPANY_NAME = os.environ.get('QMS_COMPANY_NAME', 'XYZ Solar Pvt Limited')
 COMPANY_SHORT = os.environ.get('QMS_COMPANY_SHORT', 'SOLAR QMS')
 
 app = Flask(
@@ -66,7 +62,6 @@ FORMS = {
     'ribbon_peel': (CTQ_DEF['ribbon_peel']['name'], []),
     'adhesion': (CTQ_DEF['adhesion']['name'], []),
     'busbar_peel': (CTQ_DEF['busbar_peel']['name'], []),
-    # These two kinds are retained only so previously saved reports remain readable.
     'stringer': ('Stringer Parameter Report', ['Parameter', 'Reading']),
     'peel': ('Peel Test', ['Sample ID', 'Test position', 'Peel strength (N)', 'Acceptance criteria', 'Remarks']),
     'datapaq': ('DataPAQ Test', ['Profile ID', 'Sensor / channel', 'Minimum temperature (°C)', 'Maximum temperature (°C)', 'Duration (s)', 'Remarks']),
@@ -122,7 +117,6 @@ CTQ_MATERIAL_OPTIONS = {
 
 
 def observation_unit(parameter, field):
-    """Return the display unit for dimensional observation values."""
     parameter_text = str(parameter or '').casefold()
     field_text = str(field or '').strip().casefold()
     if 'anodizing thickness' in parameter_text:
@@ -147,7 +141,6 @@ def display_observation_value(parameter, field, value):
 
 
 def ribbon_not_required(track, position, peak):
-    """Return whether a controlled Ribbon Peel cell is marked NR in the source workbook."""
     rule = track.get('not_required', {})
     return position in rule.get('positions', []) and peak in rule.get('peaks', [])
 
@@ -161,7 +154,6 @@ def ribbon_calculation_key(track, side, position, suffix):
 
 
 def ctq_field_map(kind):
-    """Return every stored CTQ value key with its controlled field definition."""
     definition = CTQ_DEF[kind]
     fields = {}
     for section in definition['sections']:
@@ -239,7 +231,6 @@ def display_number(value):
 
 
 def prepare_ctq_payload(kind, submitted, action):
-    """Whitelist, validate, and calculate the controlled CTQ form payload."""
     if kind not in CTQ_DEF or not isinstance(submitted, dict):
         raise ValueError('Invalid CTQ test data.')
     definition = CTQ_DEF[kind]
@@ -388,7 +379,6 @@ def prepare_ctq_payload(kind, submitted, action):
 
 
 def refreshed_ctq_payload(kind, payload):
-    """Apply the current peel calculations for display without rewriting stored records."""
     if kind not in ('ribbon_peel', 'busbar_peel') or not isinstance(payload, dict):
         return payload
     if payload.get('format') != 'ctq-v1':
@@ -432,7 +422,6 @@ def close_db(error=None):
 
 
 def import_previous_demo():
-    """Read previous demo records once, leaving their source database untouched."""
     legacy_path = DATA / 'qualitysystem.db'
     if not legacy_path.exists() or db().execute('SELECT 1 FROM users LIMIT 1').fetchone():
         return
@@ -585,7 +574,7 @@ def headers(response):
         "default-src 'self'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com data:; "
-        "script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; "
+        "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; "
         "connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; "
         "worker-src 'self' blob:; child-src 'self' blob:; "
         "img-src 'self' data: blob:; form-action 'self'; frame-ancestors 'none'"
@@ -660,7 +649,6 @@ def logout():
 @app.post('/api/render-pdf')
 @require('operator')
 def render_pdf_page():
-    """Render page one of a scanner PDF in memory for the browser OCR workflow."""
     upload = request.files.get('pdf')
     if not upload or not upload.filename:
         abort(400, 'Select a scanner PDF and try again.')
@@ -782,7 +770,6 @@ def get_report(rid):
 
 
 def can_current_user_review(report):
-    """Allow the assigned incharge or any active administrator to review."""
     if report['status'] != 'Pending approval':
         return False
     if g.user['role'] == 'admin' and not is_superuser():
@@ -791,7 +778,6 @@ def can_current_user_review(report):
 
 
 def observation_value_present(value):
-    """Treat zero and other explicit values as filled, but not blank text or null."""
     if value is None:
         return False
     if isinstance(value, str):
@@ -800,7 +786,6 @@ def observation_value_present(value):
 
 
 def ipqc_stage_progress(payload):
-    """Calculate saved IPQC completion from observation fields, including legacy drafts."""
     stages = []
     for section in payload.get('sections', []):
         filled = 0
@@ -1197,7 +1182,6 @@ def make_pdf(reports, title, context=None):
         return Paragraph(clean(value), style)
 
     def rich(parts, style=body_style):
-        """Render trusted labels with escaped database values."""
         return Paragraph(''.join(parts), style)
 
     def label_value(label, value):
