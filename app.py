@@ -1149,14 +1149,15 @@ def make_pdf(reports, title, context=None):
         pdfmetrics.registerFont(TTFont('QMS-Bold', ROOT / 'assets' / 'fonts' / 'DejaVuSans-Bold.ttf'))
         pdfmetrics.registerFontFamily('QMS-Regular', normal='QMS-Regular', bold='QMS-Bold')
 
-    navy = colors.HexColor('#0B1F3A')
-    navy_2 = colors.HexColor('#163A63')
-    blue = colors.HexColor('#2D5B9B')
-    orange = colors.HexColor('#F4A62A')
-    pale_blue = colors.HexColor('#EAF1F8')
-    pale_orange = colors.HexColor('#FFF3DE')
-    line = colors.HexColor('#8998AA')
-    text_color = colors.HexColor('#172235')
+    # Fixed emerald palette keeps exported reports consistent across account themes.
+    navy = colors.HexColor('#123D2B')
+    navy_2 = colors.HexColor('#166044')
+    blue = colors.HexColor('#16845B')
+    orange = colors.HexColor('#2F946A')
+    pale_blue = colors.HexColor('#EAF6EF')
+    pale_orange = colors.HexColor('#EFF9F3')
+    line = colors.HexColor('#9BBCAF')
+    text_color = colors.HexColor('#173126')
     white = colors.white
 
     body_style = ParagraphStyle('PDFBody', fontName='QMS-Regular', fontSize=5.7,
@@ -1379,7 +1380,7 @@ def make_pdf(reports, title, context=None):
         ]], colWidths=[398, 398])
         status_strip.setStyle(TableStyle([
             ('GRID', (0, 0), (-1, -1), .35, line),
-            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#F7F9FC')),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#F3F9F5')),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('LEFTPADDING', (0, 0), (-1, -1), 4),
             ('RIGHTPADDING', (0, 0), (-1, -1), 4),
@@ -1419,7 +1420,7 @@ def make_pdf(reports, title, context=None):
         ]
         for row_index, section_index in enumerate(row_sections, 1):
             if section_index % 2:
-                commands.append(('BACKGROUND', (0, row_index), (-1, row_index), colors.HexColor('#F6F8FB')))
+                commands.append(('BACKGROUND', (0, row_index), (-1, row_index), colors.HexColor('#EFF7F2')))
             if row_index == 1 or row_sections[row_index - 2] != section_index:
                 commands.extend([
                     ('LINEABOVE', (0, row_index), (-1, row_index), 1.35, navy),
@@ -1596,7 +1597,7 @@ def make_pdf(reports, title, context=None):
                          strokeColor=line, strokeWidth=.45))
         for fraction in (0, .5, 1):
             y = bottom + chart_height * fraction
-            drawing.add(Line(left, y, left + chart_width, y, strokeColor=colors.HexColor('#D9E1EA'), strokeWidth=.35))
+            drawing.add(Line(left, y, left + chart_width, y, strokeColor=colors.HexColor('#D6E7DC'), strokeWidth=.35))
         threshold_y = bottom + chart_height * section['minimum'] / maximum
         threshold = Line(left, threshold_y, left + chart_width, threshold_y,
                          strokeColor=orange, strokeWidth=.8)
@@ -1779,7 +1780,7 @@ def make_pdf(reports, title, context=None):
         canvas.setStrokeColor(line)
         canvas.line(18, 21, page_width - 18, 21)
         canvas.setFont('QMS-Regular', 6.2)
-        canvas.setFillColor(colors.HexColor('#526174'))
+        canvas.setFillColor(colors.HexColor('#526D60'))
         footer_text = (f"{IPQC_DEF['document_no']} | Control Copy" if ipqc_only else
                        'DEMO/QAD/FM/L3/007 | Control Copy' if ribbon_only else
                        f'{COMPANY_NAME} | Controlled quality report')
