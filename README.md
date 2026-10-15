@@ -50,3 +50,7 @@ Existing records retain their saved values. Earlier reduced drafts must have the
 ## Validation
 
 Run `.venv/bin/python tools/smoke_test.py` from the project directory. The suite uses a temporary database and checks full IPQC fields, CTQ calculations and submissions, approvals, access controls, dashboards, and PDFs.
+
+## Customer overview
+
+Visitors can learn about the application at `/` or `/overview` before opening the demo. Signed-in users retain their dashboard at `/`. See [landing page notes and previews](docs/landing-page.md).

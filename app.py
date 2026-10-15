@@ -718,9 +718,15 @@ def selected_reports(day=None, shift=None, kind=None, line=None, kinds=None, inc
     ).fetchall()
 
 
+@app.get('/overview')
+def product_overview():
+    return render_template('landing.html')
+
+
 @app.get('/')
-@require()
 def home():
+    if not g.user:
+        return render_template('landing.html')
     if is_superuser():
         return redirect(url_for('users'))
     requested_module = request.args.get('module', '').lower()
