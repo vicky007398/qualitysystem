@@ -51,6 +51,6 @@ Existing records retain their saved values. Earlier reduced drafts must have the
 
 Run `.venv/bin/python tools/smoke_test.py` from the project directory. The suite uses a temporary database and checks full IPQC fields, CTQ calculations and submissions, approvals, access controls, dashboards, and PDFs.
 
-## Customer overview
+## Separate customer landing page
 
-Visitors can learn about the application at `/` or `/overview` before opening the demo. Signed-in users retain their dashboard at `/`. See [landing page notes and previews](docs/landing-page.md).
+`marketing/SolarQMS-Landing.html` is a standalone presentation page with embedded assets. Download and open it separately or host it as a separate website. The QMS application opens directly at login; the supplied factory photograph is used only on its login screen.

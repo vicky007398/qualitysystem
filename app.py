@@ -600,8 +600,6 @@ def helpers():
         ctq_definitions=CTQ_DEF, ctq_material_options=CTQ_MATERIAL_OPTIONS,
         observation_unit=observation_unit, display_observation_value=display_observation_value,
         is_superuser=is_superuser, company_name=COMPANY_NAME, company_short=COMPANY_SHORT,
-        landing_background_format=next((extension for extension in ('webp', 'png', 'jpg', 'jpeg')
-                                        if (ROOT / 'static' / 'product' / f'home-background.{extension}').is_file()), None),
     )
 
 
@@ -720,15 +718,9 @@ def selected_reports(day=None, shift=None, kind=None, line=None, kinds=None, inc
     ).fetchall()
 
 
-@app.get('/overview')
-def product_overview():
-    return render_template('landing.html')
-
-
 @app.get('/')
+@require()
 def home():
-    if not g.user:
-        return render_template('landing.html')
     if is_superuser():
         return redirect(url_for('users'))
     requested_module = request.args.get('module', '').lower()
