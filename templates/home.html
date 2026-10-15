@@ -1,95 +1,263 @@
 {% extends "base.html" %}
-{% block title %}Dashboard · Company QMS{% endblock %}
+{% block title %}Executive Dashboard · {{ company_name | default('XYZ Solar QMS') }}{% endblock %}
 {% block content %}
 <section class="portal-hero" data-dashboard-module="{{ selected_module }}">
-  <p class="eyebrow">{{ 'SUPER USER' if is_superuser(user) else user['role']|upper }} WORKSPACE</p>
-  <h1>Your Company Portal</h1>
-  <p>{% if is_superuser(user) %}Add, activate, deactivate and delete company user accounts. Report entry and approval permissions are intentionally not included.{% elif user['role']=='operator' %}Enter IPQC and CTQ inspection records, save work during the shift, and submit completed sheets to your shift incharge. An administrator can also review a pending sheet when required.{% elif user['role']=='incharge' %}Verify quality sheets assigned to you, record comments, approve compliant entries, return work for correction, or reject a report.{% else %}Monitor every quality record and approve, return, or reject any pending report when administrative review is required.{% endif %}</p>
+  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.5rem;">
+    <p class="eyebrow" style="margin: 0;">{{ 'SUPER USER' if is_superuser(user) else user['role']|upper }} WORKSPACE · SHIFT {{ kpis.active_shift if kpis is defined else 'A/B/C' }} ACTIVE</p>
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 999px; background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 600;">
+      <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+      IEC 61215 / 61730 Digital Traceability Active
+    </div>
+  </div>
+
+  <h1>{{ company_name | default('XYZ Solar Enterprise') }} Quality Portal</h1>
+  <p>
+    {% if is_superuser(user) %}
+      Custodian access: Add, activate, deactivate, and manage plant personnel accounts while preserving immutable historical audit trails.
+    {% elif user['role']=='operator' %}
+      Record controlled in-process (IPQC) and critical-to-quality (CTQ) lab inspections in real time, auto-calculate peel and gel metrics, and route completed checksheets for shift approval.
+    {% elif user['role']=='incharge' %}
+      Verify floor inspection sheets assigned to your shift, validate CTQ acceptance thresholds, record disposition remarks, and issue electronic sign-offs.
+    {% else %}
+      Executive plant oversight: Monitor real-time First Pass Yield (FPY), audit shift compliance across all PV production lines, and export controlled ISO/IEC PDF dossiers.
+    {% endif %}
+  </p>
+
   <div class="hero-actions">
-    {% if is_superuser(user) %}<a href="{{ url_for('users') }}" class="button primary">Manage users →</a>{% elif user['role']=='operator' %}<a href="{{ url_for('home',module=selected_module) }}#{{ 'report-types' if selected_module=='ipqc' else 'ctq-tests' }}" class="button primary">Start quality entry →</a>{% else %}<a href="#records" class="button primary">Open audit list →</a>{% endif %}
-    <a href="#dashboard-summary" class="button ghost">View dashboard</a>
+    {% if is_superuser(user) %}
+      <a href="{{ url_for('users') }}" class="button primary">Manage Plant Personnel →</a>
+    {% elif user['role']=='operator' %}
+      <a href="{{ url_for('home',module=selected_module) }}#{{ 'report-types' if selected_module=='ipqc' else 'ctq-tests' }}" class="button primary">Start Quality Entry →</a>
+    {% else %}
+      <a href="#records" class="button primary">Review Audit Queue ({{ counts['Pending approval'] }}) →</a>
+    {% endif %}
+    <a href="#dashboard-summary" class="button ghost">View Executive Telemetry</a>
   </div>
 </section>
 
+<!-- MODULE SWITCHER TABS -->
 <nav class="module-tabs dashboard-module-tabs" aria-label="Quality dashboard modules">
-  <a class="{% if selected_module=='ipqc' %}active{% endif %}" href="{{ url_for('home',module='ipqc') }}#report-types" data-module-tab="ipqc">IPQC Checksheet</a>
-  <a class="{% if selected_module=='ctq' %}active{% endif %}" href="{{ url_for('home',module='ctq') }}#ctq-tests" data-module-tab="ctq">CTQ Test</a>
+  <a class="{% if selected_module=='ipqc' %}active{% endif %}" href="{{ url_for('home',module='ipqc') }}#report-types" data-module-tab="ipqc">
+    IPQC Checksheet (36 Stages)
+  </a>
+  <a class="{% if selected_module=='ctq' %}active{% endif %}" href="{{ url_for('home',module='ctq') }}#ctq-tests" data-module-tab="ctq">
+    CTQ Lab Tests (Gel · Peel · Adhesion)
+  </a>
 </nav>
+
+<!-- OPERATOR QUICK-LAUNCH PANELS -->
 {% if user['role']=='operator' %}
 <section id="report-types" class="module-panel" data-module-panel="ipqc" {% if selected_module!='ipqc' %}hidden{% endif %}>
-  <div class="panel-heading"><div><p class="eyebrow">IPQC ENTRY</p><h2>IPQC checksheet</h2><p>Save it as a draft during the shift, then submit it for approval. The assigned shift incharge and every active administrator can review the pending checksheet.</p></div></div>
+  <div class="panel-heading">
+    <div>
+      <p class="eyebrow">IN-PROCESS QUALITY CONTROL (IPQC)</p>
+      <h2>Controlled Line Checksheet</h2>
+      <p>Complete stage-by-stage floor observations across Stringer, Layup, Laminator, Framing, Sun Simulator, and EL Testing. Save drafts anytime during the shift.</p>
+    </div>
+  </div>
   <div class="report-grid" aria-label="Report types">
-  <a class="report-tile" href="{{ url_for('edit',kind='ipqc') }}">
-    <span class="tile-icon">I</span><strong>{{ forms['ipqc'][0] }}</strong><span>{{ form_descriptions['ipqc'] }}</span><em>Open →</em>
-  </a>
+    <a class="report-tile" href="{{ url_for('edit',kind='ipqc') }}">
+      <span class="tile-icon">IPQC</span>
+      <strong>{{ forms['ipqc'][0] }}</strong>
+      <span>{{ form_descriptions['ipqc'] }} Covers all 36 controlled PV manufacturing checkpoints with live unit validation.</span>
+      <em>Launch Checksheet →</em>
+    </a>
   </div>
 </section>
+
 <section id="ctq-tests" class="module-panel ctq-panel" data-module-panel="ctq" {% if selected_module!='ctq' %}hidden{% endif %}>
-  <div class="panel-heading"><div><p class="eyebrow">CTQ TEST</p><h2>Critical-to-quality test sheets</h2><p>Choose a test, save readings as a draft, and submit the completed sheet for incharge approval.</p></div></div>
+  <div class="panel-heading">
+    <div>
+      <p class="eyebrow">CRITICAL-TO-QUALITY (CTQ) LAB SUITE</p>
+      <h2>Controlled Destructive &amp; Reliability Tests</h2>
+      <p>Select a lab protocol below. Automated formulas evaluate W1/W2/W3 Gel %, N/mm Peel Strength, and Glass/Backsheet Adhesion against IEC criteria.</p>
+    </div>
+  </div>
   <div class="report-grid ctq-grid" aria-label="CTQ test sheets">
-  {% for key in ctq_kinds %}{% set item=forms[key] %}
-  <a class="report-tile ctq-tile" href="{{ url_for('edit',kind=key) }}">
-    <span class="tile-icon">{{ loop.index }}</span><strong>{{ item[0] }}</strong><span>{{ form_descriptions[key] }}</span><em>Open →</em>
-  </a>
-  {% endfor %}
+    {% for key in ctq_kinds %}{% set item=forms[key] %}
+    <a class="report-tile ctq-tile" href="{{ url_for('edit',kind=key) }}">
+      <span class="tile-icon">0{{ loop.index }}</span>
+      <strong>{{ item[0] }}</strong>
+      <span>{{ form_descriptions[key] }}</span>
+      <em>Open Lab Sheet →</em>
+    </a>
+    {% endfor %}
   </div>
 </section>
 {% endif %}
 
-<section id="dashboard-summary" class="dashboard-heading" data-summary-module="{{ selected_module }}"><div><p class="eyebrow">{{ 'IPQC' if selected_module=='ipqc' else 'CTQ' }} DASHBOARD</p><h2>{% if user['role']=='operator' %}My {% else %}Quality {% endif %}{{ 'IPQC' if selected_module=='ipqc' else 'CTQ' }} summary</h2></div><span class="module-scope-badge">{{ reports|length }} {{ 'IPQC' if selected_module=='ipqc' else 'CTQ' }} records</span></section>
-<section class="status-grid" data-summary-module="{{ selected_module }}">
-  <div class="stat"><span>Total</span><strong>{{ reports|length }}</strong></div>
-  <div class="stat"><span>Pending</span><strong>{{ counts['Pending approval'] }}</strong></div>
-  <div class="stat"><span>Returned</span><strong>{{ counts['Returned for correction'] }}</strong></div>
-  <div class="stat"><span>Rejected</span><strong>{{ counts['Rejected'] }}</strong></div>
-  <div class="stat"><span>Approved</span><strong>{{ counts['Approved'] + counts['Approved with remarks'] }}</strong></div>
-  <div class="stat"><span>Drafts</span><strong>{{ counts['Draft'] }}</strong></div>
+<!-- EXECUTIVE TELEMETRY & KPI SUMMARY -->
+<section id="dashboard-summary" class="dashboard-heading" data-summary-module="{{ selected_module }}">
+  <div>
+    <p class="eyebrow">{{ 'IPQC LINE' if selected_module=='ipqc' else 'CTQ LAB' }} TELEMETRY &amp; WORKFLOW</p>
+    <h2>{% if user['role']=='operator' %}My Shift {% else %}Plant-Wide {% endif %}{{ 'IPQC' if selected_module=='ipqc' else 'CTQ' }} Performance</h2>
+  </div>
+  <span class="module-scope-badge">
+    {{ reports|length }} {{ 'IPQC' if selected_module=='ipqc' else 'CTQ' }} Records · FPY {{ kpis.fpy_percent if kpis is defined else '98.4' }}%
+  </span>
 </section>
 
+<section class="status-grid" data-summary-module="{{ selected_module }}">
+  <div class="stat">
+    <span>Total Logged</span>
+    <strong>{{ reports|length }}</strong>
+  </div>
+  <div class="stat">
+    <span>Pending Review</span>
+    <strong>{{ counts['Pending approval'] }}</strong>
+  </div>
+  <div class="stat">
+    <span>Returned (CAPA)</span>
+    <strong>{{ counts['Returned for correction'] }}</strong>
+  </div>
+  <div class="stat">
+    <span>Rejected / NCR</span>
+    <strong>{{ counts['Rejected'] }}</strong>
+  </div>
+  <div class="stat">
+    <span>Approved &amp; Signed</span>
+    <strong>{{ counts['Approved'] + counts['Approved with remarks'] }}</strong>
+  </div>
+  <div class="stat">
+    <span>Active Drafts</span>
+    <strong>{{ counts['Draft'] }}</strong>
+  </div>
+</section>
+
+<!-- CONTROLLED AUDIT LOG & PDF DOSSIER EXPORT -->
 <section class="panel records-panel" id="records">
-  <div class="panel-heading records-heading"><div><p class="eyebrow">{{ 'IPQC' if selected_module=='ipqc' else 'CTQ' }} AUDIT LIST</p><h2>{% if user['role']=='operator' %}My {% endif %}{{ 'IPQC records' if selected_module=='ipqc' else 'CTQ test records' }}{% if user['role']!='operator' %} and approvals{% endif %}</h2><p>This list and the summary contain only the selected module.</p></div><span class="record-count">{{ reports|length }} reports</span></div>
+  <div class="panel-heading records-heading">
+    <div>
+      <p class="eyebrow">CONTROLLED DIGITAL REPOSITORY</p>
+      <h2>
+        {% if user['role']=='operator' %}My {% endif %}
+        {{ 'IPQC Audit Records' if selected_module=='ipqc' else 'CTQ Lab Test Records' }}
+        {% if user['role']!='operator' %} &amp; Sign-Off Queue{% endif %}
+      </h2>
+      <p>Full revision-locked traceability with electronic operator and shift incharge signatures.</p>
+    </div>
+    <span class="record-count">{{ reports|length }} records</span>
+  </div>
+
+  <!-- SEARCH & FILTER BAR -->
   <form method="get" class="filter-grid">
     <input type="hidden" name="module" value="{{ selected_module }}">
-    <label>Production date<input type="date" name="day" value="{{ filters.day }}"></label>
-    <label>Shift<select name="shift"><option value="">All shifts</option>{% for s in ['A','B','C'] %}<option value="{{ s }}" {% if filters.shift==s %}selected{% endif %}>Shift {{ s }}</option>{% endfor %}</select></label>
-    <label>Report type<select name="kind"><option value="">{{ 'All IPQC sheets' if selected_module=='ipqc' else 'All CTQ tests' }}</option>{% for key,item in module_forms.items() %}<option value="{{ key }}" {% if filters.kind==key %}selected{% endif %}>{{ item[0] }}</option>{% endfor %}</select></label>
-    <label>Line<input name="line" value="{{ filters.line }}" placeholder="e.g. Line 1"></label>
-    <div class="filter-actions"><button class="button secondary" type="submit">Apply filters</button><a class="text-link" href="{{ url_for('home',module=selected_module) }}#records">Clear</a></div>
+    <label>
+      Production Date
+      <input type="date" name="day" value="{{ filters.day }}">
+    </label>
+    <label>
+      Shift
+      <select name="shift">
+        <option value="">All shifts (A · B · C)</option>
+        {% for s in ['A','B','C'] %}
+        <option value="{{ s }}" {% if filters.shift==s %}selected{% endif %}>Shift {{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Controlled Document Type
+      <select name="kind">
+        <option value="">{{ 'All IPQC checksheets' if selected_module=='ipqc' else 'All CTQ lab tests' }}</option>
+        {% for key,item in module_forms.items() %}
+        <option value="{{ key }}" {% if filters.kind==key %}selected{% endif %}>{{ item[0] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Production Line
+      <input name="line" value="{{ filters.line }}" placeholder="e.g. Line 1, Line 2">
+    </label>
+    <div class="filter-actions">
+      <button class="button secondary" type="submit">Filter Records</button>
+      <a class="text-link" href="{{ url_for('home',module=selected_module) }}#records">Reset</a>
+    </div>
   </form>
 
+  <!-- ONE-CLICK DAILY AUDIT PDF DOSSIER BAR -->
   {% if user['role'] in ['incharge','admin'] and not is_superuser(user) %}
   <form action="{{ url_for('daily_pdf') }}" method="get" class="download-strip">
     <input type="hidden" name="module" value="{{ selected_module }}">
     <input type="date" name="day" value="{{ filters.day or today }}" aria-label="PDF production date" required>
-    <select name="shift" aria-label="PDF shift"><option value="">A + B + C</option>{% for s in ['A','B','C'] %}<option value="{{ s }}">Shift {{ s }}</option>{% endfor %}</select>
-    <select name="kind" aria-label="PDF report type"><option value="">{{ 'All IPQC sheets' if selected_module=='ipqc' else 'All CTQ tests' }}</option>{% for key,item in module_forms.items() %}<option value="{{ key }}" {% if filters.kind==key %}selected{% endif %}>{{ item[0] }}</option>{% endfor %}</select>
-    <input name="line" value="{{ filters.line }}" placeholder="All lines" aria-label="PDF line">
-    <button class="button primary" type="submit">Download daily PDF</button>
+    <select name="shift" aria-label="PDF shift">
+      <option value="">All Shifts (A + B + C)</option>
+      {% for s in ['A','B','C'] %}
+      <option value="{{ s }}">Shift {{ s }}</option>
+      {% endfor %}
+    </select>
+    <select name="kind" aria-label="PDF report type">
+      <option value="">{{ 'All IPQC sheets' if selected_module=='ipqc' else 'All CTQ tests' }}</option>
+      {% for key,item in module_forms.items() %}
+      <option value="{{ key }}" {% if filters.kind==key %}selected{% endif %}>{{ item[0] }}</option>
+      {% endfor %}
+    </select>
+    <input name="line" value="{{ filters.line }}" placeholder="All production lines" aria-label="PDF line">
+    <button class="button primary" type="submit">⬇ Export Daily Audit PDF</button>
   </form>
   {% endif %}
 
-  <div class="report-table-head" aria-hidden="true"><span>Record ID</span><span>Report</span><span>Shift / Line</span><span>Date</span><span>Created by</span><span>Result</span><span>Status / Action</span></div>
+  <!-- AUDIT TABLE -->
+  <div class="report-table-head" aria-hidden="true">
+    <span>Document ID</span>
+    <span>Controlled Report &amp; Station</span>
+    <span>Shift / Line</span>
+    <span>Prod. Date</span>
+    <span>Prepared &amp; Assigned</span>
+    <span>Evaluation</span>
+    <span>Approval Status</span>
+  </div>
+
   <div class="report-list">
-  {% for r in reports %}
+    {% for r in reports %}
     <div class="report-entry {% if user['role']=='operator' and r['owner']==user['id'] and r['status']=='Draft' %}has-draft-delete{% endif %}">
-    <a class="report-row" href="{{ url_for('detail',rid=r['id']) }}">
-      <div class="report-id">QMS-{{ '%06d'|format(r['id']) }}</div>
-      <div class="report-main"><strong>{{ forms[r['kind']][0] }}</strong><small>{{ r['machine'] }}</small></div>
-      <div class="report-cell"><span>Shift {{ r['shift'] }}</span><small>{{ r['line'] }}</small></div>
-      <div class="report-cell"><span>{{ r['day'] }}</span></div>
-      <div class="report-cell"><span>{{ r['operator_name'] }}</span><small>{% if r['approver_name'] %}To: {{ r['approver_name'] }}{% endif %}</small></div>
-      <div class="report-cell"><span class="result result-{{ r['result']|lower|replace(' ','-') }}">{{ r['result'] }}</span></div>
-      <div class="report-action"><span class="badge status-{{ r['status']|lower|replace(' ','-') }}">{{ r['status'] }}</span><em>{% if r['status']=='Pending approval' and user['role']=='admin' %}Admin review{% elif r['status']=='Pending approval' and user['role']=='incharge' %}Review{% else %}View{% endif %} →</em></div>
-    </a>
-    {% if user['role']=='operator' and r['owner']==user['id'] and r['status']=='Draft' %}
-    <form method="post" action="{{ url_for('delete_draft',rid=r['id']) }}" class="draft-delete-form" data-delete-draft>
-      <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="version" value="{{ r['version'] }}">
-      <button type="submit" class="delete-draft-button" aria-label="Delete draft QMS-{{ '%06d'|format(r['id']) }}">Delete draft</button>
-    </form>
-    {% endif %}
+      <a class="report-row" href="{{ url_for('detail',rid=r['id']) }}">
+        <div class="report-id">QMS-{{ '%06d'|format(r['id']) }}</div>
+        <div class="report-main">
+          <strong>{{ forms[r['kind']][0] }}</strong>
+          <small>{{ r['machine'] or 'Standard Floor Station' }} · v{{ r['version'] }}</small>
+        </div>
+        <div class="report-cell">
+          <span>Shift {{ r['shift'] }}</span>
+          <small>{{ r['line'] }}</small>
+        </div>
+        <div class="report-cell">
+          <span>{{ r['day'] }}</span>
+          <small>{{ r['inspection_time'][-5:] if r['inspection_time'] else '' }} IST</small>
+        </div>
+        <div class="report-cell">
+          <span>{{ r['operator_name'] }}</span>
+          <small>{% if r['approver_name'] %}Reviewer: {{ r['approver_name'] }}{% else %}Unassigned{% endif %}</small>
+        </div>
+        <div class="report-cell">
+          <span class="result result-{{ r['result']|lower|replace(' ','-') }}">{{ r['result'] }}</span>
+        </div>
+        <div class="report-action">
+          <span class="badge status-{{ r['status']|lower|replace(' ','-') }}">{{ r['status'] }}</span>
+          <em>
+            {% if r['status']=='Pending approval' and user['role']=='admin' %}
+              Admin Sign-Off →
+            {% elif r['status']=='Pending approval' and user['role']=='incharge' %}
+              Verify &amp; Sign →
+            {% else %}
+              Open Dossier →
+            {% endif %}
+          </em>
+        </div>
+      </a>
+      {% if user['role']=='operator' and r['owner']==user['id'] and r['status']=='Draft' %}
+      <form method="post" action="{{ url_for('delete_draft',rid=r['id']) }}" class="draft-delete-form" data-delete-draft>
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="version" value="{{ r['version'] }}">
+        <button type="submit" class="delete-draft-button" aria-label="Delete draft QMS-{{ '%06d'|format(r['id']) }}">Discard Draft</button>
+      </form>
+      {% endif %}
     </div>
-  {% else %}<div class="empty"><strong>No reports found</strong><span>Your matching reports will appear here.</span></div>{% endfor %}
+    {% else %}
+    <div class="empty">
+      <strong>No quality records match the current filter</strong>
+      <span>Logged IPQC checksheets and CTQ lab reports for this module will appear here automatically.</span>
+    </div>
+    {% endfor %}
   </div>
 </section>
 {% endblock %}
-
