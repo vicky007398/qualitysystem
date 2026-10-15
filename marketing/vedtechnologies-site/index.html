@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolarQMS | Digital Quality Checksheets for Solar Manufacturing</title>
+    <meta name="description" content="Digitise solar manufacturing checksheets with structured inspection entry, shift incharge review, and downloadable PDF reports. Explore the SolarQMS demo.">
+    
+    <!-- Open Graph / Social Sharing Metadata -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SolarQMS | Digital Quality Checksheets for Solar Manufacturing">
+    <meta property="og:description" content="Digitise solar manufacturing checksheets with structured inspection entry, shift incharge review, and downloadable PDF reports. Explore the SolarQMS demo.">
+    <meta property="og:site_name" content="SolarQMS">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SolarQMS | Digital Quality Checksheets for Solar Manufacturing">
+    <meta name="twitter:description" content="Record inspections, submit reports for review, and keep approved quality records organised in one application.">
+
+    <!-- Inline SVG Favicon (Emerald & Deep Navy Checksheet Emblem) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230F172A'/%3E%3Cpath d='M9 9h14v14H9z' fill='none' stroke='%2310B981' stroke-width='2'/%3E%3Cpath d='M12 16l3 3 5-6' fill='none' stroke='%2310B981' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="assets/tailwind.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        navy: {
+                            950: '#070E1A',
+                            900: '#0B192C',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            600: '#334155',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Respect Reduced Motion Preferences */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto !important;
+            }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* High-Contrast Keyboard Focus Ring */
+        :focus-visible {
+            outline: 2px solid #10B981;
+            outline-offset: 2px;
+        }
+
+        /* Hero Industrial Background Layer
+           NOTE FOR DEPLOYMENT: If you have a local hero image file (e.g. assets/hero-solar-robotics.jpg),
+           replace the url() in .hero-bg-image below. A built-in SVG industrial solar manufacturing
+           line with robotic arms and solar panels is layered underneath so the hero always renders cleanly. */
+        .hero-bg-image {
+            background-color: #070E1A;
+            background-image: 
+                linear-gradient(105deg, rgba(7, 14, 26, 0.94) 0%, rgba(11, 25, 44, 0.88) 55%, rgba(15, 23, 42, 0.78) 100%),
+                url('assets/hero-solar-manufacturing.webp');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Subtle Industrial Blueprint Grid */
+        .industrial-grid {
+            background-size: 36px 36px;
+            background-image: 
+                linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-emerald-500 selection:text-white">
+
+    <!-- Skip to Content Link for Keyboard Accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-600 focus:text-white focus:font-semibold focus:rounded-lg shadow-lg">
+        Skip to main content
+    </a>
+
+    <!-- =====================================================================
+         3. NAVIGATION (COMPACT & STICKY HEADER)
+    ====================================================================== -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo: SolarQMS -->
+            <a href="#" class="flex items-center gap-2.5 group focus:outline-none" aria-label="SolarQMS Home">
+                <div class="w-9 h-9 rounded-lg bg-navy-900 flex items-center justify-center text-emerald-400 border border-slate-800 shadow-sm group-hover:bg-navy-800 transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <span class="font-bold text-lg tracking-tight text-navy-900">
+                    Solar<span class="text-emerald-600">QMS</span>
+                </span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600" aria-label="Primary Navigation">
+                <a href="#benefits" class="hover:text-emerald-600 transition-colors py-1">Benefits</a>
+                <a href="#modules" class="hover:text-emerald-600 transition-colors py-1">Modules</a>
+                <a href="#how-it-works" class="hover:text-emerald-600 transition-colors py-1">How It Works</a>
+                <a href="#product-preview" class="hover:text-emerald-600 transition-colors py-1">Product Preview</a>
+                <a href="#faq" class="hover:text-emerald-600 transition-colors py-1">FAQ</a>
+            </nav>
+
+            <!-- Desktop Action Buttons -->
+            <div class="hidden md:flex items-center gap-3">
+                <a href="mailto:rathodar110@gmail.com?subject=SolarQMS%20Walkthrough%20Request" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-700 hover:text-navy-900 hover:bg-slate-100 transition-colors">
+                    Request a Walkthrough
+                </a>
+                <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shadow-sm">
+                    <span>Open Demo</span>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" type="button" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu" class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-slate-700 hover:bg-slate-100 focus:outline-none" aria-label="Toggle navigation menu">
+                <svg id="menu-icon-open" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-3">
+            <nav class="flex flex-col space-y-2 text-sm font-medium text-slate-700" aria-label="Mobile Navigation">
+                <a href="#benefits" onclick="closeMobileMenu()" class="px-3 py-2 rounded-lg hover:bg-slate-100">Benefits</a>
+                <a href="#modules" onclick="closeMobileMenu()" class="px-3 py-2 rounded-lg hover:bg-slate-100">Modules</a>
+                <a href="#how-it-works" onclick="closeMobileMenu()" class="px-3 py-2 rounded-lg hover:bg-slate-100">How It Works</a>
+                <a href="#product-preview" onclick="closeMobileMenu()" class="px-3 py-2 rounded-lg hover:bg-slate-100">Product Preview</a>
+                <a href="#faq" onclick="closeMobileMenu()" class="px-3 py-2 rounded-lg hover:bg-slate-100">FAQ</a>
+            </nav>
+            <div class="pt-2 border-t border-slate-100 flex flex-col gap-2.5">
+                <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500">
+                    <span>Open Demo</span>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+                <a href="mailto:rathodar110@gmail.com?subject=SolarQMS%20Walkthrough%20Request" onclick="closeMobileMenu()" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-50">
+                    Request a Walkthrough
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- =====================================================================
+             4. HERO SECTION
+             Uses solar manufacturing robotic arms & solar panels backdrop with dark overlay
+        ====================================================================== -->
+        <section class="relative hero-bg-image text-white overflow-hidden border-b border-slate-800">
+            <!-- Architectural SVG Backdrop of Robotic Arms & Solar Panel Line (Ensures immediate visual fidelity + supports local image overlay) -->
+            <div class="absolute inset-0 pointer-events-none opacity-25" aria-hidden="true">
+                <svg class="w-full h-full object-cover" viewBox="0 0 1440 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                    <!-- Industrial Ceiling Grid -->
+                    <g stroke="#334155" stroke-width="1">
+                        <line x1="0" y1="120" x2="1440" y2="120"/>
+                        <line x1="0" y1="240" x2="1440" y2="240"/>
+                        <line x1="280" y1="0" x2="280" y2="800"/>
+                        <line x1="720" y1="0" x2="720" y2="800"/>
+                        <line x1="1160" y1="0" x2="1160" y2="800"/>
+                    </g>
+                    <!-- Robotic Arm 1 (Right-side Assembly) -->
+                    <g stroke="#10B981" stroke-width="3" opacity="0.65">
+                        <rect x="920" y="90" width="90" height="40" rx="4" fill="#0F172A"/>
+                        <line x1="965" y1="130" x2="880" y2="300" stroke-width="14" stroke="#475569"/>
+                        <circle cx="880" cy="300" r="18" fill="#0F172A" stroke="#10B981" stroke-width="3"/>
+                        <line x1="880" y1="300" x2="990" y2="440" stroke-width="10" stroke="#64748B"/>
+                        <circle cx="990" cy="440" r="14" fill="#0F172A" stroke="#10B981" stroke-width="3"/>
+                        <!-- Vacuum Suction Gripper Holding Solar Module -->
+                        <line x1="940" y1="465" x2="1040" y2="465" stroke-width="5" stroke="#10B981"/>
+                    </g>
+                    <!-- Robotic Arm 2 (Background Line) -->
+                    <g stroke="#38BDF8" stroke-width="2" opacity="0.4">
+                        <rect x="1200" y="110" width="70" height="30" rx="4" fill="#0F172A"/>
+                        <line x1="1235" y1="140" x2="1160" y2="290" stroke-width="10" stroke="#334155"/>
+                        <circle cx="1160" cy="290" r="14" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
+                        <line x1="1160" y1="290" x2="1240" y2="420" stroke-width="8" stroke="#475569"/>
+                    </g>
+                    <!-- Solar Panels on Automated Conveyor Line -->
+                    <g transform="translate(680, 490) skewX(-24)">
+                        <rect x="0" y="0" width="380" height="210" rx="4" fill="#0B192C" stroke="#10B981" stroke-width="2.5"/>
+                        <!-- Solar Cells Grid -->
+                        <line x1="63" y1="0" x2="63" y2="210" stroke="#1E293B" stroke-width="1.5"/>
+                        <line x1="126" y1="0" x2="126" y2="210" stroke="#1E293B" stroke-width="1.5"/>
+                        <line x1="189" y1="0" x2="189" y2="210" stroke="#1E293B" stroke-width="1.5"/>
+                        <line x1="252" y1="0" x2="252" y2="210" stroke="#1E293B" stroke-width="1.5"/>
+                        <line x1="315" y1="0" x2="315" y2="210" stroke="#1E293B" stroke-width="1.5"/>
+                        <line x1="0" y1="52" x2="380" y2="52" stroke="#1E293B" stroke-width="1.5"/>
+                        <line x1="0" y1="105" x2="380" y2="105" stroke="#1E293B" stroke-width="1.5"/>
+                        <line x1="0" y1="157" x2="380" y2="157" stroke="#1E293B" stroke-width="1.5"/>
+                    </g>
+                    <g transform="translate(1120, 490) skewX(-24)" opacity="0.6">
+                        <rect x="0" y="0" width="340" height="210" rx="4" fill="#0B192C" stroke="#334155" stroke-width="2"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Hero Copy Column -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <!-- Small Label -->
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/90 border border-slate-700 text-emerald-400 text-xs font-semibold tracking-wider uppercase">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true"></span>
+                            <span>DIGITAL QUALITY CHECKSHEETS FOR SOLAR MANUFACTURING</span>
+                        </div>
+
+                        <!-- Headline -->
+                        <h1 class="text-3xl sm:text-5xl lg:text-[52px] font-extrabold tracking-tight text-white leading-[1.12]">
+                            From paper checksheets to clear, approved quality records.
+                        </h1>
+
+                        <!-- Supporting Text -->
+                        <p class="text-lg sm:text-xl text-slate-200 leading-relaxed max-w-2xl">
+                            Record inspections, submit reports for review, and keep approved quality records organised in one application.
+                        </p>
+
+                        <!-- Primary & Secondary Buttons -->
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3.5 pt-2">
+                            <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-base font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shadow-lg">
+                                <span>Explore the Demo</span>
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                            <a href="#how-it-works" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-base font-semibold bg-slate-800/90 text-white border border-slate-600 hover:bg-slate-700 transition-colors">
+                                <span>See How It Works</span>
+                            </a>
+                        </div>
+
+                        <!-- Three Short Benefits -->
+                        <div class="pt-6 border-t border-slate-800/90 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm font-medium text-slate-200">
+                            <div class="flex items-center gap-2.5">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Structured inspection entry</span>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Shift incharge approval</span>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Downloadable PDF reports</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Right Column: Clean Schematic Summary of the Digital Workflow -->
+                    <div class="lg:col-span-5">
+                        <div class="rounded-2xl bg-navy-900/90 border border-slate-700/80 p-5 sm:p-6 shadow-2xl backdrop-blur-sm">
+                            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <span class="text-xs font-mono text-slate-300 ml-1">SolarQMS Workflow Overview</span>
+                                </div>
+                                <span class="px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-slate-800 text-emerald-400 border border-slate-700">
+                                    Demo data
+                                </span>
+                            </div>
+
+                            <!-- Structured Summary Cards -->
+                            <div class="space-y-3">
+                                <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-start justify-between gap-3">
+                                    <div>
+                                        <span class="text-[11px] font-mono uppercase text-slate-400 block">1. Inspection Entry</span>
+                                        <p class="text-sm font-semibold text-white mt-0.5">IPQC Checksheet · CTQ Test · IQC Test</p>
+                                        <p class="text-xs text-slate-300 mt-1">Operator records shift, line, and stage observations or saves draft.</p>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded text-xs font-mono bg-amber-500/15 text-amber-300 border border-amber-500/30 shrink-0">
+                                        Submitted
+                                    </span>
+                                </div>
+
+                                <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-start justify-between gap-3">
+                                    <div>
+                                        <span class="text-[11px] font-mono uppercase text-slate-400 block">2. Incharge Review</span>
+                                        <p class="text-sm font-semibold text-white mt-0.5">Shift Incharge Verification</p>
+                                        <p class="text-xs text-slate-300 mt-1">Reviews submitted values and records approval decision.</p>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded text-xs font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shrink-0">
+                                        Approved
+                                    </span>
+                                </div>
+
+                                <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-start justify-between gap-3">
+                                    <div>
+                                        <span class="text-[11px] font-mono uppercase text-slate-400 block">3. Record Output</span>
+                                        <p class="text-sm font-semibold text-white mt-0.5">Locked Record &amp; PDF Report</p>
+                                        <p class="text-xs text-slate-300 mt-1">Approved reports are locked against editing and ready for PDF download.</p>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded text-xs font-mono bg-slate-700 text-slate-200 border border-slate-600 shrink-0">
+                                        PDF Ready
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300">
+                                <span>Try the live demo environment</span>
+                                <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1">
+                                    <span>Open Login</span>
+                                    <span aria-hidden="true">→</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             5. THE PROBLEM WITH TRADITIONAL CHECKSHEETS
+        ====================================================================== -->
+        <section class="py-16 lg:py-24 bg-white border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">The Challenge with Manual Records</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-navy-900 tracking-tight">
+                        Quality records should be easy to complete—and easy to find.
+                    </h2>
+                </div>
+
+                <!-- Four Concise Problem Cards -->
+                <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Card 1 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-10 h-10 rounded-lg bg-slate-200/80 text-navy-900 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Paperwork piles up</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            Physical checksheets need filing and manual retrieval.
+                        </p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-10 h-10 rounded-lg bg-slate-200/80 text-navy-900 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Review takes follow-up</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            Teams must chase pending signatures and approvals.
+                        </p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-10 h-10 rounded-lg bg-slate-200/80 text-navy-900 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Records are scattered</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            Paper files and spreadsheets make inspection history harder to review.
+                        </p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-10 h-10 rounded-lg bg-slate-200/80 text-navy-900 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Reporting adds work</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            Teams spend time collecting and formatting records.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Summary Callout Banner -->
+                <div class="mt-8 rounded-xl bg-navy-900 text-white p-6 sm:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p class="text-base sm:text-lg font-medium text-slate-100">
+                            SolarQMS brings inspection entry, review, and report access into a structured digital workflow.
+                        </p>
+                    </div>
+                    <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-500 shrink-0 transition-colors">
+                        Open Demo →
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             6. PAPER AND EXCEL COMPARISON TABLE
+        ====================================================================== -->
+        <section class="py-16 lg:py-24 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl mb-10">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Practical Comparison</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl font-bold text-navy-900 tracking-tight">
+                        Comparing manual records with SolarQMS
+                    </h2>
+                    <p class="mt-2 text-base text-slate-600">
+                        A direct look at how everyday quality record activities work in SolarQMS compared with paper or manually maintained sheets.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 bg-slate-100/80 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                                    <th scope="col" class="py-4 px-6 w-1/4">Activity</th>
+                                    <th scope="col" class="py-4 px-6 w-3/8">Paper / manual Excel process</th>
+                                    <th scope="col" class="py-4 px-6 w-3/8 bg-emerald-50/70 text-navy-900 border-l border-emerald-200">
+                                        SolarQMS
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-sm">
+                                <tr class="hover:bg-slate-50/80">
+                                    <th scope="row" class="py-4 px-6 font-semibold text-navy-900">Inspection entry</th>
+                                    <td class="py-4 px-6 text-slate-600">Handwritten or individually maintained sheets</td>
+                                    <td class="py-4 px-6 bg-emerald-50/30 font-medium text-navy-900 border-l border-emerald-100">Structured digital checksheets</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80">
+                                    <th scope="row" class="py-4 px-6 font-semibold text-navy-900">Submission</th>
+                                    <td class="py-4 px-6 text-slate-600">Physical handover or file sharing</td>
+                                    <td class="py-4 px-6 bg-emerald-50/30 font-medium text-navy-900 border-l border-emerald-100">Submit within the application</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80">
+                                    <th scope="row" class="py-4 px-6 font-semibold text-navy-900">Review</th>
+                                    <td class="py-4 px-6 text-slate-600">Follow up for signatures or responses</td>
+                                    <td class="py-4 px-6 bg-emerald-50/30 font-medium text-navy-900 border-l border-emerald-100">Shift incharge reviews submitted reports</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80">
+                                    <th scope="row" class="py-4 px-6 font-semibold text-navy-900">Record access</th>
+                                    <td class="py-4 px-6 text-slate-600">Search folders and files</td>
+                                    <td class="py-4 px-6 bg-emerald-50/30 font-medium text-navy-900 border-l border-emerald-100">Access records through the application</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80">
+                                    <th scope="row" class="py-4 px-6 font-semibold text-navy-900">Report output</th>
+                                    <td class="py-4 px-6 text-slate-600">Scan sheets or format files manually</td>
+                                    <td class="py-4 px-6 bg-emerald-50/30 font-medium text-navy-900 border-l border-emerald-100">Download PDF reports</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80">
+                                    <th scope="row" class="py-4 px-6 font-semibold text-navy-900">Approved records</th>
+                                    <td class="py-4 px-6 text-slate-600">Protection depends on manual controls</td>
+                                    <td class="py-4 px-6 bg-emerald-50/30 font-medium text-navy-900 border-l border-emerald-100">Approved reports are locked against editing</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             7. INSPECTION MODULES
+        ====================================================================== -->
+        <section id="modules" class="py-16 lg:py-24 bg-white border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Inspection Modules</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-navy-900 tracking-tight">
+                        Built around the checksheets your quality team uses.
+                    </h2>
+                    <p class="mt-3 text-base sm:text-lg text-slate-600">
+                        Detailed checksheet fields support consistent record keeping across inspections.
+                    </p>
+                </div>
+
+                <!-- Three Verified Module Cards -->
+                <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Module 1: IPQC Checksheet -->
+                    <div class="rounded-2xl bg-slate-50 border border-slate-200 p-7 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-5">
+                                <span class="px-3 py-1 rounded-md text-xs font-mono font-semibold bg-navy-900 text-emerald-400">
+                                    In-Process Quality
+                                </span>
+                                <svg class="w-6 h-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-navy-900 mb-4">IPQC Checksheet</h3>
+                            <ul class="space-y-3 text-sm text-slate-700">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Detailed in-process quality checks.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Inspection context such as date, shift, line, and inspection time.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Production and material details where applicable.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Structured observations across manufacturing stages.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Operator submission and incharge review.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-200 text-xs font-mono text-slate-500">
+                            Includes stage observations &amp; review workflow
+                        </div>
+                    </div>
+
+                    <!-- Module 2: CTQ Test -->
+                    <div class="rounded-2xl bg-slate-50 border border-slate-200 p-7 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-5">
+                                <span class="px-3 py-1 rounded-md text-xs font-mono font-semibold bg-navy-900 text-emerald-400">
+                                    Critical to Quality
+                                </span>
+                                <svg class="w-6 h-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-navy-900 mb-4">CTQ Test</h3>
+                            <ul class="space-y-3 text-sm text-slate-700">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Critical-to-quality process parameter checks and sample readings.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Calculated results based on entered measurements.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Review, approval, and PDF output.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-200 text-xs font-mono text-slate-500">
+                            Calculates results from entered CTQ readings
+                        </div>
+                    </div>
+
+                    <!-- Module 3: IQC Test -->
+                    <div class="rounded-2xl bg-slate-50 border border-slate-200 p-7 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-5">
+                                <span class="px-3 py-1 rounded-md text-xs font-mono font-semibold bg-navy-900 text-emerald-400">
+                                    Incoming Quality
+                                </span>
+                                <svg class="w-6 h-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-navy-900 mb-4">IQC Test</h3>
+                            <ul class="space-y-3 text-sm text-slate-700">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Structured incoming material inspection and test readings.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Batch, lot, and specification checks with calculated outputs where applicable.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0"></span>
+                                    <span>Review, approval, and PDF output.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-200 text-xs font-mono text-slate-500">
+                            Structured IQC records with approval &amp; PDF export
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             8. SIMPLE WORKFLOW DIAGRAM & ROLE CARDS
+        ====================================================================== -->
+        <section id="how-it-works" class="py-16 lg:py-24 bg-navy-900 text-white border-b border-slate-800 industrial-grid">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">How It Works</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
+                        A simple flow from inspection to approval.
+                    </h2>
+                </div>
+
+                <!-- 5-Step Workflow Diagram (Horizontal on Desktop, Vertical on Mobile) -->
+                <div class="mt-10 bg-navy-800/90 border border-slate-700/80 rounded-2xl p-6 sm:p-8">
+                    <ol class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                        
+                        <!-- Step 1 -->
+                        <li class="flex-1 bg-navy-900/90 border border-slate-700 rounded-xl p-4 flex items-center gap-3.5">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">01</span>
+                            <span class="text-sm font-semibold text-white">Operator fills checksheet</span>
+                        </li>
+
+                        <!-- Connector -->
+                        <li class="flex justify-center text-emerald-400" aria-hidden="true">
+                            <svg class="w-5 h-5 rotate-90 lg:rotate-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </li>
+
+                        <!-- Step 2 -->
+                        <li class="flex-1 bg-navy-900/90 border border-slate-700 rounded-xl p-4 flex items-center gap-3.5">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">02</span>
+                            <span class="text-sm font-semibold text-white">Submits report</span>
+                        </li>
+
+                        <!-- Connector -->
+                        <li class="flex justify-center text-emerald-400" aria-hidden="true">
+                            <svg class="w-5 h-5 rotate-90 lg:rotate-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </li>
+
+                        <!-- Step 3 -->
+                        <li class="flex-1 bg-navy-900/90 border border-slate-700 rounded-xl p-4 flex items-center gap-3.5">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">03</span>
+                            <span class="text-sm font-semibold text-white">Shift incharge reviews</span>
+                        </li>
+
+                        <!-- Connector -->
+                        <li class="flex justify-center text-emerald-400" aria-hidden="true">
+                            <svg class="w-5 h-5 rotate-90 lg:rotate-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </li>
+
+                        <!-- Step 4 -->
+                        <li class="flex-1 bg-navy-900/90 border border-slate-700 rounded-xl p-4 flex items-center gap-3.5">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">04</span>
+                            <span class="text-sm font-semibold text-white">Approves report</span>
+                        </li>
+
+                        <!-- Connector -->
+                        <li class="flex justify-center text-emerald-400" aria-hidden="true">
+                            <svg class="w-5 h-5 rotate-90 lg:rotate-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </li>
+
+                        <!-- Step 5 -->
+                        <li class="flex-1 bg-emerald-950/60 border border-emerald-500/50 rounded-xl p-4 flex items-center gap-3.5">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-500 text-navy-950 font-mono text-xs font-bold flex items-center justify-center shrink-0">05</span>
+                            <span class="text-sm font-semibold text-emerald-300">Approved PDF available</span>
+                        </li>
+
+                    </ol>
+                </div>
+
+                <!-- Three Role Cards -->
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- Role 1: Operator -->
+                    <div class="rounded-2xl bg-navy-800/90 border border-slate-700/80 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">Operator</h3>
+                            <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">Individual Login</span>
+                        </div>
+                        <ul class="space-y-2.5 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Signs in with a separate login ID and password.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Enters inspection readings and saves work in draft.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Submits completed reports for review.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Role 2: Shift Incharge -->
+                    <div class="rounded-2xl bg-navy-800/90 border border-slate-700/80 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">Shift Incharge</h3>
+                            <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-emerald-400 border border-slate-700">Individual Login</span>
+                        </div>
+                        <ul class="space-y-2.5 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Signs in with a separate login ID and password.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Reviews submitted inspection details and records a review decision.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Approves reports after checking.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Role 3: Admin -->
+                    <div class="rounded-2xl bg-navy-800/90 border border-slate-700/80 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">Admin</h3>
+                            <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Dashboard &amp; Analysis</span>
+                        </div>
+                        <ul class="space-y-2.5 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Dedicated admin login with access to the full dashboard and attached analysis screen.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Oversees inspection records, submission status, and approval activity.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-400 font-bold">•</span>
+                                <span>Manages individual user credentials and permissions.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             9. PRODUCT SCREENSHOTS (INTERACTIVE GALLERY + CLICK TO ENLARGE)
+             Uses clearly labelled demo placeholders & schematic previews without inventing stats
+        ====================================================================== -->
+        <section id="product-preview" class="py-16 lg:py-24 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Product Preview</span>
+                        <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-navy-900 tracking-tight">
+                            See the application in action.
+                        </h2>
+                        <p class="mt-2 text-base text-slate-600">
+                            Select any screen below or click to enlarge. Sample records shown are labelled <span class="font-mono text-xs bg-slate-200 px-1.5 py-0.5 rounded text-slate-800">Demo data</span>.
+                        </p>
+                    </div>
+                    <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-navy-900 text-white hover:bg-navy-800 self-start md:self-auto">
+                        <span>Open Live Demo</span>
+                        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Tab Buttons for the 6 Screens -->
+                <div class="flex flex-wrap gap-2 mb-6" role="tablist" aria-label="Application Screen Previews">
+                    <button type="button" role="tab" id="tab-btn-0" aria-selected="true" aria-controls="preview-panel" onclick="selectScreen(0)" class="screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-navy-900 text-white shadow-sm transition-colors">
+                        1. Admin Dashboard &amp; Analysis
+                    </button>
+                    <button type="button" role="tab" id="tab-btn-1" aria-selected="false" aria-controls="preview-panel" onclick="selectScreen(1)" class="screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors">
+                        2. IPQC checksheet
+                    </button>
+                    <button type="button" role="tab" id="tab-btn-2" aria-selected="false" aria-controls="preview-panel" onclick="selectScreen(2)" class="screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors">
+                        3. Test report
+                    </button>
+                    <button type="button" role="tab" id="tab-btn-3" aria-selected="false" aria-controls="preview-panel" onclick="selectScreen(3)" class="screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors">
+                        4. Review screen
+                    </button>
+                    <button type="button" role="tab" id="tab-btn-4" aria-selected="false" aria-controls="preview-panel" onclick="selectScreen(4)" class="screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors">
+                        5. PDF report
+                    </button>
+                    <button type="button" role="tab" id="tab-btn-5" aria-selected="false" aria-controls="preview-panel" onclick="selectScreen(5)" class="screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors">
+                        6. User Login
+                    </button>
+                </div>
+
+                <!-- Active Screen Preview Frame -->
+                <div id="preview-panel" role="tabpanel" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <!-- Top Browser/Window Bar -->
+                    <div class="bg-navy-900 text-white px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5" aria-hidden="true">
+                                <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            </div>
+                            <span id="preview-title" class="font-semibold text-sm text-white">1. Dashboard</span>
+                            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                Demo data
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="preview-asset-path" class="hidden sm:inline text-xs font-mono text-slate-400">
+                                Placeholder: assets/screenshots/dashboard.png
+                            </span>
+                            <button type="button" onclick="openLightbox()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-emerald-400 hover:bg-slate-700 border border-slate-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                </svg>
+                                <span>Enlarge Preview</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Screen Visual Container -->
+                    <div class="p-5 sm:p-8 bg-slate-100/70">
+                        <!-- Note for Developer/Owner to drop in actual image files -->
+                        <div class="mb-4 px-4 py-2.5 rounded-lg bg-white border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                            <span>
+                                <strong class="text-navy-900">Screenshot Placeholder:</strong> Showing structured schematic preview with labelled <span class="font-mono">Demo data</span>. Replace with actual capture from <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline font-medium">qualitysystem.onrender.com</a> if desired.
+                            </span>
+                            <button type="button" onclick="openLightbox()" class="text-emerald-700 font-semibold hover:underline">
+                                Click to enlarge ↗
+                            </button>
+                        </div>
+
+                        <!-- Dynamic Schematic Preview Box (Clickable to enlarge) -->
+                        <div id="preview-schematic-box" onclick="openLightbox()" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openLightbox();}" role="button" aria-label="Enlarge current screen preview" class="cursor-pointer rounded-xl bg-white border-2 border-dashed border-slate-300 hover:border-emerald-500 transition-colors p-5 sm:p-8 min-h-[320px] flex flex-col justify-between">
+                            <!-- Populated by JavaScript based on selected tab -->
+                        </div>
+                    </div>
+
+                    <!-- Readable Caption Footer -->
+                    <div class="px-6 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <p id="preview-caption" class="text-sm font-medium text-navy-900">
+                            Admin Dashboard &amp; Analysis: View inspection records, report status, and the attached quality analysis screen.
+                        </p>
+                        <span class="text-xs text-slate-500">All sample entries are for demonstration only (Demo data).</span>
+                    </div>
+                </div>
+
+                <!-- Thumbnail Quick-Select Grid Below -->
+                <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <button type="button" onclick="selectScreen(0)" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 transition-colors">
+                        <span class="text-xs font-mono text-emerald-700 font-semibold">Screen 01</span>
+                        <h3 class="text-sm font-bold text-navy-900 mt-0.5">Dashboard &amp; Analysis</h3>
+                        <p class="text-xs text-slate-600 mt-1">Admin dashboard with attached analysis screen.</p>
+                    </button>
+                    <button type="button" onclick="selectScreen(1)" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 transition-colors">
+                        <span class="text-xs font-mono text-emerald-700 font-semibold">Screen 02</span>
+                        <h3 class="text-sm font-bold text-navy-900 mt-0.5">IPQC checksheet</h3>
+                        <p class="text-xs text-slate-600 mt-1">Enter structured inspection observations.</p>
+                    </button>
+                    <button type="button" onclick="selectScreen(2)" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 transition-colors">
+                        <span class="text-xs font-mono text-emerald-700 font-semibold">Screen 03</span>
+                        <h3 class="text-sm font-bold text-navy-900 mt-0.5">Test report</h3>
+                        <p class="text-xs text-slate-600 mt-1">Record CTQ or IQC test readings.</p>
+                    </button>
+                    <button type="button" onclick="selectScreen(3)" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 transition-colors">
+                        <span class="text-xs font-mono text-emerald-700 font-semibold">Screen 04</span>
+                        <h3 class="text-sm font-bold text-navy-900 mt-0.5">Review screen</h3>
+                        <p class="text-xs text-slate-600 mt-1">Inspect submitted values before approval.</p>
+                    </button>
+                    <button type="button" onclick="selectScreen(4)" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 transition-colors">
+                        <span class="text-xs font-mono text-emerald-700 font-semibold">Screen 05</span>
+                        <h3 class="text-sm font-bold text-navy-900 mt-0.5">PDF report</h3>
+                        <p class="text-xs text-slate-600 mt-1">Download an approved inspection record.</p>
+                    </button>
+                    <button type="button" onclick="selectScreen(5)" class="text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 transition-colors">
+                        <span class="text-xs font-mono text-emerald-700 font-semibold">Screen 06</span>
+                        <h3 class="text-sm font-bold text-navy-900 mt-0.5">User Login</h3>
+                        <p class="text-xs text-slate-600 mt-1">Separate login ID and password per user.</p>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             10. KEY BENEFITS (SIX SHORT CARDS)
+        ====================================================================== -->
+        <section id="benefits" class="py-16 lg:py-24 bg-white border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Key Benefits</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-navy-900 tracking-tight">
+                        Practical improvements for daily quality documentation.
+                    </h2>
+                </div>
+
+                <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Benefit 1 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Consistent entry</h3>
+                        <p class="mt-1.5 text-sm text-slate-600">
+                            Follow structured checksheet fields.
+                        </p>
+                    </div>
+
+                    <!-- Benefit 2 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Separate user logins</h3>
+                        <p class="mt-1.5 text-sm text-slate-600">
+                            Individual login ID and password for each operator, shift incharge, and admin.
+                        </p>
+                    </div>
+
+                    <!-- Benefit 3 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Long-term data safeguarding</h3>
+                        <p class="mt-1.5 text-sm text-slate-600">
+                            Securely safeguard inspection records for long-term use and compliance audits.
+                        </p>
+                    </div>
+
+                    <!-- Benefit 4 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Monthly &amp; yearly analysis</h3>
+                        <p class="mt-1.5 text-sm text-slate-600">
+                            Filter and analyze inspection records by specific months and years when required.
+                        </p>
+                    </div>
+
+                    <!-- Benefit 5 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Admin dashboard &amp; analysis</h3>
+                        <p class="mt-1.5 text-sm text-slate-600">
+                            Admins can view the main dashboard along with the attached analysis screen.
+                        </p>
+                    </div>
+
+                    <!-- Benefit 6 -->
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <div class="w-9 h-9 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center mb-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-bold text-navy-900">Professional PDF output</h3>
+                        <p class="mt-1.5 text-sm text-slate-600">
+                            Share readable inspection reports.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             11. WHO IT IS FOR (FOUR AUDIENCE CARDS)
+        ====================================================================== -->
+        <section class="py-16 lg:py-24 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Designed for Manufacturing Teams</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-navy-900 tracking-tight">
+                        Who it is for
+                    </h2>
+                </div>
+
+                <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Audience 1 -->
+                    <div class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+                        <span class="text-xs font-mono font-semibold text-emerald-700">Shop Floor</span>
+                        <h3 class="mt-1 text-lg font-bold text-navy-900">Operators</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            A clear place to enter inspection readings.
+                        </p>
+                    </div>
+
+                    <!-- Audience 2 -->
+                    <div class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+                        <span class="text-xs font-mono font-semibold text-emerald-700">Supervision</span>
+                        <h3 class="mt-1 text-lg font-bold text-navy-900">Shift Incharges</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            A structured review and approval process.
+                        </p>
+                    </div>
+
+                    <!-- Audience 3 -->
+                    <div class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+                        <span class="text-xs font-mono font-semibold text-emerald-700">Quality Assurance</span>
+                        <h3 class="mt-1 text-lg font-bold text-navy-900">Quality Managers</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            Easier access to inspection records.
+                        </p>
+                    </div>
+
+                    <!-- Audience 4 -->
+                    <div class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+                        <span class="text-xs font-mono font-semibold text-emerald-700">Leadership</span>
+                        <h3 class="mt-1 text-lg font-bold text-navy-900">Plant Management</h3>
+                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                            A clearer view of documented quality activity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             12. IMPLEMENTATION AND DATA STORAGE
+        ====================================================================== -->
+        <section class="py-16 lg:py-24 bg-white border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Implementation &amp; Deployment</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-navy-900 tracking-tight">
+                        Start with a focused pilot.
+                    </h2>
+                </div>
+
+                <!-- Four Steps -->
+                <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-md bg-navy-900 text-emerald-400 font-mono text-xs font-bold mb-3">1</span>
+                        <h3 class="text-base font-bold text-navy-900">Review your checksheets</h3>
+                        <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+                            Compare the demo modules against your current inspection forms and fields.
+                        </p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-md bg-navy-900 text-emerald-400 font-mono text-xs font-bold mb-3">2</span>
+                        <h3 class="text-base font-bold text-navy-900">Configure users and hosting</h3>
+                        <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+                            Set up operator, shift incharge, and admin accounts on your chosen hosting environment.
+                        </p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-md bg-navy-900 text-emerald-400 font-mono text-xs font-bold mb-3">3</span>
+                        <h3 class="text-base font-bold text-navy-900">Run a pilot</h3>
+                        <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+                            Trial digital entry and approval across selected shifts or inspection stages.
+                        </p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-6">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-md bg-navy-900 text-emerald-400 font-mono text-xs font-bold mb-3">4</span>
+                        <h3 class="text-base font-bold text-navy-900">Review results before wider rollout</h3>
+                        <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+                            Evaluate feedback from operators and supervisors before expanding plant-wide.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Careful Deployment & Storage Note -->
+                <div class="mt-8 rounded-xl bg-amber-50/80 border border-amber-200 p-5 sm:px-6 flex items-start gap-3.5">
+                    <svg class="w-5 h-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-sm text-amber-950 font-medium leading-relaxed">
+                        Production deployment should include persistent database storage, backups, and access settings appropriate for your company.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             13. FREQUENTLY ASKED QUESTIONS
+        ====================================================================== -->
+        <section id="faq" class="py-16 lg:py-24 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Questions &amp; Answers</span>
+                    <h2 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-navy-900 tracking-tight">
+                        Frequently asked questions
+                    </h2>
+                </div>
+
+                <div class="space-y-3" id="faq-accordion">
+                    <!-- FAQ 1 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(0)" aria-expanded="true" aria-controls="faq-panel-0" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Does this replace our inspection work?</span>
+                            <span id="faq-icon-0" class="text-emerald-600 font-mono text-lg leading-none">−</span>
+                        </button>
+                        <div id="faq-panel-0" class="px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            No. Your team still performs the inspections. The application digitises how readings are recorded, reviewed, and reported.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(1)" aria-expanded="false" aria-controls="faq-panel-1" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Can operators, shift incharges, and admins have separate logins?</span>
+                            <span id="faq-icon-1" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-1" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            Yes. Each user is assigned a separate login and password with role-specific permissions—operators enter readings, shift incharges review and approve, and admins can access the full dashboard and attached analysis screen.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(2)" aria-expanded="false" aria-controls="faq-panel-2" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Can we download inspection reports?</span>
+                            <span id="faq-icon-2" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-2" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            Yes. Inspection reports can be downloaded as PDFs.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(3)" aria-expanded="false" aria-controls="faq-panel-3" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Can we retain our detailed checksheet fields?</span>
+                            <span id="faq-icon-3" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-3" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            The demo includes detailed checksheets. Your company’s exact forms and requirements should be reviewed during onboarding.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 5 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(4)" aria-expanded="false" aria-controls="faq-panel-4" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Can it use our company name and branding?</span>
+                            <span id="faq-icon-4" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-4" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            Company branding can be discussed as part of deployment.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 6 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(5)" aria-expanded="false" aria-controls="faq-panel-5" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Can we use our own domain?</span>
+                            <span id="faq-icon-5" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-5" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            Yes. A custom domain can be connected to the hosting service.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 7 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(6)" aria-expanded="false" aria-controls="faq-panel-6" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>How is data stored and safeguarded for long-term use?</span>
+                            <span id="faq-icon-6" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-6" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            Data is safeguarded using persistent relational storage and backup plans. This ensures records remain accessible for long-term use and allows teams to analyze quality history by specific months and years when required.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 8 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(7)" aria-expanded="false" aria-controls="faq-panel-7" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Is the demo data real production data?</span>
+                            <span id="faq-icon-7" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-7" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            No. Sample records are for demonstration and evaluation.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 9 -->
+                    <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+                        <button type="button" onclick="toggleFaq(8)" aria-expanded="false" aria-controls="faq-panel-8" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-navy-900 hover:bg-slate-50 transition-colors">
+                            <span>Why might the demo take time to open?</span>
+                            <span id="faq-icon-8" class="text-emerald-600 font-mono text-lg leading-none">+</span>
+                        </button>
+                        <div id="faq-panel-8" class="hidden px-6 pb-5 text-sm text-slate-600 leading-relaxed">
+                            The demo uses hosting that may need time to start after inactivity. Hosting options can be reviewed for company deployment.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             14. FINAL CALL TO ACTION & CONFIGURABLE WALKTHROUGH DESTINATION
+        ====================================================================== -->
+        <section id="walkthrough" class="py-16 lg:py-24 bg-navy-900 text-white">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Get Started</span>
+                <h2 class="mt-2 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                    Make quality checksheets easier to manage.
+                </h2>
+                <p class="mt-4 text-lg text-slate-300 max-w-2xl mx-auto">
+                    Explore how your team can move from manual records to structured inspection entry and approval.
+                </p>
+
+                <!-- Primary CTA Buttons -->
+                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-base font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shadow-lg">
+                        <span>Open Demo</span>
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+
+                    <a href="mailto:rathodar110@gmail.com?subject=SolarQMS%20Walkthrough%20Request" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-base font-semibold bg-slate-800 text-white border border-slate-600 hover:bg-slate-700 transition-colors">
+                        <span>Request a Walkthrough</span>
+                    </a>
+                </div>
+
+                <!-- Direct Contact Details Card -->
+                <div id="walkthrough-contact-box" class="mt-10 max-w-2xl mx-auto rounded-2xl bg-navy-800 border border-slate-700 p-6 text-left transition-all">
+                    <div class="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-700">
+                        <span class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
+                            Walkthrough &amp; Deployment Inquiries
+                        </span>
+                        <span class="text-[11px] font-mono text-slate-400">Direct Email</span>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        To schedule a walkthrough or discuss your plant’s checksheet requirements, please reach out directly via email:
+                    </p>
+                    <div class="mt-4 p-3.5 rounded-xl bg-navy-900 border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <a href="mailto:rathodar110@gmail.com?subject=SolarQMS%20Walkthrough%20Request" class="text-sm font-mono text-emerald-400 hover:text-emerald-300 underline">
+                            rathodar110@gmail.com
+                        </a>
+                        <a href="mailto:rathodar110@gmail.com?subject=SolarQMS%20Walkthrough%20Request" class="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg shrink-0 text-center transition-colors">
+                            Send Email →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         15. FOOTER
+    ====================================================================== -->
+    <footer class="bg-navy-950 text-slate-400 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-slate-800/80">
+                
+                <!-- Brand & Short Description -->
+                <div class="md:col-span-5 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-navy-800 flex items-center justify-center text-emerald-400 border border-slate-700">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <span class="font-bold text-lg text-white">Solar<span class="text-emerald-400">QMS</span></span>
+                    </div>
+                    <p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+                        Digital quality checksheet entry, shift incharge review, and PDF reporting application for solar panel manufacturing companies.
+                    </p>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="md:col-span-4 space-y-2">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Navigation</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#benefits" class="hover:text-emerald-400 transition-colors">Benefits</a></li>
+                        <li><a href="#modules" class="hover:text-emerald-400 transition-colors">Modules</a></li>
+                        <li><a href="#how-it-works" class="hover:text-emerald-400 transition-colors">How It Works</a></li>
+                        <li><a href="#product-preview" class="hover:text-emerald-400 transition-colors">Product Preview</a></li>
+                        <li><a href="#faq" class="hover:text-emerald-400 transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Application Demo & Configurable Contact Details -->
+                <div class="md:col-span-3 space-y-3">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Application &amp; Contact</h3>
+                    <p class="text-sm">
+                        <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1">
+                            <span>Open SolarQMS Demo</span>
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                    </p>
+                    <div class="text-xs font-mono text-slate-300 p-2.5 rounded bg-navy-900 border border-slate-800">
+                        Contact: <a href="mailto:rathodar110@gmail.com?subject=SolarQMS%20Inquiry" class="text-emerald-400 hover:underline">rathodar110@gmail.com</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Copyright Row -->
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>© <span id="copyright-year">2026</span> SolarQMS. All rights reserved.</p>
+                <p>Sample records shown on this page represent demonstration data.</p>
+                <!-- PRIVACY & TERMS PLACEHOLDER:
+                     Uncomment and add real document URLs below only when actual Privacy Policy and Terms documents exist.
+                <div class="flex gap-4">
+                    <a href="/privacy.html" class="hover:text-slate-300">Privacy Policy</a>
+                    <a href="/terms.html" class="hover:text-slate-300">Terms of Use</a>
+                </div>
+                -->
+            </div>
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         ACCESSIBLE LIGHTBOX MODAL FOR ENLARGING PRODUCT SCREENSHOTS
+    ====================================================================== -->
+    <div id="lightbox-modal" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" class="fixed inset-0 z-50 hidden bg-navy-950/85 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
+        <div class="bg-white rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl border border-slate-300">
+            <div class="bg-navy-900 text-white px-5 py-4 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2.5">
+                    <h3 id="lightbox-title" class="font-bold text-base text-white">Screen Preview</h3>
+                    <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        Demo data
+                    </span>
+                </div>
+                <button type="button" onclick="closeLightbox()" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700">
+                    Close (Esc)
+                </button>
+            </div>
+            <div id="lightbox-body" class="p-6 sm:p-8 bg-slate-50 max-h-[75vh] overflow-y-auto">
+                <!-- Populated dynamically when enlarged -->
+            </div>
+            <div class="px-6 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+                <span id="lightbox-caption">Caption</span>
+                <a href="https://qualitysystem.onrender.com/login" target="_blank" rel="noopener noreferrer" class="font-semibold text-emerald-700 hover:underline">
+                    Open Live Demo Application ↗
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         INTERACTIVE SCRIPTS (TABS, LIGHTBOX, MOBILE MENU, FAQ)
+    ====================================================================== -->
+    <script>
+        // Set current copyright year
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-btn');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+            const isHidden = menu.classList.contains('hidden');
+
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded', 'true');
+                iconOpen.classList.add('hidden');
+                iconClose.classList.remove('hidden');
+            } else {
+                closeMobileMenu();
+            }
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-btn');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+
+            menu.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            iconOpen.classList.remove('hidden');
+            iconClose.classList.add('hidden');
+        }
+
+        // 6 Verified Product Screen Previews (Labelled "Demo data", zero fabricated plant statistics)
+        const screenPreviews = [
+            {
+                title: "1. Admin Dashboard & Monthly/Yearly Analysis",
+                caption: "Admin Dashboard & Analysis: Safeguard inspection history and analyze records by specific month and year.",
+                assetPath: "Placeholder: assets/screenshots/dashboard-analysis.png",
+                html: `
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-xs font-mono text-slate-500">ADMIN VIEW · LONG-TERM STORAGE &amp; MONTHLY/YEARLY ANALYSIS</span>
+                                <h4 class="text-lg font-bold text-navy-900">Dashboard &amp; Historical Date Filtering</h4>
+                            </div>
+                            <span class="px-2.5 py-1 rounded text-xs font-mono bg-slate-100 text-slate-700 border border-slate-300">Demo data</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2 space-y-3">
+                                <div class="p-3 bg-white rounded-lg border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold text-navy-900">Filter Year:</span>
+                                        <select class="px-2.5 py-1 rounded border border-slate-300 bg-slate-50 text-slate-800 font-mono">
+                                            <option>2026</option>
+                                            <option>2025</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold text-navy-900">Filter Month:</span>
+                                        <select class="px-2.5 py-1 rounded border border-slate-300 bg-slate-50 text-slate-800 font-mono">
+                                            <option>October</option>
+                                            <option>September</option>
+                                            <option>All Months</option>
+                                        </select>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-semibold">Apply Filter</span>
+                                </div>
+                                <div class="overflow-x-auto border border-slate-200 rounded-lg bg-white">
+                                    <table class="w-full text-left border-collapse text-xs">
+                                        <thead>
+                                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                                <th class="py-2 px-3">Report / Test</th>
+                                                <th class="py-2 px-3">Date</th>
+                                                <th class="py-2 px-3">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-200">
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-navy-900">IPQC Checksheet (Demo)</td>
+                                                <td class="py-2 px-3 text-slate-600 font-mono">Oct 15, 2026</td>
+                                                <td class="py-2 px-3"><span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px]">Approved</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-navy-900">CTQ Test (Demo)</td>
+                                                <td class="py-2 px-3 text-slate-600 font-mono">Oct 14, 2026</td>
+                                                <td class="py-2 px-3"><span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px]">Approved</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-lg bg-emerald-50/70 border border-emerald-200 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[11px] font-mono uppercase font-semibold text-emerald-800">Long-Term Safeguarding</span>
+                                    <h5 class="text-sm font-bold text-navy-900 mt-1">Monthly &amp; Yearly Analysis</h5>
+                                    <p class="text-xs text-slate-600 mt-1">Safeguard inspection records securely over years of production and filter reports by specific months and years for audits and quality reviews.</p>
+                                </div>
+                                <div class="mt-3 pt-2.5 border-t border-emerald-200/80 text-xs font-mono text-emerald-900">
+                                    <span>Historical Data Ready</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "2. IPQC checksheet",
+                caption: "IPQC checksheet: Enter structured inspection observations.",
+                assetPath: "Placeholder: assets/screenshots/ipqc-checksheet.png",
+                html: `
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-xs font-mono text-slate-500">INSPECTION ENTRY FORM</span>
+                                <h4 class="text-lg font-bold text-navy-900">IPQC Checksheet</h4>
+                            </div>
+                            <span class="px-2.5 py-1 rounded text-xs font-mono bg-slate-100 text-slate-700 border border-slate-300">Demo data</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                            <div class="p-2.5 rounded bg-slate-50 border border-slate-200">
+                                <span class="text-slate-500 block">Date</span>
+                                <span class="font-semibold text-navy-900">Sample Date (Demo)</span>
+                            </div>
+                            <div class="p-2.5 rounded bg-slate-50 border border-slate-200">
+                                <span class="text-slate-500 block">Shift</span>
+                                <span class="font-semibold text-navy-900">Shift A (Demo)</span>
+                            </div>
+                            <div class="p-2.5 rounded bg-slate-50 border border-slate-200">
+                                <span class="text-slate-500 block">Line</span>
+                                <span class="font-semibold text-navy-900">Line 1 (Demo)</span>
+                            </div>
+                            <div class="p-2.5 rounded bg-slate-50 border border-slate-200">
+                                <span class="text-slate-500 block">Entry Mode</span>
+                                <span class="font-semibold text-emerald-700">Operator Form</span>
+                            </div>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-2 text-xs sm:text-sm">
+                            <div class="font-semibold text-navy-900">Stage Observations &amp; Checksheet Fields</div>
+                            <p class="text-slate-600">Structured fields for recording in-process observations, material context, and stage checks before saving as draft or submitting for review.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "3. Test report",
+                caption: "Test report: Record CTQ or IQC test readings.",
+                assetPath: "Placeholder: assets/screenshots/test-report.png",
+                html: `
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-xs font-mono text-slate-500">TEST READINGS &amp; CALCULATED RESULTS</span>
+                                <h4 class="text-lg font-bold text-navy-900">CTQ / IQC Test Report</h4>
+                            </div>
+                            <span class="px-2.5 py-1 rounded text-xs font-mono bg-slate-100 text-slate-700 border border-slate-300">Demo data</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                                <span class="text-slate-500 block">Sample Reading 1</span>
+                                <span class="font-mono font-semibold text-navy-900 text-sm">Entered Measurement (Demo)</span>
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                                <span class="text-slate-500 block">Sample Reading 2</span>
+                                <span class="font-mono font-semibold text-navy-900 text-sm">Entered Measurement (Demo)</span>
+                            </div>
+                            <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                                <span class="text-emerald-800 block">Calculated Output</span>
+                                <span class="font-mono font-bold text-emerald-900 text-sm">Derived from Entered Values</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600">Operators record CTQ or IQC sample measurements and inspection details; calculated results are generated from the entered readings for review.</p>
+                    </div>
+                `
+            },
+            {
+                title: "4. Review screen",
+                caption: "Review screen: Inspect submitted values before approval.",
+                assetPath: "Placeholder: assets/screenshots/review-screen.png",
+                html: `
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-xs font-mono text-slate-500">SHIFT INCHARGE VERIFICATION</span>
+                                <h4 class="text-lg font-bold text-navy-900">Submitted Report Review Screen</h4>
+                            </div>
+                            <span class="px-2.5 py-1 rounded text-xs font-mono bg-slate-100 text-slate-700 border border-slate-300">Demo data</span>
+                        </div>
+                        <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2 text-xs sm:text-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold text-navy-900">Submission Status: Pending Incharge Review</span>
+                                <span class="font-mono text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Submitted</span>
+                            </div>
+                            <p class="text-slate-600">Shift incharge inspects all submitted observations and calculated test values before recording a review decision and approving the report.</p>
+                        </div>
+                        <div class="flex items-center gap-3 pt-1">
+                            <span class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white">Approve Report (Demo View)</span>
+                            <span class="text-xs text-slate-500">Locks record against further editing once approved</span>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "5. PDF report",
+                caption: "PDF report: Download an approved inspection record.",
+                assetPath: "Placeholder: assets/screenshots/pdf-report.png",
+                html: `
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-xs font-mono text-slate-500">APPROVED RECORD OUTPUT</span>
+                                <h4 class="text-lg font-bold text-navy-900">Downloadable PDF Inspection Report</h4>
+                            </div>
+                            <span class="px-2.5 py-1 rounded text-xs font-mono bg-slate-100 text-slate-700 border border-slate-300">Demo data</span>
+                        </div>
+                        <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="space-y-1 text-xs sm:text-sm">
+                                <div class="font-bold text-navy-900">Formatted Inspection Record (PDF)</div>
+                                <p class="text-slate-600">Contains structured checksheet entries, calculated test results, and approval status in a clean, shareable document.</p>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-navy-900 text-white shrink-0">
+                                <span>Download PDF</span>
+                            </span>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "6. User Login",
+                caption: "User Login: Separate login ID and password for each operator, shift incharge, and admin.",
+                assetPath: "Placeholder: assets/screenshots/user-login.png",
+                html: `
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-xs font-mono text-slate-500">ROLE-BASED AUTHENTICATION</span>
+                                <h4 class="text-lg font-bold text-navy-900">Separate Login &amp; Password per User</h4>
+                            </div>
+                            <span class="px-2.5 py-1 rounded text-xs font-mono bg-slate-100 text-slate-700 border border-slate-300">Demo data</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200">
+                                <span class="font-mono text-emerald-700 font-semibold block">Operator Account</span>
+                                <p class="text-slate-600 mt-1">Individual login credentials to fill checksheets, save drafts, and submit reports.</p>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200">
+                                <span class="font-mono text-emerald-700 font-semibold block">Shift Incharge Account</span>
+                                <p class="text-slate-600 mt-1">Individual login credentials to verify submitted values and approve records.</p>
+                            </div>
+                            <div class="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200">
+                                <span class="font-mono text-emerald-900 font-semibold block">Admin Account</span>
+                                <p class="text-slate-700 mt-1">Dedicated login with full access to the dashboard and attached analysis screen.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let currentScreenIndex = 0;
+
+        function selectScreen(index) {
+            currentScreenIndex = index;
+            const item = screenPreviews[index];
+
+            document.getElementById('preview-title').textContent = item.title;
+            document.getElementById('preview-caption').textContent = item.caption;
+            document.getElementById('preview-asset-path').textContent = item.assetPath;
+            document.getElementById('preview-schematic-box').innerHTML = item.html;
+
+            // Update tab button styles and ARIA attributes
+            for (let i = 0; i < screenPreviews.length; i++) {
+                const btn = document.getElementById('tab-btn-' + i);
+                if (i === index) {
+                    btn.setAttribute('aria-selected', 'true');
+                    btn.className = "screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-navy-900 text-white shadow-sm transition-colors";
+                } else {
+                    btn.setAttribute('aria-selected', 'false');
+                    btn.className = "screen-tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors";
+                }
+            }
+        }
+
+        function openLightbox() {
+            const item = screenPreviews[currentScreenIndex];
+            document.getElementById('lightbox-title').textContent = item.title;
+            document.getElementById('lightbox-caption').textContent = item.caption;
+            document.getElementById('lightbox-body').innerHTML = item.html;
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+
+        // Close lightbox on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // FAQ Accordion Toggle
+        function toggleFaq(index) {
+            const panel = document.getElementById('faq-panel-' + index);
+            const icon = document.getElementById('faq-icon-' + index);
+            const btn = panel.previousElementSibling;
+            const isHidden = panel.classList.contains('hidden');
+
+            if (isHidden) {
+                panel.classList.remove('hidden');
+                icon.textContent = '−';
+                btn.setAttribute('aria-expanded', 'true');
+            } else {
+                panel.classList.add('hidden');
+                icon.textContent = '+';
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        // Highlight configurable contact destination box when Request a Walkthrough is clicked
+        function highlightContactBox() {
+            const box = document.getElementById('walkthrough-contact-box');
+            box.classList.add('ring-2', 'ring-emerald-400');
+            setTimeout(() => {
+                box.classList.remove('ring-2', 'ring-emerald-400');
+            }, 2200);
+        }
+
+        // Initialize first screen preview on load
+        selectScreen(0);
+    </script>
+</body>
+</html>
