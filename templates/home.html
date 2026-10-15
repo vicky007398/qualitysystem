@@ -2,15 +2,14 @@
 {% block title %}Executive Dashboard · {{ company_name | default('XYZ Solar QMS') }}{% endblock %}
 {% block content %}
 <section class="portal-hero" data-dashboard-module="{{ selected_module }}">
-  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.5rem;">
+  <div class="hero-telemetry-bar">
     <p class="eyebrow" style="margin: 0;">{{ 'SUPER USER' if is_superuser(user) else user['role']|upper }} WORKSPACE · SHIFT {{ kpis.active_shift if kpis is defined else 'A/B/C' }} ACTIVE</p>
-    <div style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 999px; background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 600;">
-      <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-      IEC 61215 / 61730 Digital Traceability Active
+    <div class="iec-compliance-pill">
+      <i></i> IEC 61215 / 61730 Digital Traceability Active
     </div>
   </div>
 
-  <h1>{{ company_name | default('XYZ Solar Enterprise') }} Quality Portal</h1>
+  <h1>{{ company_name | default('XYZ Solar Pvt Limited') }} Quality Portal</h1>
   <p>
     {% if is_superuser(user) %}
       Custodian access: Add, activate, deactivate, and manage plant personnel accounts while preserving immutable historical audit trails.
@@ -35,7 +34,6 @@
   </div>
 </section>
 
-<!-- MODULE SWITCHER TABS -->
 <nav class="module-tabs dashboard-module-tabs" aria-label="Quality dashboard modules">
   <a class="{% if selected_module=='ipqc' %}active{% endif %}" href="{{ url_for('home',module='ipqc') }}#report-types" data-module-tab="ipqc">
     IPQC Checksheet (36 Stages)
@@ -45,7 +43,6 @@
   </a>
 </nav>
 
-<!-- OPERATOR QUICK-LAUNCH PANELS -->
 {% if user['role']=='operator' %}
 <section id="report-types" class="module-panel" data-module-panel="ipqc" {% if selected_module!='ipqc' %}hidden{% endif %}>
   <div class="panel-heading">
@@ -86,7 +83,6 @@
 </section>
 {% endif %}
 
-<!-- EXECUTIVE TELEMETRY & KPI SUMMARY -->
 <section id="dashboard-summary" class="dashboard-heading" data-summary-module="{{ selected_module }}">
   <div>
     <p class="eyebrow">{{ 'IPQC LINE' if selected_module=='ipqc' else 'CTQ LAB' }} TELEMETRY &amp; WORKFLOW</p>
@@ -124,7 +120,6 @@
   </div>
 </section>
 
-<!-- CONTROLLED AUDIT LOG & PDF DOSSIER EXPORT -->
 <section class="panel records-panel" id="records">
   <div class="panel-heading records-heading">
     <div>
@@ -139,7 +134,6 @@
     <span class="record-count">{{ reports|length }} records</span>
   </div>
 
-  <!-- SEARCH & FILTER BAR -->
   <form method="get" class="filter-grid">
     <input type="hidden" name="module" value="{{ selected_module }}">
     <label>
@@ -174,7 +168,6 @@
     </div>
   </form>
 
-  <!-- ONE-CLICK DAILY AUDIT PDF DOSSIER BAR -->
   {% if user['role'] in ['incharge','admin'] and not is_superuser(user) %}
   <form action="{{ url_for('daily_pdf') }}" method="get" class="download-strip">
     <input type="hidden" name="module" value="{{ selected_module }}">
@@ -196,7 +189,6 @@
   </form>
   {% endif %}
 
-  <!-- AUDIT TABLE -->
   <div class="report-table-head" aria-hidden="true">
     <span>Document ID</span>
     <span>Controlled Report &amp; Station</span>
