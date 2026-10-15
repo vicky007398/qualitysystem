@@ -12,4 +12,4 @@ This branch does not include the separate `green-pdf-theme` change. It has not b
 
 ## Supplied homepage photograph
 
-The requested robot/solar-panel image arrived inline in chat without a downloadable file reference. Its exact original bytes are still needed. Upload the image directly to `static/product/` on this branch, named `home-background.png`, `home-background.jpg`, `home-background.jpeg`, or `home-background.webp` (keep the original format). The landing page detects the file and applies it automatically behind the main hero with a dark readability overlay. It uses a dark fallback without requesting missing image files until the asset is added. The existing product screenshots remain in the hero and feature sections.
+The supplied robot/solar-panel photograph is installed at `static/product/home-background.webp`. It was taken from the user's uploaded `presentations/Gemini_Generated_Image_sl7dafsl7dafsl7d.png` and encoded as lossless WebP: dimensions and decoded RGB pixels are unchanged. The hero uses a dark overlay to keep white headings and buttons readable, with responsive positioning on mobile.
