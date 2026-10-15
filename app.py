@@ -600,6 +600,8 @@ def helpers():
         ctq_definitions=CTQ_DEF, ctq_material_options=CTQ_MATERIAL_OPTIONS,
         observation_unit=observation_unit, display_observation_value=display_observation_value,
         is_superuser=is_superuser, company_name=COMPANY_NAME, company_short=COMPANY_SHORT,
+        landing_background_format=next((extension for extension in ('webp', 'png', 'jpg', 'jpeg')
+                                        if (ROOT / 'static' / 'product' / f'home-background.{extension}').is_file()), None),
     )
 
 

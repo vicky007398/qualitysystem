@@ -9,3 +9,7 @@ Preview: [desktop](previews/landing-full.webp), [mobile](previews/landing-mobile
 Verification: `python tools/landing_test.py`, account appearance checks, existing IPQC submission/approval/PDF validation, and browser checks at 360, 390, 768, 1024, and 1440 pixels. The landing page works without JavaScript; disclosure questions use native HTML.
 
 This branch does not include the separate `green-pdf-theme` change. It has not been deployed to Render. The live demo previously lost records, so configure persistent storage and migrate or restore the existing demo data before publishing changes that restart that service.
+
+## Supplied homepage photograph
+
+The requested robot/solar-panel image arrived inline in chat without a downloadable file reference. Its exact original bytes are still needed. Upload the image directly to `static/product/` on this branch, named `home-background.png`, `home-background.jpg`, `home-background.jpeg`, or `home-background.webp` (keep the original format). The landing page detects the file and applies it automatically behind the main hero with a dark readability overlay. It uses a dark fallback without requesting missing image files until the asset is added. The existing product screenshots remain in the hero and feature sections.
