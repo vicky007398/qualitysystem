@@ -3,77 +3,148 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f7f9fc" data-theme-color>
-  <title>{% block title %}Company QMS{% endblock %}</title>
+  <meta name="theme-color" content="#0b1324" data-theme-color>
+  <title>{% block title %}SolarQMS™ · Enterprise Quality Intelligence{% endblock %}</title>
   <link rel="icon" href="{{ url_for('static', filename='company-logo.svg') }}">
   <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='company-logo.svg') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='qms-appearance-1') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='theme.css', v='qms-appearance-1') }}">
-  <script defer src="{{ url_for('static', filename='app.js', v='qms-appearance-1') }}"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='qms-appearance-2') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme.css', v='qms-appearance-2') }}">
+  <script defer src="{{ url_for('static', filename='app.js', v='qms-appearance-2') }}"></script>
 </head>
 <body class="{% if user %}authenticated{% endif %}">
   {% if user %}
   <aside id="desktop-sidebar" class="desktop-sidebar" aria-label="Main navigation">
-    <a class="sidebar-brand" href="{{ url_for('home') }}" aria-label="Company QMS home">
-      <span class="sidebar-brand-mark" aria-hidden="true">✓</span>
-      <span class="sidebar-brand-copy"><strong>COMPANY QMS</strong><small>Quality Management</small></span>
+    <a class="sidebar-brand" href="{{ url_for('home') }}" aria-label="SolarQMS home">
+      <span class="sidebar-brand-mark" aria-hidden="true">☀</span>
+      <span class="sidebar-brand-copy">
+        <strong>SOLAR QMS™</strong>
+        <small>PV Quality &amp; Traceability</small>
+      </span>
     </a>
+
     <nav class="sidebar-nav">
-      <a class="{% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}"><span class="nav-icon">⌂</span><span>Home</span></a>
-      {% if user['role'] == 'operator' and not is_superuser(user) %}<a href="{{ url_for('home',module='ipqc') }}#report-types"><span class="nav-icon">＋</span><span>Report Entry</span></a>{% endif %}
-      {% if user['role'] == 'operator' and not is_superuser(user) %}<a href="{{ url_for('home',module='ctq') }}#ctq-tests"><span class="nav-icon">◫</span><span>CTQ Test</span></a>{% endif %}
-      {% if not is_superuser(user) %}<a href="{{ url_for('home') }}#records"><span class="nav-icon">▤</span><span>{% if user['role']=='operator' %}My Records{% else %}Quality Records{% endif %}</span></a>{% endif %}
-      {% if user['role'] in ['incharge','admin'] and not is_superuser(user) %}<a href="{{ url_for('home') }}#records"><span class="nav-icon">✓</span><span>Approvals</span></a>{% endif %}
-      {% if is_superuser(user) %}<a class="{% if request.endpoint == 'users' %}active{% endif %}" href="{{ url_for('users') }}"><span class="nav-icon">◎</span><span>User Management</span></a>{% endif %}
-      <a class="{% if request.endpoint == 'password' %}active{% endif %}" href="{{ url_for('password') }}"><span class="nav-icon">◇</span><span>Change Password</span></a>
-      <a class="{% if request.endpoint == 'appearance' %}active{% endif %}" href="{{ url_for('appearance') }}"><span class="nav-icon" aria-hidden="true">◐</span><span>Appearance & colours</span></a>
+      <a class="{% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}">
+        <span class="nav-icon">⌂</span>
+        <span>Executive Dashboard</span>
+      </a>
+      {% if user['role'] == 'operator' and not is_superuser(user) %}
+      <a href="{{ url_for('home',module='ipqc') }}#report-types">
+        <span class="nav-icon">＋</span>
+        <span>IPQC Checksheet</span>
+      </a>
+      <a href="{{ url_for('home',module='ctq') }}#ctq-tests">
+        <span class="nav-icon">◫</span>
+        <span>CTQ Lab Suite</span>
+      </a>
+      {% endif %}
+      {% if not is_superuser(user) %}
+      <a href="{{ url_for('home') }}#records">
+        <span class="nav-icon">▤</span>
+        <span>{% if user['role']=='operator' %}My Shift Logs{% else %}Controlled Repository{% endif %}</span>
+      </a>
+      {% endif %}
+      {% if user['role'] in ['incharge','admin'] and not is_superuser(user) %}
+      <a href="{{ url_for('home') }}#records">
+        <span class="nav-icon">✓</span>
+        <span>Sign-Off &amp; Approvals</span>
+      </a>
+      {% endif %}
+      {% if is_superuser(user) %}
+      <a class="{% if request.endpoint == 'users' %}active{% endif %}" href="{{ url_for('users') }}">
+        <span class="nav-icon">◎</span>
+        <span>Plant Personnel</span>
+      </a>
+      {% endif %}
+      <a class="{% if request.endpoint == 'password' %}active{% endif %}" href="{{ url_for('password') }}">
+        <span class="nav-icon">◇</span>
+        <span>Security Credentials</span>
+      </a>
+      <a class="{% if request.endpoint == 'appearance' %}active{% endif %}" href="{{ url_for('appearance') }}">
+        <span class="nav-icon" aria-hidden="true">◐</span>
+        <span>Workspace Theme</span>
+      </a>
     </nav>
-    <div class="sidebar-footer"><strong>Company QMS</strong><span>Commercial demonstration</span><small>© 2026 Quality Control</small></div>
+
+    <div class="sidebar-footer">
+      <strong>{{ company_name | default('XYZ Solar Pvt Ltd') }}</strong>
+      <span>IEC 61215 · ISO 9001 Digital QMS</span>
+      <small>© 2026 Enterprise Quality Suite</small>
+    </div>
   </aside>
+
   <header class="topbar">
-    <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="desktop-sidebar" aria-expanded="true" aria-label="Hide sidebar" title="Hide sidebar"><span aria-hidden="true">←</span></button>
+    <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="desktop-sidebar" aria-expanded="true" aria-label="Hide sidebar" title="Toggle Navigation Sidebar">
+      <span aria-hidden="true">←</span>
+    </button>
+
     <a class="brand" href="{{ url_for('home') }}" aria-label="QMS home">
-      <img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Your Company">
-      <span><strong>Quality Records</strong><small>Demo system</small></span>
+      <img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Company Logo">
+      <span>
+        <strong>{{ company_name | default('SolarQMS™ Enterprise') }}</strong>
+        <small>In-Process &amp; CTQ Quality Intelligence</small>
+      </span>
     </a>
+
     <div class="top-actions">
-      <div class="desktop-user"><strong>{{ user['name'] }}</strong><span>{{ 'Super User' if is_superuser(user) else user['role']|title }}</span></div>
-      <button class="icon-button" type="button" data-theme-toggle aria-label="Open appearance options" title="Appearance">◉</button>
+      <div class="desktop-user">
+        <strong>{{ user['name'] }}</strong>
+        <span>{{ user['employee'] }} · {{ 'Super User' if is_superuser(user) else user['role']|title }}</span>
+      </div>
+      <button class="icon-button" type="button" data-theme-toggle aria-label="Open appearance options" title="Switch Workspace Theme">◉</button>
       <button class="avatar" type="button" data-menu-toggle aria-expanded="false" aria-label="Open account menu">{{ user['name'][0]|upper }}</button>
+
       <div class="account-menu" data-account-menu hidden>
-        <strong>{{ user['name'] }}</strong><span>{{ user['employee'] }} · {{ 'Super User' if is_superuser(user) else user['role']|title }}</span>
-        <a href="{{ url_for('password') }}">Change password</a>
+        <strong>{{ user['name'] }}</strong>
+        <span>ID: {{ user['employee'] }} · {{ 'Super User' if is_superuser(user) else user['role']|title }}</span>
+        <a href="{{ url_for('password') }}">Change security password</a>
         <div class="appearance-picker" data-appearance-picker>
-          <b>Appearance</b><small>Only changes your account</small>
+          <b>Workspace Appearance</b>
+          <small>Instant theme switch for your profile</small>
           <div class="appearance-options">
             {% for key, label in [('midnight','Midnight'),('daylight','Daylight'),('ocean','Ocean'),('emerald','Emerald'),('plum','Plum'),('amber','Amber')] %}
             <form method="post" action="{{ url_for('appearance') }}">
               <input type="hidden" name="csrf" value="{{ csrf }}">
-              <input type="hidden" name="from_menu" value="1"><button type="submit" name="appearance" value="{{ key }}" class="appearance-option appearance-{{ key }}{% if user['appearance'] == key %} selected{% endif %}" aria-pressed="{{ 'true' if user['appearance'] == key else 'false' }}"><i></i><span>{{ label }}</span></button>
+              <input type="hidden" name="from_menu" value="1">
+              <button type="submit" name="appearance" value="{{ key }}" class="appearance-option appearance-{{ key }}{% if user['appearance'] == key %} selected{% endif %}" aria-pressed="{{ 'true' if user['appearance'] == key else 'false' }}">
+                <i></i><span>{{ label }}</span>
+              </button>
             </form>
             {% endfor %}
           </div>
         </div>
-        <a href="{{ url_for('appearance') }}">Appearance settings</a>
-        {% if is_superuser(user) %}<a href="{{ url_for('users') }}">Manage users</a>{% endif %}
-        <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-button">Log out</button></form>
+        <a href="{{ url_for('appearance') }}">All appearance settings</a>
+        {% if is_superuser(user) %}<a href="{{ url_for('users') }}">Manage plant users</a>{% endif %}
+        <form method="post" action="{{ url_for('logout') }}">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <button class="link-button">Sign out of portal</button>
+        </form>
       </div>
     </div>
   </header>
   {% endif %}
+
   <main class="page {% block pageclass %}{% endblock %}">
     {% with messages = get_flashed_messages() %}
-      {% if messages %}<div class="flash-stack" role="status">{% for message in messages %}<div class="flash">{{ message }}</div>{% endfor %}</div>{% endif %}
+      {% if messages %}
+      <div class="flash-stack" role="status">
+        {% for message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+
   {% if user %}
   <nav class="page-scroll-controls" aria-label="Page scrolling">
-    <button type="button" data-page-scroll="up" aria-label="Scroll up" title="Scroll up">↑</button>
-    <button type="button" data-page-scroll="down" aria-label="Scroll down" title="Scroll down">↓</button>
+    <button type="button" data-page-scroll="up" aria-label="Scroll up" title="Scroll to top">↑</button>
+    <button type="button" data-page-scroll="down" aria-label="Scroll down" title="Scroll to bottom">↓</button>
   </nav>
   {% endif %}
 </body>
 </html>
-
