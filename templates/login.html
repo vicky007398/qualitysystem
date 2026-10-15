@@ -1,51 +1,72 @@
 {% extends "base.html" %}
-{% block title %}Log in · Company QMS{% endblock %}
+{% block title %}Log in · {{ company_name | default('XYZ Solar QMS') }}{% endblock %}
 {% block pageclass %}login-page{% endblock %}
 {% block content %}
 <section class="welcome-screen" data-welcome-screen hidden role="dialog" aria-modal="true" aria-labelledby="welcome-title">
   <div class="welcome-glow" aria-hidden="true"></div>
   <div class="welcome-content">
     <img class="welcome-logo" src="{{ url_for('static', filename='xyz-solar-logo.svg') }}" alt="XYZ Solar logo" width="112" height="112">
-    <p class="welcome-eyebrow">POWERING QUALITY. BUILDING TRUST.</p>
+    <p class="welcome-eyebrow">POWERING SOLAR QUALITY · BUILDING TIER-1 TRUST</p>
     <h1 id="welcome-title">XYZ Solar <span>Pvt Limited</span></h1>
-    <p class="welcome-message">Welcomes you</p>
-    <p class="welcome-caption">Your quality journey starts here.</p>
+    <p class="welcome-message">Enterprise Quality &amp; Traceability Suite</p>
+    <p class="welcome-caption">Zero-defect PV module manufacturing starts here.</p>
     <div class="welcome-progress" aria-hidden="true"><span></span></div>
-    <button class="welcome-skip" type="button" data-welcome-skip>Continue to sign in →</button>
+    <button class="welcome-skip" type="button" data-welcome-skip>Launch Executive Portal →</button>
   </div>
 </section>
 <script defer src="{{ url_for('static', filename='welcome.js', v='solar-welcome-1') }}"></script>
+
 <section class="login-shell" data-login-shell>
   <div class="login-showcase">
-    <div class="login-brand"><span><img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Your Company"></span><strong>QUALITY CONTROL</strong></div>
-    <div class="network-chip"><i></i> Commercial demonstration</div>
-    <div class="login-message">
-      <p class="eyebrow">IN-PROCESS QUALITY CONTROL</p>
-      <h1>Controlled inspection.<br>Clear approval.<br><span>Complete traceability.</span></h1>
-      <p>One secure workspace for operators and shift incharges to complete, verify and retrieve IPQC records.</p>
+    <div class="login-brand">
+      <span><img src="{{ url_for('static', filename='company-logo.svg') }}" alt="Company Logo"></span>
+      <strong>SOLAR QMS · MES SUITE</strong>
     </div>
-    <div class="login-metrics" aria-label="System features">
-      <div><strong>36</strong><span>Process stages</span></div>
-      <div><strong>A · B · C</strong><span>Shift coverage</span></div>
-      <div><strong>PDF</strong><span>Controlled reports</span></div>
+    <div class="network-chip"><i></i> IEC 61215 / 61730 Compliant Architecture</div>
+    <div class="login-message">
+      <p class="eyebrow">IN-PROCESS QUALITY &amp; CTQ INTELLIGENCE</p>
+      <h1>Controlled inspection.<br>Instant approval.<br><span>Audit-ready traceability.</span></h1>
+      <p>Unified digital quality workspace for PV production floors—connecting operators, shift incharges, and plant heads across IPQC checksheets, Gel Content, Peel Strength, and Lamination CTQ labs.</p>
+    </div>
+    <div class="login-metrics" aria-label="System capabilities">
+      <div><strong>36+</strong><span>IPQC Checkpoints</span></div>
+      <div><strong>4 Labs</strong><span>CTQ Peel &amp; Gel Suites</span></div>
+      <div><strong>24/7</strong><span>Shift A · B · C Telemetry</span></div>
+      <div><strong>1-Click</strong><span>Controlled Audit PDFs</span></div>
     </div>
   </div>
+
   <div class="login-access">
-    <button class="login-theme-button" type="button" data-theme-toggle aria-label="Change colour theme">◐</button>
+    <button class="login-theme-button" type="button" data-theme-toggle aria-label="Change colour theme" title="Switch Appearance Theme">◐</button>
     <section class="login-card">
       <div class="login-card-mark">QMS</div>
-      <p class="eyebrow">SECURE ACCESS</p>
-      <h2>Welcome back</h2>
-      <p class="muted">Sign in with your individual employee account.</p>
-      <form method="post" class="form-stack">
+      <p class="eyebrow">AUTHORIZED PLANT ACCESS</p>
+      <h2>Sign in to Quality Portal</h2>
+      <p class="muted">Authenticate with your assigned employee credentials.</p>
+
+      <form method="post" class="form-stack" id="loginForm">
         <input type="hidden" name="csrf" value="{{ csrf }}">
-        <label>Employee ID<input name="employee" autocomplete="username" maxlength="80" placeholder="Enter employee ID" required autofocus></label>
-        <label>Password<input type="password" name="password" autocomplete="current-password" placeholder="Enter password" required></label>
-        <button class="button primary full" type="submit">Enter Quality Portal →</button>
+        <label>
+          Employee ID
+          <input id="empInput" name="employee" autocomplete="username" maxlength="80" placeholder="e.g. OP100, IC100, AD100" required autofocus>
+        </label>
+        <label>
+          Security Password
+          <input id="passInput" type="password" name="password" autocomplete="current-password" placeholder="Enter password" required>
+        </label>
+        <button class="button primary full" type="submit">Authenticate &amp; Enter Portal →</button>
       </form>
-      <p class="network-note"><span></span> Demo accounts: OP100 · IC100 · AD100 / Demo123</p>
+
+      <div class="pitch-role-switcher" style="margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid rgba(148, 163, 184, 0.16);">
+        <p class="network-note" style="margin-bottom: 0.4rem;"><span></span> <strong>Live Pitch Quick-Switch</strong> (Pass: <code>Demo123</code>)</p>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; font-size: 0.72rem; text-align: center;">
+          <span style="padding: 0.35rem 0.25rem; border-radius: 6px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 600;">OP100<br><small style="opacity: 0.75; font-weight: 400;">Operator</small></span>
+          <span style="padding: 0.35rem 0.25rem; border-radius: 6px; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); font-weight: 600;">IC100<br><small style="opacity: 0.75; font-weight: 400;">Incharge</small></span>
+          <span style="padding: 0.35rem 0.25rem; border-radius: 6px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 600;">AD100<br><small style="opacity: 0.75; font-weight: 400;">Plant Admin</small></span>
+          <span style="padding: 0.35rem 0.25rem; border-radius: 6px; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); font-weight: 600;">0001<br><small style="opacity: 0.75; font-weight: 400;">Superuser</small></span>
+        </div>
+      </div>
     </section>
   </div>
 </section>
 {% endblock %}
-
